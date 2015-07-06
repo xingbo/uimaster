@@ -1,0 +1,225 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.shaolin.bmdp</groupId>
+    <artifactId>build.root</artifactId>
+    <name>Building Actions</name>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <uimaster.version>1.0.0-SNAPSHOT</uimaster.version>
+		<uimaster.package>C:/uimaster/deploy</uimaster.package>
+		<uimaster.commonjar>C:/uimaster/deploy/apache-tomcat-8.0.9/lib/uimaster</uimaster.commonjar>
+		<uimaster.webapp>C:/uimaster/deploy/apache-tomcat-8.0.9/webapps/uimaster</uimaster.webapp>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+					<fork>true</fork>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+				    <finalName>${project.groupId}.${project.build.finalName}</finalName>
+					<excludes>
+						<exclude>**/entities/**</exclude>
+					</excludes>
+					<includes/>
+                </configuration>
+            </plugin>
+			<plugin>
+                <groupId>org.codehaus.groovy.maven</groupId>
+                <artifactId>gmaven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-cli</id>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <phase>install</phase>
+                        <configuration>
+                            <source>
+							    jarFileStr = project.build.directory +'/'+ project.groupId + '.' + project.build.finalName + '.jar';
+								jarFile = new File(jarFileStr);
+								if (jarFile.exists()) {
+									destFold = '${uimaster.commonjar}';
+									println("copy jar: " + jarFile + " to " + destFold);
+									ant.copy(todir: destFold, file: jarFile, overwrite: true);
+								}
+								
+								entitiesResources = new File(project.basedir, '/src/main/resources/entities'); 
+								if (entitiesResources.exists()) {
+									destFold = '${uimaster.commonjar}' + "/entities";
+									ant.copy(todir: destFold) {
+										fileset(dir: entitiesResources) {
+											filename(name: '**');
+										}
+									}
+								}
+								
+								hbmResources = new File(project.basedir, '/src/other/hbm'); 
+								if (hbmResources.exists()) {
+									destFold = '${uimaster.webapp}' + "/WEB-INF/classes/hbm";
+									ant.copy(todir: destFold) {
+										fileset(dir: hbmResources) {
+											filename(name: '**');
+										}
+									}
+								}
+								
+								webResources = new File(project.basedir, '/src/other/web'); 
+								if (webResources.exists()) {
+									destFold = '${uimaster.webapp}';
+									ant.copy(todir: destFold) {
+										fileset(dir: webResources) {
+											filename(name: '**');
+										}
+									}
+								}
+								
+								sqlScript = new File(project.basedir, '/src/other/sql'); 
+								if (sqlScript.exists()) {
+									destFold = '${uimaster.package}' + '/sql';
+									ant.copy(todir: destFold) {
+										fileset(dir: sqlScript) {
+											filename(name: '**');
+										}
+									}
+								}
+                            </source>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
+        <pluginManagement>
+            <plugins>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-plugin-api</artifactId>
+                <version>2.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-project</artifactId>
+                <version>2.0.2</version>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.8.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.6.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>1.6.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.log4j</groupId>
+                <artifactId>com.springsource.org.apache.log4j</artifactId>
+                <version>1.2.16</version>
+            </dependency>
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>5.1.25</version>
+			</dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>3.1-b02</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.servlet.jsp</groupId>
+                <artifactId>jsp-api</artifactId>
+                <version>2.1</version>
+            </dependency>
+            <dependency>
+              <groupId>javax.transaction</groupId>
+              <artifactId>jta</artifactId>
+              <version>1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.xml.parsers</groupId>
+                <artifactId>jaxp-api</artifactId>
+                <version>1.4</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>2.2.5</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-impl</artifactId>
+                <version>2.2.5</version>
+            </dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-core</artifactId>
+				<version>4.2.3.Final</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-entitymanager</artifactId>
+				<version>4.2.3.Final</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-testing</artifactId>
+				<version>4.2.3.Final</version>
+			</dependency>
+			<dependency>
+				<groupId>com.esotericsoftware.kryo</groupId>
+				<artifactId>kryo</artifactId>
+				<version>2.24.0</version>
+			</dependency>
+			<dependency>
+			    <groupId>org.jbpm</groupId>
+			    <artifactId>jbpm-test</artifactId>
+			    <version>6.1.0.Final</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-fileupload</groupId>
+				<artifactId>commons-fileupload</artifactId>
+				<version>1.3.1</version>
+			</dependency>
+			<dependency>
+			   <groupId>org.apache.commons</groupId>
+			   <artifactId>commons-io</artifactId>
+			   <version>2.4</version>
+		   </dependency>
+		   <dependency>
+			    <groupId>org.apache.poi</groupId>  
+			    <artifactId>poi</artifactId>  
+			    <version>3.10-FINAL</version>
+			</dependency>
+		   <dependency>
+			    <groupId>org.apache.poi</groupId>  
+			    <artifactId>poi-ooxml</artifactId>  
+			    <version>3.10-FINAL</version>
+			</dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>
