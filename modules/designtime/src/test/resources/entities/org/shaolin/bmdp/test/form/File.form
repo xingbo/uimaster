@@ -1,0 +1,226 @@
+<?xml version="1.0" ?>
+<ns2:UIEntity xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns5="http://bmdp.shaolin.org/datamodel/RDBDiagram" xmlns:ns4="http://bmdp.shaolin.org/datamodel/PageDiagram" xmlns:ns3="http://bmdp.shaolin.org/datamodel/BEDiagram" xmlns:ns2="http://bmdp.shaolin.org/datamodel/Page" xmlns="http://bmdp.shaolin.org/datamodel/Common" xsi:schemaLocation="">
+  <entityName>org.shaolin.bmdp.test.form.File</entityName>
+  <systemVersion>0</systemVersion>
+  <ns2:body xsi:type="ns2:UIPanelType" UIID="Form">
+    <ns2:layout xsi:type="ns2:TableLayoutType">
+      <ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+      <ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+      <ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+      <ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+      <ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+      <ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+      <ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+      <ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+      <ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+      <ns2:columnWidthWeight>-1.0</ns2:columnWidthWeight>
+      <ns2:columnWidthWeight>-1.0</ns2:columnWidthWeight>
+    </ns2:layout>
+    <ns2:component xsi:type="ns2:UILabelType" UIID="idUILabel">
+      <ns2:text xsi:type="ns2:ResourceBundlePropertyType">
+        <ns2:bundle>i18n</ns2:bundle>
+        <ns2:key>org.shaolin.bmdp.test.be.File.id</ns2:key>
+      </ns2:text>
+    </ns2:component>
+    <ns2:component xsi:type="ns2:UITextFieldType" UIID="idUI"></ns2:component>
+    <ns2:component xsi:type="ns2:UILabelType" UIID="nameUILabel">
+      <ns2:text xsi:type="ns2:ResourceBundlePropertyType">
+        <ns2:bundle>i18n</ns2:bundle>
+        <ns2:key>org.shaolin.bmdp.test.be.File.name</ns2:key>
+      </ns2:text>
+    </ns2:component>
+    <ns2:component xsi:type="ns2:UITextFieldType" UIID="nameUI"></ns2:component>
+    <ns2:component xsi:type="ns2:UILabelType" UIID="authorUILabel">
+      <ns2:text xsi:type="ns2:ResourceBundlePropertyType">
+        <ns2:bundle>i18n</ns2:bundle>
+        <ns2:key>org.shaolin.bmdp.test.be.File.author</ns2:key>
+      </ns2:text>
+    </ns2:component>
+    <ns2:component xsi:type="ns2:UITextFieldType" UIID="authorUI"></ns2:component>
+    <ns2:component xsi:type="ns2:UILabelType" UIID="typeUILabel">
+      <ns2:text xsi:type="ns2:ResourceBundlePropertyType">
+        <ns2:bundle>i18n</ns2:bundle>
+        <ns2:key>org.shaolin.bmdp.test.be.File.type</ns2:key>
+      </ns2:text>
+    </ns2:component>
+    <ns2:component xsi:type="ns2:UIComboBoxType" UIID="typeUI"></ns2:component>
+    <ns2:component xsi:type="ns2:UILabelType" UIID="ownerUILabel">
+      <ns2:text xsi:type="ns2:ResourceBundlePropertyType">
+        <ns2:bundle>i18n</ns2:bundle>
+        <ns2:key>org.shaolin.bmdp.test.be.File.owner</ns2:key>
+      </ns2:text>
+    </ns2:component>
+    <ns2:component xsi:type="ns2:UIReferenceEntityType" UIID="ownerUI"></ns2:component>
+    <ns2:component xsi:type="ns2:UILabelType" UIID="sizeUILabel">
+      <ns2:text xsi:type="ns2:ResourceBundlePropertyType">
+        <ns2:bundle>i18n</ns2:bundle>
+        <ns2:key>org.shaolin.bmdp.test.be.File.size</ns2:key>
+      </ns2:text>
+    </ns2:component>
+    <ns2:component xsi:type="ns2:UITextFieldType" UIID="sizeUI"></ns2:component>
+    <ns2:component xsi:type="ns2:UILabelType" UIID="filesUILabel">
+      <ns2:text xsi:type="ns2:ResourceBundlePropertyType">
+        <ns2:bundle>i18n</ns2:bundle>
+        <ns2:key>org.shaolin.bmdp.test.be.File.files</ns2:key>
+      </ns2:text>
+    </ns2:component>
+    <ns2:component xsi:type="ns2:UITableType" UIID="filesUI">
+      <ns2:defaultRowSize>0</ns2:defaultRowSize>
+    </ns2:component>
+    <ns2:component xsi:type="ns2:UILabelType" UIID="modifiedUILabel">
+      <ns2:text xsi:type="ns2:ResourceBundlePropertyType">
+        <ns2:bundle>i18n</ns2:bundle>
+        <ns2:key>org.shaolin.bmdp.test.be.File.modified</ns2:key>
+      </ns2:text>
+    </ns2:component>
+    <ns2:component xsi:type="ns2:UIDateType" UIID="modifiedUI"></ns2:component>
+    <ns2:component xsi:type="ns2:UIButtonType" UIID="okbtn">
+      <ns2:editable xsi:type="ns2:ExpressionPropertyType">
+        <ns2:expression>
+          <expressionString><![CDATA[{return $editable;}]]></expressionString>
+        </ns2:expression>
+      </ns2:editable>
+      <ns2:text xsi:type="ns2:ResourceBundlePropertyType">
+        <ns2:bundle>Common</ns2:bundle>
+        <ns2:key>OKbtn</ns2:key>
+      </ns2:text>
+    </ns2:component>
+    <ns2:component xsi:type="ns2:UIButtonType" UIID="cancelbtn">
+      <ns2:text xsi:type="ns2:ResourceBundlePropertyType">
+        <ns2:bundle>Common</ns2:bundle>
+        <ns2:key>Cancelbtn</ns2:key>
+      </ns2:text>
+    </ns2:component>
+    <ns2:layoutConstraint>
+      <ns2:componentId>idUILabel</ns2:componentId>
+      <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" x="0" y="0" align="FULL"></ns2:constraint>
+    </ns2:layoutConstraint>
+    <ns2:layoutConstraint>
+      <ns2:componentId>idUI</ns2:componentId>
+      <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" x="1" y="0" align="FULL"></ns2:constraint>
+    </ns2:layoutConstraint>
+    <ns2:layoutConstraint>
+      <ns2:componentId>nameUILabel</ns2:componentId>
+      <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" x="0" y="1" align="FULL"></ns2:constraint>
+    </ns2:layoutConstraint>
+    <ns2:layoutConstraint>
+      <ns2:componentId>nameUI</ns2:componentId>
+      <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" x="1" y="1" align="FULL"></ns2:constraint>
+    </ns2:layoutConstraint>
+    <ns2:layoutConstraint>
+      <ns2:componentId>authorUILabel</ns2:componentId>
+      <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" x="0" y="2" align="FULL"></ns2:constraint>
+    </ns2:layoutConstraint>
+    <ns2:layoutConstraint>
+      <ns2:componentId>authorUI</ns2:componentId>
+      <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" x="1" y="2" align="FULL"></ns2:constraint>
+    </ns2:layoutConstraint>
+    <ns2:layoutConstraint>
+      <ns2:componentId>typeUILabel</ns2:componentId>
+      <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" x="0" y="3" align="FULL"></ns2:constraint>
+    </ns2:layoutConstraint>
+    <ns2:layoutConstraint>
+      <ns2:componentId>typeUI</ns2:componentId>
+      <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" x="1" y="3" align="FULL"></ns2:constraint>
+    </ns2:layoutConstraint>
+    <ns2:layoutConstraint>
+      <ns2:componentId>ownerUILabel</ns2:componentId>
+      <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" x="0" y="4" align="FULL"></ns2:constraint>
+    </ns2:layoutConstraint>
+    <ns2:layoutConstraint>
+      <ns2:componentId>ownerUI</ns2:componentId>
+      <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" x="1" y="4" align="FULL"></ns2:constraint>
+    </ns2:layoutConstraint>
+    <ns2:layoutConstraint>
+      <ns2:componentId>sizeUILabel</ns2:componentId>
+      <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" x="0" y="5" align="FULL"></ns2:constraint>
+    </ns2:layoutConstraint>
+    <ns2:layoutConstraint>
+      <ns2:componentId>sizeUI</ns2:componentId>
+      <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" x="1" y="5" align="FULL"></ns2:constraint>
+    </ns2:layoutConstraint>
+    <ns2:layoutConstraint>
+      <ns2:componentId>filesUILabel</ns2:componentId>
+      <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" x="0" y="6" align="FULL"></ns2:constraint>
+    </ns2:layoutConstraint>
+    <ns2:layoutConstraint>
+      <ns2:componentId>filesUI</ns2:componentId>
+      <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" x="1" y="6" align="FULL"></ns2:constraint>
+    </ns2:layoutConstraint>
+    <ns2:layoutConstraint>
+      <ns2:componentId>modifiedUILabel</ns2:componentId>
+      <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" x="0" y="7" align="FULL"></ns2:constraint>
+    </ns2:layoutConstraint>
+    <ns2:layoutConstraint>
+      <ns2:componentId>modifiedUI</ns2:componentId>
+      <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" x="1" y="7" align="FULL"></ns2:constraint>
+    </ns2:layoutConstraint>
+    <ns2:layoutConstraint>
+      <ns2:componentId>okbtn</ns2:componentId>
+      <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" x="0" y="8" align="FULL"></ns2:constraint>
+    </ns2:layoutConstraint>
+    <ns2:layoutConstraint>
+      <ns2:componentId>cancelbtn</ns2:componentId>
+      <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" x="2" y="8" align="FULL"></ns2:constraint>
+    </ns2:layoutConstraint>
+  </ns2:body>
+  <ns2:mapping>
+    <systemVersion>0</systemVersion>
+    <ns2:DataEntity scope="InOut" name="beObject" category="BusinessEntity">
+      <type entityName="org.shaolin.bmdp.test.be.File"></type>
+    </ns2:DataEntity>
+    <ns2:DataEntity scope="InOut" name="editable" category="JavaPrimitive">
+      <type entityName="java.lang.Boolean"></type>
+    </ns2:DataEntity>
+    <ns2:ComponentMapping xsi:type="ns2:SimpleComponentMappingType" name="simpleMapping0">
+      <ns2:mappingRule entityName="org.shaolin.uimaster.page.od.rules.UITextWithNumber"></ns2:mappingRule>
+      <ns2:UIComponent componentPath="idUI" paramName="UIWidgetType"></ns2:UIComponent>
+      <ns2:DataComponent xsi:type="ns2:ComponentParamType" componentPath="beObject.id" paramName="Number"></ns2:DataComponent>
+    </ns2:ComponentMapping>
+    <ns2:ComponentMapping xsi:type="ns2:SimpleComponentMappingType" name="simpleMapping1">
+      <ns2:mappingRule entityName="org.shaolin.uimaster.page.od.rules.UIText"></ns2:mappingRule>
+      <ns2:UIComponent componentPath="nameUI" paramName="UIWidgetType"></ns2:UIComponent>
+      <ns2:DataComponent xsi:type="ns2:ComponentParamType" componentPath="beObject.name" paramName="StringData"></ns2:DataComponent>
+    </ns2:ComponentMapping>
+    <ns2:ComponentMapping xsi:type="ns2:SimpleComponentMappingType" name="simpleMapping2">
+      <ns2:mappingRule entityName="org.shaolin.uimaster.page.od.rules.UIText"></ns2:mappingRule>
+      <ns2:UIComponent componentPath="authorUI" paramName="UIWidgetType"></ns2:UIComponent>
+      <ns2:DataComponent xsi:type="ns2:ComponentParamType" componentPath="beObject.author" paramName="StringData"></ns2:DataComponent>
+    </ns2:ComponentMapping>
+    <ns2:ComponentMapping xsi:type="ns2:SimpleComponentMappingType" name="simpleMapping3">
+      <ns2:mappingRule entityName="org.shaolin.uimaster.page.od.rules.UITextWithCE"></ns2:mappingRule>
+      <ns2:UIComponent componentPath="typeUI" paramName="UIWidgetType"></ns2:UIComponent>
+      <ns2:DataComponent xsi:type="ns2:ComponentParamType" componentPath="beObject.type" paramName="CEValue"></ns2:DataComponent>
+      <ns2:DataComponent xsi:type="ns2:ComponentParamType" componentPath="org.shaolin.bmdp.test.ce.FileType" paramName="CEType"></ns2:DataComponent>
+    </ns2:ComponentMapping>
+    <ns2:ComponentMapping xsi:type="ns2:SimpleComponentMappingType" name="simpleMapping4">
+      <ns2:mappingRule entityName="org.shaolin.bmdp.test.be.User"></ns2:mappingRule>
+      <ns2:UIComponent componentPath="ownerUI" paramName="UIWidgetType"></ns2:UIComponent>
+    </ns2:ComponentMapping>
+    <ns2:ComponentMapping xsi:type="ns2:SimpleComponentMappingType" name="simpleMapping5">
+      <ns2:mappingRule entityName="org.shaolin.uimaster.page.od.rules.UITextWithNumber"></ns2:mappingRule>
+      <ns2:UIComponent componentPath="sizeUI" paramName="UIWidgetType"></ns2:UIComponent>
+      <ns2:DataComponent xsi:type="ns2:ComponentParamType" componentPath="beObject.size" paramName="Number"></ns2:DataComponent>
+    </ns2:ComponentMapping>
+    <ns2:ComponentMapping xsi:type="ns2:SimpleComponentMappingType" name="simpleMapping6">
+      <ns2:mappingRule entityName="org.shaolin.uimaster.page.od.rules.UITable"></ns2:mappingRule>
+      <ns2:UIComponent componentPath="filesUI" paramName="UIWidgetType"></ns2:UIComponent>
+      <ns2:DataComponent xsi:type="ns2:ComponentParamType" componentPath="beObject.files" paramName="Condition"></ns2:DataComponent>
+    </ns2:ComponentMapping>
+    <ns2:ComponentMapping xsi:type="ns2:SimpleComponentMappingType" name="simpleMapping7">
+      <ns2:mappingRule entityName="org.shaolin.uimaster.page.od.rules.UITextWithDate"></ns2:mappingRule>
+      <ns2:UIComponent componentPath="modifiedUI" paramName="UIWidgetType"></ns2:UIComponent>
+      <ns2:DataComponent xsi:type="ns2:ComponentParamType" componentPath="beObject.modified" paramName="Date"></ns2:DataComponent>
+    </ns2:ComponentMapping>
+    <ns2:DataToUIMappingOperation>
+      <expressionString><![CDATA[{
+@odContext.executeAllMappings();
+}]]></expressionString>
+    </ns2:DataToUIMappingOperation>
+    <ns2:UIToDataMappingOperation>
+      <expressionString><![CDATA[{
+@odContext.executeAllMappings();
+}]]></expressionString>
+    </ns2:UIToDataMappingOperation>
+  </ns2:mapping>
+</ns2:UIEntity>

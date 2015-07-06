@@ -1,0 +1,2063 @@
+options {
+	LOOKAHEAD=1;
+	STATIC = false;
+	JAVA_UNICODE_ESCAPE=true;
+}
+     
+PARSER_BEGIN(Parser)
+
+package org.shaolin.uimaster.javacc.parser;
+
+import org.shaolin.uimaster.javacc.exception.ParsingException;
+import org.shaolin.uimaster.javacc.symbol.*;
+import org.shaolin.uimaster.javacc.statement.*;
+import org.shaolin.uimaster.utils.StringUtil;
+import java.util.*;
+import java.io.*;
+
+public class Parser{
+    
+    Statement currentBlock = null;
+    List loopSmt = new ArrayList();
+    ExpressionNode returnType = null;
+    List importArrayList = new ArrayList();
+    boolean hasDefineReturnType = false;
+	
+	public static ExpressionNode parseExpression(String expression) throws Exception
+	{
+    	ExpressionNode result = null;
+    	if(expression != null && expression.trim().length() > 0)
+		{
+    		    Parser parser = new Parser(new StringReader(expression));
+                result = parser.parse();
+		}
+		else
+		{
+		    throw new ParsingException("Expression can't be null or empty string");
+		}
+        return result;
+	}
+	
+	public static CompilationUnit parseStatement(String statement) throws Exception
+    {
+        CompilationUnit compilationUnit = null;
+        if(statement != null && statement.trim().length() > 0)
+	    {
+                 Parser parser = new Parser(new StringReader(statement));
+                 compilationUnit = parser.CompilationUnit(statement);
+        }
+        else
+        {
+               throw new ParsingException("Expression can't be null or empty string"); 
+        }
+         return compilationUnit;		
+    }
+    
+    private ExpressionNode makeAssignExpressionNode(ExpressionNode lChild, ExpressionNode rChild, String op)
+    {
+       
+        if (op.length() > 1)
+        {
+            String caculateType = op.substring(0, op.length() - 1 );
+            // numeric operator
+            if (caculateType.equals("+") || caculateType.equals("-") || caculateType.equals("*") || caculateType.equals("/"))
+            {
+              return makeNumericOperator(lChild, rChild, caculateType);
+            }
+            // bit operate
+            if (caculateType.equals("|") || caculateType.equals("&") || caculateType.equals("^"))
+            {
+                return makeBitOperator(lChild, rChild, caculateType);
+            }
+            // shift operate
+            if(caculateType.equals("<<") || caculateType.equals(">>") || caculateType.equals(">>"))
+            {
+                return makeShiftOperator(lChild, rChild, caculateType);
+            }
+            // never go to here
+            //throw new ParsingException("Can't indentify  " + caculateType + " operater");
+        }
+        return rChild;
+    }
+        
+	
+	private ExpressionNode makeLogicOperator(ExpressionNode lChild, ExpressionNode rChild, String op)
+	{
+		LogicOperator node = new LogicOperator(op);
+		node.addChild(lChild);
+		node.addChild(rChild);
+		return node;                  
+	}
+
+	private ExpressionNode makeBitOperator(ExpressionNode lChild, ExpressionNode rChild, String op)
+	{
+		BitOperator node = new BitOperator(op);
+		node.addChild(lChild);
+		node.addChild(rChild);
+		return node;                  
+	}
+
+	private ExpressionNode makeShiftOperator(ExpressionNode lChild, ExpressionNode rChild, String op)
+	{
+		ShiftOperator node = new ShiftOperator(op);
+		node.addChild(lChild);
+		node.addChild(rChild);
+		return node;                  
+	}
+
+	private ExpressionNode makeNumericOperator(ExpressionNode lChild, ExpressionNode rChild, String op)
+	{
+		NumericOperator node = new NumericOperator(op);
+		node.addChild(lChild);
+		node.addChild(rChild);
+		return node;                  
+	}
+
+	private ExpressionNode makeUnaryOperator(ExpressionNode child, String op)
+	{
+		UnaryOperator node = new UnaryOperator(op);
+		node.addChild(child);
+		return node;                  
+	}	
+
+	private ExpressionNode makeIncrDecrOperator(ExpressionNode child, String op, boolean isPrefix)
+	{
+		IncrDecrOperator node = new IncrDecrOperator(op);
+		node.setIsPrefix(isPrefix);
+		node.addChild(child);
+		return node;                  
+	}	
+	
+	private ExpressionNode makeCastExpression(ExpressionNode typeNode, ExpressionNode exprNode)
+	{
+		CastExpression node = new CastExpression();
+		node.addChild(typeNode);
+		node.addChild(exprNode);
+		return node;                  
+	}		
+}
+
+
+PARSER_END(Parser)
+
+/* WHITE SPACE */
+
+SKIP :
+{
+  " "
+| "\t"
+| "\r"
+| "\n"
+| "\f"
+}
+
+/* COMMENTS */
+
+MORE :
+{
+  "//" : IN_SINGLE_LINE_COMMENT
+|
+  <"/**" ~["/"]> { input_stream.backup(1); } : IN_FORMAL_COMMENT
+|
+  "/*" : IN_MULTI_LINE_COMMENT
+}
+
+<IN_SINGLE_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <SINGLE_LINE_COMMENT: "\n" | "\r" | "\r\n" > : DEFAULT
+}
+
+<IN_FORMAL_COMMENT>
+SPECIAL_TOKEN :
+{
+  <FORMAL_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_MULTI_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <MULTI_LINE_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_SINGLE_LINE_COMMENT,IN_FORMAL_COMMENT,IN_MULTI_LINE_COMMENT>
+MORE :
+{
+  < ~[] >
+}
+
+/* OPERATORS */
+
+TOKEN :
+{
+    <PRIMITIVETYPE: <BOOLEAN>|<INTEGER>|<CHAR>|<FLOAT>|<DOUBLE>|<LONG>|<SHORT>|<BYTE> >
+    |<EQUALOP: <EQUAL>|<NOTEQUAL> >
+	|<RELATIONOP: <LARGER>|<SMALLER>|<LE>|<SE> >
+	|<PLUSMINUS: <PLUS>|<MINUS> >
+	|<MULDIV: <MULTIPLY>|<DIVIDE>|<MODULO> >
+	|<UNARYPLUS: <PLUS> >
+	|<UNARYMINUS: <MINUS> >
+	|<INCRDECR: <INCR>|<DECR> >
+	|<SHIFTOP: <LSHIFT>|<RSIGNEDSHIFT>|<RUNSIGNEDSHIFT> >
+    |<NEW: "new" >
+    |<INSTANCEOF: "instanceof" >	
+    |<ASSIGN: "=" >
+	|<VOID: "void" >
+	|<CLASS: "class" >
+
+	|<XOR: "^" >
+    |<BIT_AND: "&" >
+    |<BIT_OR:  "|" >    
+
+	|<AND: "&&">
+	|<OR: "||">
+
+	|<#PLUS: "+" >
+	|<#MINUS: "-" >
+	|<#MULTIPLY: "*" >
+	|<#DIVIDE: "/" >
+	|<#MODULO: "%" >
+
+	|<#LARGER: ">" >
+	|<#LE: ">=" >
+	|<#SMALLER: "<" >
+	|<#SE: "<=" >
+	|<#EQUAL: "==" >
+	|<#NOTEQUAL: "!=" >
+	
+    |<#INCR: "++" >
+    |<#DECR: "--" >    
+    
+    |<#LSHIFT: "<<" >
+    |<#RSIGNEDSHIFT: ">>" >
+    |<#RUNSIGNEDSHIFT: ">>>" >
+    
+    |<#BOOLEAN: "boolean">
+    |<#SHORT: "short">    
+    |<#INTEGER: "int">
+    |<#LONG: "long">
+    |<#FLOAT: "float">
+    |<#DOUBLE: "double">
+    |<#CHAR: "char">
+    |<#BYTE: "byte">
+}
+
+TOKEN :
+{
+  < INTEGER_LITERAL:
+        <DECIMAL_LITERAL> (["l","L"])?
+      | <HEX_LITERAL> (["l","L"])?
+      | <OCTAL_LITERAL> (["l","L"])?
+  >
+|
+  < #DECIMAL_LITERAL: ["1"-"9"] (["0"-"9"])* >
+|
+  < #HEX_LITERAL: "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+ >
+|
+  < #OCTAL_LITERAL: "0" (["0"-"7"])* >
+|
+  < FLOATING_POINT_LITERAL:
+        (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)? (["f","F","d","D"])?
+      | "." (["0"-"9"])+ (<EXPONENT>)? (["f","F","d","D"])?
+      | (["0"-"9"])+ <EXPONENT> (["f","F","d","D"])?
+      | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"]
+  >
+|
+  < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+|
+  < STRING_LITERAL:
+      "\""
+      (   (~["\"","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )*
+      "\""
+  >
+|
+  < CHARACTER_LITERAL:
+      "'"
+      (   (~["'","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )
+      "'"
+  >
+|
+  < BOOLEAN_LITERAL:
+  	"true"
+  	| "false"
+  >
+|
+  < NULL_LITERAL:
+    "null"
+  >
+}
+
+/* RESERVED WORDS AND LITERALS */
+
+TOKEN :
+{
+  < ABSTRACT: "abstract" >
+| < ASSERT: "assert" >
+| < BREAK: "break" >
+| < CASE: "case" >
+| < CATCH: "catch" >
+| < CONST: "const" >
+| < CONTINUE: "continue" >
+| < _DEFAULT: "default" >
+| < DO: "do" >
+| < ELSE: "else" >
+| < ENUM: "enum" >
+| < EXTENDS: "extends" >
+| < FINAL: "final" >
+| < FINALLY: "finally" >
+| < FOR: "for" >
+| < GOTO: "goto" >
+| < IF: "if" >
+| < IMPLEMENTS: "implements" >
+| < IMPORT: "import" >
+| < INTERFACE: "interface" >
+| < NATIVE: "native" >
+| < PACKAGE: "package">
+| < PRIVATE: "private" >
+| < PROTECTED: "protected" >
+| < PUBLIC: "public" >
+| < RETURN: "return" >
+| < STATIC: "static" >
+| < STRICTFP: "strictfp" >
+| < SUPER: "super" >
+| < SWITCH: "switch" >
+| < SYNCHRONIZED: "synchronized" >
+| < THIS: "this" >
+| < THROW: "throw" >
+| < THROWS: "throws" >
+| < TRANSIENT: "transient" >
+| < TRY: "try" >
+| < VOLATILE: "volatile" >
+| < WHILE: "while" >
+}
+
+/* IDENTIFIERS */
+
+TOKEN :
+{
+  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
+|
+  < #LETTER:
+      "$" | "@" | "#" |
+      [
+       "\u0041"-"\u005a",
+       "\u005f",
+       "\u0061"-"\u007a",
+       "\u00c0"-"\u00d6",
+       "\u00d8"-"\u00f6",
+       "\u00f8"-"\u00ff",
+       "\u0100"-"\u1fff",
+       "\u3040"-"\u318f",
+       "\u3300"-"\u337f",
+       "\u3400"-"\u3d2d",
+       "\u4e00"-"\u9fff",
+       "\uf900"-"\ufaff"
+      ]
+  >
+|
+  < #DIGIT:
+      [
+       "\u0030"-"\u0039",
+       "\u0660"-"\u0669",
+       "\u06f0"-"\u06f9",
+       "\u0966"-"\u096f",
+       "\u09e6"-"\u09ef",
+       "\u0a66"-"\u0a6f",
+       "\u0ae6"-"\u0aef",
+       "\u0b66"-"\u0b6f",
+       "\u0be7"-"\u0bef",
+       "\u0c66"-"\u0c6f",
+       "\u0ce6"-"\u0cef",
+       "\u0d66"-"\u0d6f",
+       "\u0e50"-"\u0e59",
+       "\u0ed0"-"\u0ed9",
+       "\u1040"-"\u1049"
+      ]
+  >
+}
+
+
+
+/**********************************************
+ * THE OOEE EXPRESSION GRAMMAR STARTS HERE *
+ **********************************************/
+CompilationUnit CompilationUnit(String statement)throws  ParsingException:
+{
+    Block block = null;
+    ExpressionNode exp = null;
+    CompilationUnit compilationUnit = null;
+    List importList = null;
+}
+{
+  (
+  ImportDeclaration() 
+  )*
+  (
+   LOOKAHEAD([Declare()]"{")
+   block =  MainBlock()(<EOF>)
+  {
+     compilationUnit = new BlockCompilationUnit(statement, block, returnType, importArrayList);
+  }
+  | exp = Expression() (";")* <EOF>
+  {
+      compilationUnit = new ExpressionCompilationUnit(statement, exp, importArrayList);
+  }
+  )
+  {
+      return compilationUnit;
+  }
+}
+
+Block MainBlock() throws ParsingException:
+{
+    Block block = null;
+}
+{
+    [
+     Declare()
+     {
+           hasDefineReturnType = true;
+     }
+    ]
+    block =  Block()
+    {
+        return block;
+    }
+}
+
+void Declare() throws ParsingException:
+{ 
+   ExpressionNode node;
+}
+{
+   returnType = ResultType()      
+}
+
+Statement Statement() throws  ParsingException :
+{
+    Statement smt = null; 
+}
+{
+ ( LOOKAHEAD(2)
+  smt = LabeledStatement()
+|
+  smt = AssertStatement()
+|
+  smt = Block()
+|
+ smt = EmptyStatement()
+|
+ smt = StatementExpression() ";"
+|
+  smt = IfStatement()
+|
+  smt = WhileStatement()
+|
+  smt = DoStatement()
+|
+  smt = ForStatement()
+|
+  smt = BreakStatement()
+|
+  smt = ContinueStatement()
+|
+  smt = ReturnStatement()
+|
+  smt = SwitchStatement()
+|
+  smt = ThrowStatement()
+|
+  smt = TryStatement())
+
+    {
+        return smt;
+    }
+}
+
+
+void ImportDeclaration():
+{
+    String importName = null;    
+}
+{
+"import" importName = ImportName() 
+ [ "." <MULDIV> 
+ {
+      importName = importName + ".*";
+      importArrayList.add(importName);
+ } 
+ ]
+ {
+ importArrayList.add(importName);
+ }
+  ";"
+}
+
+String ImportName():
+{
+    String importName = null;
+    Token temp =null;
+    Token t;
+}
+{
+  t = <IDENTIFIER>
+  {
+      importName = t.image;
+  }
+  ( LOOKAHEAD(2) "." temp = <IDENTIFIER>
+  {      
+      importName = importName + "." + temp.image;
+  }
+  )*
+  {
+      return importName;
+  }
+}
+
+AssertStatement AssertStatement()throws  ParsingException:
+{
+    ExpressionNode assertExpNode = null, valueExpNode = null;
+    AssertStatement assertStatement = new AssertStatement();
+}
+{
+  "assert" 
+  assertExpNode = Expression() 
+  [ ":" valueExpNode = Expression() ] ";"
+  {
+      assertExpNode.setParentBlock(currentBlock);
+      assertStatement.setAssertExp(assertExpNode);
+      if(valueExpNode != null)
+      {
+          valueExpNode.setParentBlock(currentBlock);
+          assertStatement.setValuetExp(valueExpNode);
+      }
+      assertStatement.setParentBlock(currentBlock);
+      return assertStatement; 
+  }
+}
+
+LabeledStatement LabeledStatement()throws  ParsingException:
+{
+    LabeledStatement labeledStatement = new LabeledStatement();
+    Statement labeledSmt;
+}
+{
+  <IDENTIFIER> ":" 
+  labeledSmt = Statement()
+  {
+      labeledStatement.setLabeledStatement(labeledSmt);
+      labeledStatement.setParentBlock(currentBlock);
+      return labeledStatement;
+  }
+}
+
+EmptyStatement EmptyStatement()throws  ParsingException:
+{
+    EmptyStatement emptySmt = new EmptyStatement();
+}
+{
+  ";"
+  {
+      emptySmt.setParentBlock(currentBlock);
+      return emptySmt;
+  }
+}
+
+StatementExpression StatementExpression() throws  ParsingException:
+/*
+ * The last expansion of this production accepts more than the legal
+ * Java expansions for StatementExpression.  This expansion does not
+ * use PostfixExpression for performance reasons.
+ */
+{
+    ExpressionNode preIncrDecrExp,primaryExp,assignExp,newNode;
+    StatementExpression SmtExp = new StatementExpression();
+    Token t;
+    String op,assignOper;     
+    
+}
+{
+  preIncrDecrExp = PreIncrDecrExpression()
+  {
+      preIncrDecrExp.setParentBlock(currentBlock);
+      SmtExp.setStatementExp(preIncrDecrExp);
+      return SmtExp; 
+  }
+|
+  primaryExp=PrimaryExpression()
+  [
+  t = <INCRDECR>
+  {
+      op = t.image;
+      primaryExp=makeIncrDecrOperator(primaryExp,op,false);
+  }
+  |
+    assignOper = AssignmentOperator() 
+    assignExp = Expression()
+  {
+      // alway set "=" operater
+      newNode = new AssignmentOperator("=");
+      newNode.addChild(primaryExp);
+      // separete "a += b" to "a = a + b"
+      newNode.addChild(makeAssignExpressionNode(primaryExp, assignExp, assignOper));
+      primaryExp = newNode;
+  }
+  ]
+  
+  {
+      primaryExp.setParentBlock(currentBlock);
+      SmtExp.setStatementExp(primaryExp);
+      SmtExp.setParentBlock(currentBlock);
+      return SmtExp;    
+  }
+}
+
+SwitchStatement SwitchStatement()throws  ParsingException:
+{
+    ExpressionNode switchExpNode, switchLabelExp = null;
+    SwitchStatement switchStatement = new SwitchStatement();
+    Object switchLabel;
+    List blockSmtList = new ArrayList();
+    BlockStatement blockSmt = new BlockStatement();
+    String defaultCase = null;
+    switchStatement.setParentBlock(currentBlock);
+    currentBlock = switchStatement;
+    loopSmt.add(switchStatement);
+}
+{
+  "switch" "("
+  switchExpNode = Expression()
+  {
+      switchExpNode.setParentBlock(currentBlock);
+      switchStatement.setSwitchExpression(switchExpNode); 
+  } 
+  ")" "{"
+  (
+  switchLabel = SwitchLabel()
+  {
+      if(switchLabel instanceof String)
+      {
+	  String name = (String)switchLabel;
+          if(name.equals("default"))
+              defaultCase = "default";
+      }
+      else
+      {
+          switchLabelExp = (ExpressionNode)switchLabel;
+          switchLabelExp.setParentBlock(currentBlock);
+          defaultCase = null;    
+      }
+      
+  }
+  
+  ( 
+  blockSmt = BlockStatement()
+  {
+      blockSmt.setParentBlock(currentBlock);
+      blockSmtList.add(blockSmt);
+  } 
+  
+  )*
+  {
+      if(defaultCase != null)
+      {
+          switchStatement.getSwitchCase().put("default",blockSmtList);
+          switchStatement.getCaseList().add("default");
+	  switchStatement.getCaseValueList().add(blockSmtList);	
+      }
+      else
+      {
+          switchStatement.getSwitchCase().put(switchLabelExp,blockSmtList);
+          switchStatement.getCaseList().add(switchLabelExp);
+          switchStatement.getCaseValueList().add(blockSmtList);
+      }
+      blockSmtList = new ArrayList();
+  } 
+  
+  )*
+  "}"
+  {
+      currentBlock = switchStatement.getParentBlock();
+      loopSmt.remove(loopSmt.size() - 1);
+      return switchStatement;
+  }
+}
+
+Object SwitchLabel()throws  ParsingException:
+{
+    ExpressionNode switchExpNode;
+    String defaultCase = "default";
+}
+{
+  "case" 
+   switchExpNode = Expression() 
+   ":"
+   {
+       switchExpNode.setParentBlock(currentBlock);
+       return switchExpNode;
+   }
+|
+  "default" ":"
+   {
+       return defaultCase;
+   }
+}
+
+IfStatement IfStatement()throws  ParsingException:
+/*
+ * The disambiguating algorithm of JavaCC automatically binds dangling
+ * else's to the innermost if statement.  The LOOKAHEAD specification
+ * is to tell JavaCC that we know what we are doing.
+ */
+{
+    IfStatement ifStatement = new IfStatement();
+    Statement ifSmt;
+    Statement elseSmt = null;
+    ExpressionNode ifExpNode;
+}
+{
+  "if" "(" 
+   ifExpNode = Expression() 
+   ")" 
+    ifSmt = Statement() 
+   [ 
+     LOOKAHEAD(1) "else" 
+     elseSmt = Statement() 
+   ]
+   {
+     //  ifExp = new Expression(ifExpNode.toString());
+       ifExpNode.setParentBlock(currentBlock);
+       ifStatement.setParentBlock(currentBlock);	
+       ifStatement.setIfExpression(ifExpNode);
+       ifStatement.setIfStatement(ifSmt);
+       ifStatement.setElseStatement(elseSmt);
+       return ifStatement;    
+   }
+}
+
+WhileStatement WhileStatement()throws  ParsingException:
+{
+    WhileStatement whileStatement = new WhileStatement();
+    ExpressionNode whileExpNode;
+    Statement whileSmt;
+    loopSmt.add(whileStatement);
+}
+{
+  "while" "(" 
+  whileExpNode=Expression() 
+  ")"
+  whileSmt=Statement()
+  {
+   //   whileExp = new Expression(whileExpNode.toString());
+      whileExpNode.setParentBlock(currentBlock);
+      whileStatement.setWhileExpression(whileExpNode);
+      whileStatement.setWhileStatement(whileSmt);
+      whileStatement.setParentBlock(currentBlock);
+      loopSmt.remove(loopSmt.size() - 1);
+      return whileStatement;
+  }
+}
+
+DoStatement DoStatement()throws  ParsingException:
+{
+    DoStatement doStatement = new DoStatement();
+    ExpressionNode doExpNode;
+    Statement doSmt;
+    loopSmt.add(doStatement);        
+}
+{
+  "do"
+  doSmt = Statement()
+  "while" "("
+  doExpNode = Expression() 
+  ")" ";"
+  {
+   //   doExp = new Expression(doExpNode.toString());
+      doExpNode.setParentBlock(currentBlock);
+      doStatement.setDoExpression(doExpNode);
+      doStatement.setDoStatement(doSmt);
+      doStatement.setParentBlock(currentBlock);
+      loopSmt.remove(loopSmt.size() - 1);
+      return doStatement;
+  }
+}
+
+ForStatement ForStatement()throws  ParsingException:
+{
+    Object forInit = null;
+    ForStatement forStatement = new ForStatement();
+    forStatement.setParentBlock(currentBlock);
+    currentBlock = forStatement;
+    Statement forSmt = null;
+    ExpressionNode forExpNode = null;
+    StatementExpressionList updateSmtList = new StatementExpressionList();
+    loopSmt.add(forStatement);
+ 
+}
+{
+  "for" "("
+
+  (
+     [ 
+     forInit = ForInit() 
+     {
+         if(forInit instanceof LocalVariableDeclaration )
+         {
+             forStatement.setInitVarDec((LocalVariableDeclaration)forInit);
+         }
+         else
+         {
+             forStatement.setInitSmtList((StatementExpressionList)forInit);
+         }
+     }
+     ] ";" 
+     [ 
+     forExpNode = Expression()
+     {
+       //  forExp = new Expression(forExpNode.toString());
+         forExpNode.setParentBlock(currentBlock);
+         forStatement.setForExp(forExpNode);
+     } 
+     ] ";" 
+     [ 
+     updateSmtList = ForUpdate()
+     {
+         forStatement.setUpdateSmtList(updateSmtList);
+     } 
+     ]
+  )
+
+  ")"forSmt = Statement()
+  {
+      forStatement.setForSmt(forSmt);
+      currentBlock = forStatement.getParentBlock();
+      loopSmt.remove(loopSmt.size() - 1);
+      return forStatement;
+  }
+}
+
+Object ForInit()throws  ParsingException:
+{
+    Object forInit = null;
+}
+{
+ ( LOOKAHEAD( Type() <IDENTIFIER> )
+  forInit = LocalVariableDeclaration()
+|
+  forInit = StatementExpressionList())
+  {
+      return forInit;
+  }
+}
+
+StatementExpressionList StatementExpressionList()throws  ParsingException:
+{
+    StatementExpressionList smtExpList = new StatementExpressionList();
+    smtExpList.setParentBlock(currentBlock);
+    StatementExpression smtExp;
+}
+{
+  smtExp = StatementExpression()
+  {
+      smtExp.setParentBlock(currentBlock);	
+      smtExpList.getSmtExpList().add(smtExp);
+  } 
+  ( "," 
+  smtExp = StatementExpression()
+  {
+      smtExp.setParentBlock(currentBlock);
+      smtExpList.getSmtExpList().add(smtExp);
+  } 
+  )*
+  {
+      return smtExpList;  
+  }
+}
+
+StatementExpressionList ForUpdate()throws  ParsingException:
+{
+    StatementExpressionList updateSmtList = new StatementExpressionList();
+}
+{
+  updateSmtList = StatementExpressionList()
+  {
+      return updateSmtList;
+  }
+}
+
+BreakStatement BreakStatement()throws  ParsingException:
+{
+    Token t;
+    BreakStatement breakSmt = new BreakStatement();
+    
+}
+{
+  "break" 
+  [ 
+  t = <IDENTIFIER>
+  {
+      breakSmt.setBreakID(t.image);
+  } 
+  ] ";"
+  {
+      breakSmt.setParentBlock(currentBlock);
+      if(loopSmt.size() > 0)
+      {
+      breakSmt.setParentSmt((Statement)loopSmt.get(loopSmt.size() - 1));	
+      return breakSmt;
+      }
+      else throw new ParsingException("break cannot be used outside of a loop or a switch");    
+  }
+
+}
+
+ContinueStatement ContinueStatement()throws  ParsingException:
+{
+    Token t;
+    ContinueStatement continueSmt = new ContinueStatement();
+}
+{
+  "continue" 
+  [ 
+  t = <IDENTIFIER>
+  {
+      continueSmt.setContinueID(t.image);
+  } 
+  ] ";"
+  {
+      continueSmt.setParentBlock(currentBlock);
+      if(loopSmt.size() > 0)
+      {
+        int i = loopSmt.size() - 1;
+        while(i>=0)
+        {
+            Object smt = loopSmt.get(i);
+      	    if(!(smt instanceof SwitchStatement))
+      	    {
+       	        continueSmt.setParentSmt((Statement)loopSmt.get(loopSmt.size() - 1));
+                return continueSmt;
+      	    }
+     	    i--;
+        }
+        throw new ParsingException("continue cannot be used outside of a loop");    
+      }
+      else throw new ParsingException("continue cannot be used outside of a loop");
+  }
+}
+
+ReturnStatement ReturnStatement()throws  ParsingException:
+{
+    ReturnStatement returnSmt = new ReturnStatement();
+    ExpressionNode returnNode = null;
+}
+{
+  "return" 
+  [ 
+  returnNode = Expression()
+  {
+      returnNode.setParentBlock(currentBlock);
+      returnSmt.setReturnExp(returnNode);
+  } 
+  ] ";"
+  {
+      returnSmt.setParentBlock(currentBlock);
+      returnSmt.setHasDefineReturnType(hasDefineReturnType);
+      returnSmt.setDeclareReturnType(returnType);
+      return returnSmt;
+  }
+}
+
+ThrowStatement ThrowStatement()throws  ParsingException:
+{
+    ExpressionNode throwExpNode;
+    ThrowStatement throwSmt = new ThrowStatement();
+}
+{
+  "throw" 
+  throwExpNode = Expression() ";"
+  {
+      throwExpNode.setParentBlock(currentBlock);
+      throwSmt.setThrowExp(throwExpNode);
+      throwSmt.setParentBlock(currentBlock);
+      return throwSmt;
+      
+  }
+}
+
+TryStatement TryStatement()throws  ParsingException:
+/*
+ * Semantic check required here to make sure that at least one
+ * finally/catch is present.
+ */
+{
+    TryStatement trySmt = new TryStatement();
+    Block tryBlock,finalBlock,tempBlock = new Block();
+    FormalParameter formalPara = new FormalParameter();
+}
+{
+  "try" tryBlock = Block()
+  {
+      trySmt.setTryBlock(tryBlock);
+  }
+  (
+   "catch" "(" formalPara = FormalParameter() ")" tempBlock = Block() 
+  {
+      trySmt.getCatchBlock().put(formalPara,tempBlock);
+      trySmt.getCatchValueList().add(formalPara);
+  }
+  )*
+  [ 
+  "finally" finalBlock = Block()
+  {
+      trySmt.setFinalBlock(finalBlock);
+  } 
+  ]
+  {
+      trySmt.setParentBlock(currentBlock);
+      return trySmt;
+  }
+}
+
+Block Block()throws  ParsingException:
+{
+    Block block = new Block();
+    block.setParentBlock(currentBlock);
+    currentBlock = block;	
+    BlockStatement blockSmt = new BlockStatement();
+}
+{
+    "{"
+     (
+         blockSmt=BlockStatement()
+         {
+             block.getBlockSmtList().add(blockSmt);
+         }
+     )* 
+    "}"
+    {
+        currentBlock = block.getParentBlock();	        
+        return block;
+    }
+}
+
+BlockStatement BlockStatement()throws  ParsingException:
+{
+    BlockStatement blockSmt = new BlockStatement();
+    LocalVariableDeclaration localVarDec = null;
+    Statement blockSmtElement = null;
+}
+{
+(  LOOKAHEAD(Type() <IDENTIFIER> )
+  localVarDec=LocalVariableDeclaration() ";"
+|
+  blockSmtElement=Statement())
+
+  {
+      if(localVarDec == null)
+          blockSmt.setBlockSmt(blockSmtElement); 
+      else
+          blockSmt.setLocalVar(localVarDec);
+      blockSmt.setParentBlock(currentBlock);	
+      return blockSmt;    
+  }
+}
+
+
+LocalVariableDeclaration LocalVariableDeclaration()throws  ParsingException:
+{
+    LocalVariableDeclaration localVarDec = new LocalVariableDeclaration();
+    ExpressionNode typeNode = null;
+}
+{
+  typeNode = Type() 
+  VariableDeclarator(localVarDec.getValueMap(),localVarDec.getVarName()) 
+  ( "," 
+  VariableDeclarator(localVarDec.getValueMap(),localVarDec.getVarName()) 
+  )*
+  {
+      localVarDec.setTypeNode(typeNode);
+      localVarDec.setParentBlock(currentBlock);
+      return localVarDec;
+  }
+} 
+
+void VariableDeclarator(Map map,List list):
+{
+    String name = null;
+    ExpressionNode varNode = null;
+}
+{
+  name = VariableDeclaratorId() [ "=" varNode = VariableInitializer() ]
+  {
+      if(varNode != null)		
+          varNode.setParentBlock(currentBlock);	
+      map.put(name,varNode);
+      list.add(name);
+  }
+}
+
+String VariableDeclaratorId():
+{
+    Token t;
+}
+{
+  t=<IDENTIFIER> ( "[" "]" )*
+  {
+      return t.image;
+  }
+}
+
+String AssignmentOperator():
+{
+  String assignOper;  
+}
+{
+  (assignOper="=".image | assignOper="*=".image | assignOper="/=".image | assignOper="%=".image | assignOper="+=".image 
+  | assignOper="-=".image | assignOper="<<=".image | assignOper=">>=".image | assignOper=">>>=".image |assignOper="&=".image 
+  | assignOper="^=".image | assignOper="|=".image)
+  {
+      return assignOper;
+  }
+
+}
+
+
+void FormalParameters() throws ParsingException:
+{}
+{
+  "(" [ FormalParameter() ( "," FormalParameter() )* ] ")"
+}
+
+FormalParameter FormalParameter()throws  ParsingException:
+{
+  ExpressionNode type;
+  String parameterID;
+  FormalParameter formalParameter = new FormalParameter();
+  formalParameter.setParentBlock(currentBlock); 
+}
+{
+  type = Type() [ "..." ] parameterID = VariableDeclaratorId()
+  {
+      formalParameter.setType(type);
+      formalParameter.setParameterID(parameterID);
+      return formalParameter;
+  }
+}
+
+ExpressionNode parse()throws  ParsingException:
+{
+	ExpressionNode root;
+}
+{
+	root = Expression() <EOF>
+	{
+		return root;
+	}
+}
+
+ExpressionNode Expression() :
+{
+	ExpressionNode node, tmpNode, newNode;
+	String assignOper;
+}
+{
+    node = ConditionalExpression()
+    [
+        assignOper = AssignmentOperator() 
+        tmpNode = Expression()
+        {
+            newNode = new AssignmentOperator("=");
+            newNode.addChild(node);
+            // separete "a += b" to "a = a + b"
+            newNode.addChild(makeAssignExpressionNode(node, tmpNode, assignOper));
+            node = newNode;
+        }
+    ]
+    {
+        return node;
+    }
+}
+
+ExpressionNode ConditionalExpression() :
+{
+    ExpressionNode node, trueNode, falseNode, tmpNode;
+}
+{
+    node = ConditionalOrExpression()
+    [ "?"
+      trueNode = Expression()
+      ":"
+      falseNode = ConditionalExpression()
+      {
+        tmpNode = new ConditionalOperator();
+        tmpNode.addChild(node);
+        tmpNode.addChild(trueNode);
+        tmpNode.addChild(falseNode);
+        node = tmpNode;
+      }
+    ]
+    {
+        return node;
+    }
+}
+
+ExpressionNode ConditionalOrExpression() :
+{
+    ExpressionNode node, tmpNode;
+    Token t;
+    String op;
+}
+{
+    node = ConditionalAndExpression()
+    (   t = <OR>
+        {
+            op = t.image;
+        }
+        tmpNode = ConditionalAndExpression()
+        {
+			node = makeLogicOperator(node, tmpNode, op);
+        }
+    )*
+    {
+        return node;
+    }
+}
+
+ExpressionNode ConditionalAndExpression() :
+{
+    ExpressionNode node, tmpNode;
+    Token t;
+    String op;
+}
+{
+    node = InclusiveOrExpression()
+    (   
+        t = <AND>
+        {
+            op = t.image;
+        }
+        tmpNode = InclusiveOrExpression()
+        {
+			node = makeLogicOperator(node, tmpNode, op);        
+        }
+    )*
+    {
+        return node;
+    }    
+}
+
+ExpressionNode InclusiveOrExpression() :
+{
+    ExpressionNode node, tmpNode;
+    Token t;
+    String op;    
+}
+{
+    node = ExclusiveOrExpression()
+    (   
+        t = <BIT_OR>
+        {
+            op = t.image;
+        }
+        tmpNode = ExclusiveOrExpression()
+        {
+            node = makeBitOperator(node, tmpNode, op);
+        }
+    )*
+    {
+        return node;
+    } 
+}
+
+ExpressionNode ExclusiveOrExpression() :
+{
+    ExpressionNode node, tmpNode;
+    Token t;
+    String op; 
+}
+{
+    node = BitAndExpression()
+    (   
+        t = <XOR>
+        {
+            op = t.image;
+        }
+        tmpNode = BitAndExpression()
+        {
+            node = makeBitOperator(node, tmpNode, op);
+        }
+    )*
+    {
+        return node;
+    } 
+}
+
+ExpressionNode BitAndExpression() :
+{
+    ExpressionNode node, tmpNode;
+    Token t;
+    String op; 
+}
+{
+    node = EqualityExpression()
+    (   
+        t = <BIT_AND>
+        {
+            op = t.image;
+        }
+        tmpNode = EqualityExpression()
+        {
+            node = makeBitOperator(node, tmpNode, op);
+        }
+    )*
+    {
+        return node;
+    } 
+}
+
+ExpressionNode EqualityExpression() :
+{
+    ExpressionNode node, tmpNode, newNode;
+    Token t;
+    String op; 
+}
+{
+    node = InstanceOfExpression()
+    (   
+        t = <EQUALOP>
+        {
+            op = t.image;
+        }
+        tmpNode = InstanceOfExpression()
+        {
+            newNode = new EqualityOperator(op);
+            newNode.addChild(node);
+            newNode.addChild(tmpNode);
+            node = newNode;
+        }
+    )*
+    {
+        return node;
+    } 
+}
+
+ExpressionNode InstanceOfExpression() :
+{
+    ExpressionNode node, tmpNode;
+}
+{
+    node = RelationalExpression()
+    [   
+        <INSTANCEOF>
+        tmpNode = Type()
+        {
+            InstanceofOperator newNode = new InstanceofOperator();
+            newNode.addChild(node);
+            newNode.addChild(tmpNode);
+            node = newNode;
+        }
+    ]
+    {
+        return node;
+    } 
+}
+
+ExpressionNode RelationalExpression() :
+{
+    ExpressionNode node, tmpNode, newNode;
+    Token t;
+    String op; 
+}
+{
+    node = ShiftExpression()
+    (   
+        t = <RELATIONOP>
+        {
+            op = t.image;
+        }
+        tmpNode = ShiftExpression()
+        {
+            newNode = new RelationalOperator(op);
+            newNode.addChild(node);
+            newNode.addChild(tmpNode);
+            node = newNode;
+        }
+    )*
+    {
+        return node;
+    } 
+}
+
+ExpressionNode ShiftExpression() :
+{
+    ExpressionNode node, tmpNode;
+    Token t;
+    String op; 
+}
+{
+    node = AdditiveExpression()
+    (   
+        t = <SHIFTOP>
+        {
+            op = t.image;
+        }
+        tmpNode = AdditiveExpression()
+        {
+            node = makeShiftOperator(node, tmpNode, op);
+        }
+    )*
+    {
+        return node;
+    }
+}
+
+ExpressionNode AdditiveExpression() :
+{
+    ExpressionNode node, tmpNode;
+    Token t;
+    String op; 
+}
+{
+    node = MultiplicativeExpression()
+    (   
+        t = <PLUSMINUS>
+        {
+            op = t.image;
+        }
+        tmpNode = MultiplicativeExpression()
+        {
+            node = makeNumericOperator(node, tmpNode, op);
+        }
+    )*
+    {
+        return node;
+    }
+}
+
+ExpressionNode MultiplicativeExpression() :
+{
+    ExpressionNode node, tmpNode;
+    Token t;
+    String op; 
+}
+{
+    node = UnaryExpression()
+    (   
+        t = <MULDIV>
+        {
+            op = t.image;
+        }
+        tmpNode = UnaryExpression()
+        {
+            node = makeNumericOperator(node, tmpNode, op);
+        }
+    )*
+    {
+        return node;
+    }
+}
+
+ExpressionNode UnaryExpression() :
+{
+    ExpressionNode node;
+    Token t;
+    String op; 
+}
+{
+    (
+        t = <PLUSMINUS>
+        {
+            op = t.image;
+        }
+        node = UnaryExpression()
+        {
+            node = makeUnaryOperator(node, op);
+        }
+    |
+        node = PreIncrDecrExpression()
+    |
+        node = UnaryExpressionNotPlusMinus()
+    )
+    {
+        return node;
+    }
+}
+
+ExpressionNode PreIncrDecrExpression() :
+{
+    ExpressionNode node;
+    Token t;
+    String op; 
+}
+{
+    t = <INCRDECR>
+    {
+        op = t.image;
+    }
+    node = PrimaryExpression()
+    {
+        node = makeIncrDecrOperator(node, op, true);
+        return node;
+    }
+}
+
+ExpressionNode UnaryExpressionNotPlusMinus() :
+{
+    ExpressionNode node;
+    Token t;
+    String op; 
+}
+{
+    (
+        (
+        t = "~" |
+        t = "!"
+        )
+        {
+            op = t.image;
+        }
+        node = UnaryExpression()
+        {
+            node = makeUnaryOperator(node, op);    
+        }
+    |
+        LOOKAHEAD( CastLookahead() )
+        node = CastExpression()
+    |
+        node = PostIncrDecrExpression()
+    )    
+    {
+        return node;
+    }
+}
+
+// This production is to determine lookahead only.  The LOOKAHEAD specifications
+// below are not used, but they are there just to indicate that we know about
+// this.
+void CastLookahead() :
+{}
+{
+    LOOKAHEAD(2)
+    "(" PrimitiveType()
+|
+    LOOKAHEAD("(" Name() "[")
+    "(" Name() "[" "]"
+|
+    "(" Name() ")" ( "~" | "!" | "(" | <IDENTIFIER> | <NEW> | Literal() )
+}
+
+ExpressionNode CastExpression() :
+{
+    ExpressionNode node, typeNode;
+}
+{
+    LOOKAHEAD("(" PrimitiveType())
+    "("
+    typeNode = Type()
+    ")"
+    node = UnaryExpression()
+    {
+        node = makeCastExpression(typeNode, node);
+        return node;
+    }
+|
+    
+    "("
+    typeNode = Type()
+    ")"
+    node = UnaryExpressionNotPlusMinus()
+    {
+        node = makeCastExpression(typeNode, node);
+        return node;
+    }
+}
+
+ExpressionNode PostIncrDecrExpression() :
+{
+    ExpressionNode node;
+    Token t;
+    String op; 
+}
+{
+    node = PrimaryExpression()
+    [
+        t = <INCRDECR>
+        {
+            op = t.image;
+            node = makeIncrDecrOperator(node, op, false);
+        }
+    ]
+    {
+        return node;
+    }
+}
+
+ExpressionNode PrimaryExpression() :
+{
+    ExpressionNode node, suffixNode;
+}
+{
+    node = PrimaryPrefix()
+    (
+        LOOKAHEAD(2)
+        suffixNode = PrimarySuffix()
+        {
+            suffixNode.addChild(0, node);
+            node = suffixNode;
+        }
+    )*
+    {
+        return node;
+    }
+}
+
+ExpressionNode PrimaryPrefix() :
+{
+    ExpressionNode node, argNode;
+    FieldExpression nameNode;
+}
+{
+    node = Literal()
+    {
+        return node;
+    }
+|
+    "("
+    node = Expression()
+    ")"
+    {
+        return node;
+    }
+|
+    node = AllocationExpression()
+    {
+        return node;
+    }
+|
+    LOOKAHEAD( ResultType() "." <CLASS> )
+    node = ResultType()
+    "." <CLASS>
+    {
+        ClassExpression newNode = new ClassExpression();
+        newNode.addChild(node);
+        node = newNode;
+        return node;
+    }
+|
+    nameNode = Name()
+    {
+        nameNode.setCanBeClass(false);
+    }
+    [
+        argNode = Arguments()
+        {
+            int index = nameNode.getChildNum() - 1;
+            FieldName fName = (FieldName)nameNode.getChild(index);
+            nameNode.removeChild(index);
+            nameNode.setCanBeClass(true);
+            FunctionExpression func = new FunctionExpression();
+            func.setFuncName(fName.getFieldName());
+            func.addChild(argNode);
+            nameNode.addChild(func);
+        }
+    ]
+    {
+        return nameNode;
+    }
+}
+
+ExpressionNode PrimarySuffix() :
+{
+    ExpressionNode node, tmpNode;
+    ExpressionNode argNode = null;
+    Token t;
+}
+{
+    (
+        LOOKAHEAD(2)
+        "." 
+        tmpNode = AllocationExpression()
+        {
+            node = new FieldExpression();
+            node.addChild(tmpNode);
+        }
+    |
+        "[" 
+            tmpNode = Expression()
+        "]"
+        {
+            node = new ArrayAccessOperator();
+            ArrayExpression arrayNode = new ArrayExpression();
+            arrayNode.addChild(tmpNode);
+            node.addChild(arrayNode);
+        }
+    |
+        "."
+        t = <IDENTIFIER>
+        {
+            node = new FieldExpression();
+            FieldName fieldName = new FieldName();
+            fieldName.setFieldName(t.image);
+            node.addChild(fieldName);
+        }
+        [
+            argNode = Arguments()
+            {
+                node = new FieldExpression();
+                FunctionExpression func = new FunctionExpression();
+                func.setFuncName(t.image);
+                func.addChild(argNode);
+                node.addChild(func);
+            }
+        ]
+    )
+    {
+        return node;
+    }
+}
+
+ExpressionNode Literal() :
+{
+    Literal node = new Literal();
+    Token t;
+    String image;
+}
+{
+    t = <INTEGER_LITERAL>
+    {
+        image = t.image;
+
+        if(image.endsWith("l") || image.endsWith("L"))
+        {
+            node.setValueClass(long.class);
+            image = image.substring(0, image.length() - 1);
+            node.setConstantValue(Long.valueOf(image));
+        }
+        else
+        {
+            node.setValueClass(int.class);
+            node.setConstantValue(Integer.valueOf(image));
+        }
+        
+        return node;
+    }
+|    
+    t = <FLOATING_POINT_LITERAL>
+    {
+        image = t.image;
+        if(image.endsWith("f") || image.endsWith("F"))
+        {
+            node.setValueClass(float.class);
+            node.setConstantValue(Float.valueOf(image));
+        }
+        else
+        {
+            node.setValueClass(double.class);
+            node.setConstantValue(Double.valueOf(image));
+        }
+
+        return node;
+    }
+|    
+    t = <CHARACTER_LITERAL>
+    {
+        node.setValueClass(char.class);
+        node.setConstantValue(new Character(t.image.charAt(1)));
+        return node;
+    }
+|    
+    t = <STRING_LITERAL>
+    {
+        node.setValueClass(String.class);
+        node.setConstantValue(StringUtil.unescape(t.image.substring(1, t.image.length() - 1)));
+        return node;
+    }
+|    
+    t = <BOOLEAN_LITERAL>
+    {
+        node.setValueClass(boolean.class);
+        node.setConstantValue(Boolean.valueOf(t.image));
+        return node;
+    }
+|    
+    t = <NULL_LITERAL>
+    {
+        node.setValueClass(null);
+        node.setConstantValue(null);
+        return node;
+    }
+}
+
+
+ExpressionNode Arguments() :
+{
+    ExpressionNode node = new Argument();
+    ExpressionNode argList;
+}
+{
+    "("
+    [
+        argList = ArgumentList()
+        {
+            node.addChild(argList);
+        }
+    ]
+    ")"
+    {
+        return node;
+    }
+}
+
+ExpressionNode ArgumentList() :
+{
+    ExpressionNode node = new ArgumentList();
+    ExpressionNode expr;
+}
+{
+    expr = Expression()
+    {
+        node.addChild(expr);
+    }
+    (   ","
+        expr = Expression()
+        {
+            node.addChild(expr);
+        }
+    )*
+    {
+        return node;
+    }
+}
+
+ExpressionNode AllocationExpression() :
+{
+    ExpressionNode node = new AllocationExpression();
+    ExpressionNode type, init;
+}
+{
+    LOOKAHEAD(2)
+    <NEW>
+    type = PrimitiveType()
+    init = ArrayDimsAndInits()
+    {
+        node.addChild(type);
+        node.addChild(init);
+        return node;
+    }
+|
+    <NEW>
+    type = Name()
+    {
+        node.addChild(type);
+    }
+   (
+        init = Arguments()
+        {
+            node.addChild(init);
+        }
+    |
+        init = ArrayDimsAndInits()
+        {
+            node.addChild(init);
+        }
+    )
+    {
+        return node;
+    }
+}
+
+/*
+ * The second LOOKAHEAD specification below is to parse to PrimarySuffix
+ * if there is an expression between the "[...]".
+ */
+ExpressionNode ArrayDimsAndInits() :
+{
+    ExpressionNode node = new ArrayDimsAndInits();
+    ExpressionNode expr, init;
+}
+{
+    LOOKAHEAD(2)
+    (
+        LOOKAHEAD(2) 
+        "[" 
+        expr = Expression()
+        "]"
+        {
+            ExpressionNode arrayExpr = new ArrayExpression();
+            arrayExpr.addChild(expr);
+            node.addChild(arrayExpr);
+        }
+    )+
+    (
+        LOOKAHEAD(2) "[" "]"
+        {
+            ExpressionNode arrayExpr = new ArrayExpression();
+            node.addChild(arrayExpr);
+        }
+    )*
+    {
+        return node;
+    }
+|
+    (
+        "[" 
+        "]"
+        {
+            ExpressionNode arrayExpr = new ArrayExpression();
+            node.addChild(arrayExpr);
+        }
+    )+
+    init = ArrayInitializer()
+    {
+        node.addChild(init);
+        return node;
+    }
+}
+
+ExpressionNode ArrayInitializer() :
+{
+    ExpressionNode node = new ArrayInitExpression();
+    ExpressionNode init;
+}
+{
+    "{"
+    [   init = VariableInitializer()
+        {
+            node.addChild(init);
+        }
+        (
+            LOOKAHEAD(2)
+            "," 
+            init = VariableInitializer()
+            {
+                node.addChild(init);
+            }
+        )* 
+    ]
+    [ "," ]
+    "}"
+    {
+        return node;
+    }
+}
+
+ExpressionNode VariableInitializer() :
+{
+    ExpressionNode node;
+}
+{
+    node = ArrayInitializer()
+    {
+        return node;
+    }
+|
+    node = Expression()
+    {
+        return node;
+    }
+}
+
+FieldExpression Name() :
+{
+    FieldExpression node = new FieldExpression();
+    Token t;
+    FieldName fieldName;
+}
+{
+    t = <IDENTIFIER>
+    {
+        fieldName = new FieldName();
+        fieldName.setFieldName(t.image);
+        node.addChild(fieldName);
+    }
+    (
+        LOOKAHEAD(2)
+        "."
+        t = <IDENTIFIER>
+        {
+            fieldName = new FieldName();
+            fieldName.setFieldName(t.image);
+            node.addChild(fieldName);
+        }
+    )*
+    {
+        return node;
+    }
+}
+
+/*
+ * Type, name and expression syntax follows.
+ */
+
+ExpressionNode Type() :
+{
+    ExpressionNode node = new TypeExpression();
+    ExpressionNode name, array;
+}
+{
+    ( 
+        name = PrimitiveType() 
+        | 
+        name = Name()
+    ) 
+    {
+        node.addChild(name);
+    }
+    ( 
+        "[" "]"
+        {
+            array = new ArrayExpression();
+            node.addChild(array);
+        }
+    )*
+    {
+        return node;
+    }
+}
+
+ExpressionNode PrimitiveType() :
+{
+    ExpressionNode node = new PrimitiveType();
+    Token t;
+}
+{
+    t = <PRIMITIVETYPE>
+    {
+        node.setType(t.image);
+        return node;
+    }
+}
+
+ExpressionNode ResultType() :
+{
+    ExpressionNode node;
+    Token t;
+}
+{
+    (
+        t = <VOID>
+        {
+            node = new PrimitiveType();
+            node.setType(t.image);        
+        }
+    |
+        node = Type()
+    )
+    {
+        return node;
+    }
+}

@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xs:schema xmlns:Common="http://bmdp.shaolin.org/datamodel/Common"
+	xmlns:Pageflow="http://bmdp.shaolin.org/datamodel/PageDiagram"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://bmdp.shaolin.org/datamodel/PageDiagram"
+	elementFormDefault="qualified" version="">
+	
+	<xs:import namespace="http://bmdp.shaolin.org/datamodel/Common" schemaLocation="common.xsd"/>
+	
+	<!-- WebNode-->
+	<xs:complexType abstract="true" name="WebNodeType">
+		<xs:annotation>
+			<xs:documentation>an abstraction of JSP/HTML/WML page and server-side Action. </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="variables" type="Common:ParamType" maxOccurs="unbounded" minOccurs="0" >
+				<xs:annotation>
+					<xs:documentation>the input datas of this node. Note: the input data should not have default value, the attribute "name" is required </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="out" type="Pageflow:OutType">
+				<xs:annotation>
+					<xs:documentation>specified the Out for this node.  </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="accessPermission" type="xs:string"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="description" type="xs:string" use="optional"/>
+		<xs:attribute name="displayName" type="xs:string" use="optional"/>
+		<xs:attribute name="x" type="xs:int"/>
+        <xs:attribute name="y" type="xs:int"/>
+	</xs:complexType>
+	<xs:complexType name="DisplayNodeType">
+		<xs:annotation>
+			<xs:documentation>the attribute "path" of Display Node specifies the path of the JSP/HTML/WML page. Note: the OutType of DisplayNodeType should be the type DisplayOutType. when the node is type of UIPageDisplayNodeType, the "path" attribute is optional.</xs:documentation>
+			<xs:documentation>All these info can be imported from the UIHTML info. </xs:documentation>
+			<xs:documentation>All these info can be imported from the UIHTML info. </xs:documentation>
+			<xs:documentation>All these info can be imported from the UIHTML info. </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="Pageflow:WebNodeType">
+				<xs:sequence>
+					<xs:element name="operation" type="Common:ExpressionType">
+						<xs:annotation>
+							<xs:documentation>engine will execute these operations after request forwards to this page</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="queryString" type="Common:ExpressionType">
+						<xs:annotation>
+							<xs:documentation>engine will execute these operations after request forwards to this page</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="path" type="xs:string" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PageNodeType">
+		<xs:annotation>
+			<xs:documentation>diaply node from UIPage</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="Pageflow:WebNodeType">
+				<xs:sequence>
+					<xs:element name="sourceEntity" type="Common:TargetEntityType">
+						<xs:annotation>
+							<xs:documentation>There is one or zero UIPage(See UIPage module) corresponding to a Display Node. 
+							This element indicates the entity name of the corresponding UIPage.  if there is no UIPage, you must also specify the entity name.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="operation" type="Common:ExpressionType">
+						<xs:annotation>
+							<xs:documentation>engine will execute these operations after request forwards to this page</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute default="false" name="needTransaction" type="xs:boolean" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:complexType name="LogicNodeType">
+		<xs:annotation>
+			<xs:documentation>the Logic Node, represents some business operations. Note: the OutType of LogicNodeType should be the type ConditionalOutType.  if an out's conditionalExpression is null, this out is default out.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="Pageflow:WebNodeType">
+				<xs:sequence>
+					<xs:element name="operation" type="Common:ExpressionType"/>
+					<xs:element name="invokeworkflowOps" type="Pageflow:InvokeWorkflowOpsType"/>
+				</xs:sequence>
+				<xs:attribute default="false" name="needTransaction" type="xs:boolean" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="InvokeWorkflowOpsType">
+		<xs:sequence>
+			<xs:element name="condition" type="Common:ExpressionType"/>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="outDataMappingToNode" type="Common:NameExpressionType" />
+		</xs:sequence>
+		<xs:attribute name="eventProducer" type="xs:string" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="StartNodeType">
+		<xs:complexContent>
+			<xs:extension base="Pageflow:LogicNodeType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="FlowNodeType">
+		<xs:complexContent>
+			<xs:extension base="Pageflow:WebNodeType">
+				<xs:sequence>
+				<xs:element name="DestChunkName" type="Common:TargetEntityType">
+				<xs:annotation>
+					<xs:documentation>If not specified, then means in the same web chunk.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DestNode" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The name of the next node.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="DataMappingToNode" type="Common:NameExpressionType">
+				<xs:annotation>
+					<xs:documentation>only session variable can be used in expression</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="DataMappingToChunk" type="Common:NameExpressionType">
+				<xs:annotation>
+					<xs:documentation>only session variable can be used in expression</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!--Out connections -->
+	<xs:complexType abstract="true" name="OutType">
+		<xs:annotation>
+			<xs:documentation>specified the out for WebNode.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element minOccurs="0" name="next" type="Pageflow:NextType"/>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="mappings" type="Common:NameExpressionType"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>specify the name of the branch.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="DisplayOutType">
+		<xs:annotation>
+			<xs:documentation>specified the out for UIPageDisplayNode</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="Pageflow:OutType">
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ConditionalOutType">
+		<xs:annotation>
+			<xs:documentation> a OutType with condition expression, for LogicNode</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="Pageflow:OutType">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="conditionExpression" type="Common:ExpressionType">
+						<xs:annotation>
+							<xs:documentation>the condition expression should has a value type of boolean</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="DynamicOutType">
+		<xs:complexContent>
+			<xs:extension base="Pageflow:OutType">
+				<xs:annotation>
+					<xs:documentation>Uses this to show the dynamic out more clearly, 
+					takes no effect on the engine</xs:documentation>
+				</xs:annotation>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- Next Type-->
+	<xs:complexType name="NextType">
+		<xs:annotation>
+			<xs:documentation>specified the next node by chunk name, the  node name and OutDataMapping. in OutDataMapping, expression can reference GlobalVariables of current chunk using prefix tag "@",  reference the OutData/variables of the current node using prefix tag "$"</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="destNode" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The name of the next node.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="outDataMappingToNode" type="Common:NameExpressionType">
+				<xs:annotation>
+					<xs:documentation>defines the mapping between the  Node OutputData/variables and the destination Node InputData/variables. the  attribute "name" is required and is the InputData/variables name of the destnode. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="connectionPoint" type="Pageflow:ConnectionPointType" />
+		</xs:sequence>
+		<xs:attribute name="description" type="xs:string"/>
+	</xs:complexType>
+	<xs:complexType name="ConnectionPointType">
+        <xs:attribute name="x" type="xs:int"/>
+        <xs:attribute name="y" type="xs:int"/>
+    </xs:complexType>
+	<!-- web chunk-->
+	<xs:complexType name="WebChunkType">
+		<xs:annotation>
+			<xs:documentation>A collection of Display Nodes and Logic Nodes, which indicates a complete web process or a web application module.  the chunk is a entity so we can store in or get from component library.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="Common:EntityType">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="webNode" type="Pageflow:WebNodeType"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="globalVariable" type="Common:ParamType">
+						<xs:annotation>
+							<xs:documentation>The global variables in this WebChunk. if you use variable in Expression, you can use prefix "@" to indicate  Global variable</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="errorHandler" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>the path of error page,  if  error/exception occurs  when WebFlowEngine process the node in this WebChunk,  WebFlowEngine forward the request to this page</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="accessPermission" type="xs:string"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- element -->
+	<xs:element name="WebChunk" type="Pageflow:WebChunkType">
+		<xs:annotation>
+			<xs:documentation>the root element.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>

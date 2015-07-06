@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<registry xmlns="http://bmdp.shaolin.org/datamodel/Registry">
+    <node name="System">
+    	<item name="encoding" value="UTF-8"/>
+        <node name="webConstant">
+            <item name="contextRoot" value="/uimaster" />
+            <item name="attr0" value="value0" />
+        </node>
+        <node name="i18n">
+            <node name="default">
+	            <item name="locale" value="en_US" />
+            	<item name="dateTimeFormat" value="yyyy-MM-dd/HH:mm:ss" />
+            	<item name="dateFormat" value="yyyy-MM-dd" />
+            	<item name="floatNumberFormat" value="0.###" />
+            	<item name="numberFormat" value="0" />
+            	<item name="currencyFormat" value="0.##" />
+            	<item name="currencySymbol" value="&#164;" />
+	        </node>
+	        <node name="Chinese">
+	            <item name="locale" value="zh_CN" />
+            	<item name="dateTimeFormat" value="yyyy-MM-dd/HH:mm:ss" />
+            	<item name="dateFormat" value="yyyy-MM-dd" />
+            	<item name="floatNumberFormat" value="0.###" />
+            	<item name="numberFormat" value="0" />
+            	<item name="currencyFormat" value="0.##" />
+            	<item name="currencySymbol" value="&#164;" />
+	        </node>
+        </node>
+        <node name="security">
+        	<node name="passwordExpireTime">
+                <item name="year" value="0"/>
+                <item name="month" value="2"/>
+                <item name="day" value="0"/>
+            </node>
+            <node name="LDAPSecurity">
+                <item name="host" value="ldap://localhost:7001"/> 
+                <item name="principal" value="cn=Admin"/>
+                <item name="credentials" value="wlsadmin"/>
+                <item name="userBase" value="ou=people,ou=myrealm,dc=Infinys"/>
+                <item name="userSearchMatching" value="(uid={0})"/>
+                <item name="userSearchSubtree" value="true"/>
+                <item name="roleBase" value="ou=groups,ou=myrealm,dc=Infinys"/>
+                <item name="roleName" value="cn"/>
+                <item name="roleSearchMatching" value="(uniqueMember={0})"/>
+                <item name="roleSearchSubtree" value="true"/>
+            </node>
+        </node>
+    </node>
+</registry>
+

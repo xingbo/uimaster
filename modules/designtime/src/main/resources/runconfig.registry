@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<registry xmlns="http://bmdp.shaolin.org/datamodel/Registry">
+    <node name="System">
+    	<node name="services">
+    	   <node name="designtime_service">
+	   	       <expression><![CDATA[
+	   	       import org.shaolin.bmdp.runtime.spi.IServerServiceManager;
+	   	       import org.shaolin.bmdp.designtime.page.PageJsGeneratorServiceProvider;
+	   	       import org.shaolin.uimaster.page.spi.IJsGenerator;
+	   	       {
+	   	           IJsGenerator jsGenerator = (IJsGenerator)IServerServiceManager.INSTANCE.getService(IJsGenerator.class);
+	   	           if (jsGenerator == null) {
+	   	               IServerServiceManager.INSTANCE.register(new PageJsGeneratorServiceProvider());
+	   	           }
+	   	       }
+	   	       ]]></expression>
+   	       </node>
+        </node>
+    </node>
+</registry>
+

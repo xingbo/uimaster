@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xs:schema xmlns:Common="http://bmdp.shaolin.org/datamodel/Common"
+	xmlns:wf="http://bmdp.shaolin.org/datamodel/Workflow" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://bmdp.shaolin.org/datamodel/Workflow"
+	elementFormDefault="qualified" version="">
+
+	<xs:import namespace="http://bmdp.shaolin.org/datamodel/Common"
+		schemaLocation="common.xsd" />
+
+	<!-- this schema is only the data model definition. the ui definition is in the flow diagram. -->
+	<xs:element name="Workflow" type="wf:WorkflowType">
+		<xs:annotation>
+			<xs:documentation>the root element.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+
+	<xs:complexType name="WorkflowType">
+		<xs:annotation>
+			<xs:documentation>
+				App is a real time application like load balancer.
+				It contains a variable definition and some workflows
+				definition.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="Common:EntityType">
+				<xs:sequence>
+					<xs:element name="conf" type="wf:confType" minOccurs="0"/>
+					<xs:element name="import" type="wf:flowImportType" maxOccurs="unbounded"/>
+					<xs:element name="flow" type="wf:flowType" maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="flowType">
+		<xs:annotation>
+			<xs:documentation>
+				Flow is a workflow consists of source and
+				destination
+				node pairs. A specific node is a bean defined in bean
+				configuration file.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="description" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>description of flow</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="conf" type="wf:flowConfType" minOccurs="0" />
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="node" type="wf:generalNodeType" />
+				<xs:element name="condition" type="wf:conditionNodeType" />
+				<xs:element name="split" type="wf:splitNodeType" />
+				<xs:element name="join" type="wf:joinNodeType" />
+				<xs:element name="child-flow" type="wf:childFlowNodeType" />
+				<xs:element name="start-node" type="wf:startNodeType" />
+				<xs:element name="intermediate-node" type="wf:intermediateNodeType" />
+				<xs:element name="end-node" type="wf:endNodeType" />
+				<xs:element name="timeout-node" type="wf:timeoutNodeType" />
+				<xs:element name="cancel-timeout-node" type="wf:cancelTimeoutNodeType" />
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="eventConsumer" type="xs:string" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="conditionNodeType">
+		<xs:annotation>
+			<xs:documentation>
+				A node that has multi-dest nodes, one of them will
+				be
+				executed at the runtime. The expression attribute
+				specifies which
+				one. The expression attribute in the
+				parent returns the destination
+				node name, and the
+				expression in the child returns true or false.The
+				expression attribute in the parent is prior to the
+				child, and prior
+				to the condition() method defined in
+				the node.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="wf:nodeType">
+				<xs:sequence>
+					<xs:element name="var" type="Common:ParamType" minOccurs="0"
+						maxOccurs="unbounded" />
+					<xs:element name="expression" type="Common:ExpressionType"
+						minOccurs="0" />
+					<xs:element name="dest" type="wf:destWithFilterType"
+						maxOccurs="unbounded" />
+				</xs:sequence>
+				<xs:attribute name="bean" type="xs:string" />
+				<xs:attribute name="var" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="destWithFilterType">
+		<xs:annotation>
+			<xs:documentation>
+				dest node with a filter for condition or split.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="wf:destType">
+				<xs:sequence>
+					<xs:element name="var" type="Common:ParamType" minOccurs="0"
+						maxOccurs="unbounded" />
+					<xs:element name="expression" type="Common:ExpressionType"
+						minOccurs="0" />
+				</xs:sequence>
+				<xs:attribute name="bean" type="xs:string" />
+				<xs:attribute name="var" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="splitNodeType">
+		<xs:annotation>
+			<xs:documentation>
+				A node that has multi-dest nodes. An IEvent will be
+				split into multi events when executed, each of the
+				events will be
+				passed to one dest node.The expression
+				attribute specifies the split
+				logic. The expression in
+				the parent returns a map of nodeName and
+				Event pairs,
+				and the expression in the child returns an Event. The
+				expression attribute in the parent is prior to the
+				child, and prior
+				to the split() method defined in the
+				node.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="wf:nodeType">
+				<xs:sequence>
+					<xs:element name="dest" type="wf:destWithFilterType"
+						maxOccurs="unbounded" />
+					<xs:element name="var" type="Common:ParamType" minOccurs="0"
+						maxOccurs="unbounded" />
+					<xs:element name="expression" type="Common:ExpressionType"
+						minOccurs="0" />
+				</xs:sequence>
+				<xs:attribute name="bean" type="xs:string" />
+				<xs:attribute name="var" type="xs:string" />
+				<xs:attribute name="concurrent" type="xs:boolean"
+					default="false" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="childFlowNodeType">
+		<xs:annotation>
+			<xs:documentation>
+				A child-flow is a logic flow inside its parent. The
+				start attribute specifies which node in the child-flow
+				will be
+				invoked when the IEvent is passed to.The flow
+				attribute refers the
+				flow definition.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="wf:generalNodeType">
+				<xs:sequence>
+					<xs:element name="app" type="xs:string" minOccurs="0" />
+					<xs:element name="inputMapping" type="Common:NameExpressionType"
+						minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="ouputMapping" type="Common:NameExpressionType"
+						minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="postProcess" type="wf:handlerType"
+						minOccurs="0" />
+				</xs:sequence>
+
+				<xs:attribute name="start" type="xs:string" use="required" />
+				<xs:attribute name="flow" type="xs:string" use="required">
+					<xs:annotation>
+						<xs:documentation>
+							a child flow is a flow worked as a general
+							node
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="nodeType">
+		<xs:annotation>
+			<xs:documentation>
+				Basic node type is an abstract type which extended
+				by
+				all the real types. It contains some basic attributes
+				like timeout
+				etc.When IEvent passed to one node, ac will
+				call the node's process()
+				method. process and timeout
+				are handler beans which handle normal or
+				abnormal event.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="description" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+						description of node
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="process" type="wf:handlerType"
+				minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+						process() is a method usually called by system,
+						it means a node execution script.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="exception-handler" type="wf:exceptionHandlerType"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string">
+		</xs:attribute>
+		<xs:attribute name="timeout" type="xs:long">
+			<xs:annotation>
+				<xs:documentation>
+					time out in the node, unit ms
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="asyn" type="xs:boolean" default="false">
+			<xs:annotation>
+				<xs:documentation>
+					True:engine calls the process(), then stops here.
+					False:engine will invoke next node's process().
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="generalNodeType">
+		<xs:annotation>
+			<xs:documentation>
+				A simple node that has just one dest node. Or no
+				dest
+				node because it's an end node.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="wf:nodeType">
+				<xs:sequence>
+					<xs:choice minOccurs="0">
+						<xs:element name="dest" type="wf:destType" minOccurs="0" />
+						<xs:element name="eventDest" type="wf:eventDestType"
+							minOccurs="0" />
+					</xs:choice>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="eventDestType">
+		<xs:annotation>
+			<xs:documentation>
+				An eventDest can have 0..n dest.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dest" type="wf:destType" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="destType">
+		<xs:annotation>
+			<xs:documentation>dest node with a name</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="name" type="xs:string" use="required" />
+	</xs:complexType>
+	<xs:complexType name="joinNodeType">
+		<xs:annotation>
+			<xs:documentation>
+				Join node is a block node, that wait for n first-in
+				Event from m, abandon the m-n ones. Then join them into
+				one event
+				then pass to the next.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="wf:generalNodeType">
+				<xs:sequence maxOccurs="1" minOccurs="0">
+					<xs:element name="var" type="Common:ParamType" minOccurs="0"
+						maxOccurs="unbounded" />
+					<xs:element name="expression" type="wf:joinExpressionType" />
+				</xs:sequence>
+				<xs:attribute name="bean" type="xs:string" />
+				<xs:attribute name="var" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="handlerType">
+		<xs:sequence>
+			<xs:element name="var" type="Common:ParamType" minOccurs="0"
+				maxOccurs="unbounded" />
+			<xs:element name="expression" type="Common:ExpressionType"
+				minOccurs="0" />
+		</xs:sequence>
+		<xs:attribute name="bean" type="xs:string" />
+		<xs:attribute name="var" type="xs:string" />
+	</xs:complexType>
+	<xs:complexType name="confType">
+		<xs:sequence>
+			<xs:element name="template" type="xs:boolean" minOccurs="0"
+				default="false">
+				<xs:annotation>
+					<xs:documentation>
+						Indicate the flow is an template or not.
+						Template
+						flow can be imported by others.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="bootable" type="xs:boolean" minOccurs="0"
+				default="false">
+				<xs:annotation>
+					<xs:documentation>
+						Indicate the flow is auto start or not.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="managedTransaction" type="xs:boolean"
+				minOccurs="0" default="false">
+				<xs:annotation>
+					<xs:documentation>
+						Indicate the flow using managed transaction or
+						not.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="service" type="Common:VariableType" minOccurs="0"
+				maxOccurs="unbounded" />
+			<xs:element name="session-service" type="wf:sessionServiceType"
+				minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+						The session service integrates the session
+						manager to handle session event in the workflow
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<!-- 
+			<xs:element name="producer-service" type="wf:producerServiceType"
+				minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>
+						The event producer can set event processor.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			 -->
+			<xs:element name="exception-handler" type="wf:exceptionHandlerType"
+				minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="exception-type" type="wf:exceptionType"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="defaultTypeServiceType">
+		<xs:attribute name="name" type="xs:string" />
+		<xs:attribute name="bean" type="xs:string" />
+	</xs:complexType>
+	<xs:complexType name="sessionServiceType">
+		<xs:complexContent>
+			<xs:extension base="wf:defaultTypeServiceType">
+				<xs:attribute name="type" type="xs:string"
+					default="org.shaolin.bmdp.workflow.spi.SessionService" />
+				<xs:attribute name="sessionClass" type="xs:string"
+					default="org.shaolin.bmdp.workflow.spi.WorkflowSession" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="producerServiceType">
+		<xs:complexContent>
+			<xs:extension base="wf:defaultTypeServiceType">
+				<xs:attribute name="type" type="xs:string"
+					default="org.shaolin.bmdp.workflow.spi.EventProducer" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="exceptionHandlerType">
+		<xs:complexContent>
+			<xs:extension base="wf:handlerType">
+				<xs:attribute name="name" type="xs:string" />
+				<xs:attribute name="dest" type="xs:string" />
+				<xs:attribute name="exceptionType" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="flowConfType">
+		<xs:sequence minOccurs="0">
+			<xs:element name="param" type="Common:VariableType"
+				minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="exception-handler" type="wf:exceptionHandlerType"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="joinExpressionType">
+		<xs:complexContent>
+			<xs:extension base="Common:ExpressionType">
+				<xs:attribute name="receive" type="xs:boolean" default="false" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="exceptionType">
+		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="type" type="xs:string" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="startNodeType">
+		<xs:annotation>
+			<xs:documentation>
+				A start-node will create a new session for an
+				application.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="wf:generalNodeType">
+				<xs:sequence>
+					<xs:element name="filter" type="wf:destWithFilterType" minOccurs="0"></xs:element>
+				</xs:sequence>
+				<!-- 
+				<xs:attribute name="producer" type="xs:string" use="required" />
+				<xs:attribute name="eventClass" type="xs:string" use="required" />
+				 -->
+				<xs:attribute name="ranking" type="xs:int" default="0" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="intermediateNodeType">
+		<xs:annotation>
+			<xs:documentation>
+				An intermediate-node is an asynchronous node which
+				uses the session created by the start-node.The start-node or
+				intermediate-node will append event to a queue if there is an active
+				session in the workflow. The pending events will be executed when
+				the flow goes to the end.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="wf:generalNodeType">
+				<xs:sequence>
+					<xs:element name="filter" type="wf:destWithFilterType" minOccurs="0"></xs:element>
+				</xs:sequence>
+				<xs:attribute name="eventConsumer" type="xs:string" use="required" />
+				<xs:attribute name="ranking" type="xs:int" default="0" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="endNodeType">
+		<xs:annotation>
+			<xs:documentation>
+				An end-node will destroy the session for an
+				application.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="wf:nodeType" />
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="flowImportType">
+		<xs:sequence>
+			<xs:element name="serviceMapping" type="Common:NameExpressionType"
+				minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="app" type="xs:string"></xs:attribute>
+		<xs:attribute name="include" type="xs:boolean"></xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="timeoutNodeType">
+		<xs:annotation>
+			<xs:documentation>
+				A timeout-node can configure a timeout interval,
+				and a destination node to handle timeout. The waiting event will be
+				passed to the timeout destination when over time.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="wf:nodeType">
+				<xs:sequence>
+					<xs:element name="timeout-dest" type="wf:destType"
+						minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="cancelTimeoutNodeType">
+		<xs:annotation>
+			<xs:documentation>
+				A cancel-timeout-node always behind the
+				intermediate node, to cancel the timeout event hold by the
+				timeout-node.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="wf:generalNodeType">
+				<xs:attribute name="timeout-node" type="xs:string" use="required" />
+				<xs:attribute name="flow" type="xs:string" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+</xs:schema>

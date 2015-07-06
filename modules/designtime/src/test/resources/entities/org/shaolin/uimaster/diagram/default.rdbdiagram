@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdbdiagram:RDBDiagram xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:common="http://bmdp.shaolin.org/datamodel/Common" 
+	xmlns:rdbdiagram="http://bmdp.shaolin.org/datamodel/RDBDiagram" >
+	<daoPackage>org.shaolin.bmdp.test.dao</daoPackage>
+	<diagramPackage>org.shaolin.bmdp.test.diagram.SecurityManagement</diagramPackage>
+  <joinTable name="FOLDERFILEOTM" srcPKColumn="id" srcTable="FOLDER" tarTable="FILE" tarPKColumn="id"/>
+  <rdbdiagram:table>
+    <common:entityName>FOLDER</common:entityName>
+    <rdbdiagram:column length="10" name="id" type="BIGINT" autoIncrement="true" isNull="false"/>
+    <rdbdiagram:column name="parentId" type="INTEGER"/>
+    <rdbdiagram:column isNull="true" length="30" name="NAME" type="VARCHAR"/>
+    <rdbdiagram:column isNull="true" name="AUTHOR" type="VARCHAR"/>
+    <rdbdiagram:index name="FOLDER_INDEX">
+      <rdbdiagram:column>id</rdbdiagram:column>
+    </rdbdiagram:index>
+    <rdbdiagram:primaryKey>
+      <rdbdiagram:columnName>id</rdbdiagram:columnName>
+    </rdbdiagram:primaryKey>
+    <rdbdiagram:mapping>
+      <rdbdiagram:businessEntity entityName="org.shaolin.bmdp.test.be.Folder">
+        <diagramInfo location="/security/src/main/resources/entities/org/shaolin/bmdp/security/diagram/default.bediagram" entityName="org.shaolin.bmdp.security.diagram.default"/>
+      </rdbdiagram:businessEntity>
+      <rdbdiagram:fieldMapping xsi:type="rdbdiagram:SimpleFieldMappingType" beFieldName="name" columnName="NAME"/>
+      <rdbdiagram:fieldMapping xsi:type="rdbdiagram:SimpleFieldMappingType" beFieldName="author" columnName="AUTHOR"/>
+      <rdbdiagram:fieldMapping xsi:type="rdbdiagram:SimpleFieldMappingType" beFieldName="id" columnName="id"/>
+      <rdbdiagram:fieldMapping xsi:type="rdbdiagram:ListFieldMappingType" beFieldName="files" associationName="FOLDERFILEOTM" mappingType="One-to-Many" collectionElement="org.shaolin.bmdp.test.be.File"/>
+    </rdbdiagram:mapping>
+  </rdbdiagram:table>
+  <rdbdiagram:table>
+    <common:entityName>FILE</common:entityName>
+    <rdbdiagram:column length="10" name="id" type="BIGINT" autoIncrement="true" isNull="false"/>
+    <rdbdiagram:column isNull="true" length="30" name="NAME" type="VARCHAR"/>
+    <rdbdiagram:column isNull="true" name="AUTHOR" type="VARCHAR"/>
+    <rdbdiagram:column isNull="true" length="2" name="TYPE" type="INTEGER"/>
+    <rdbdiagram:column isNull="true" length="10" name="OWNER" type="BIGINT"/>
+    <rdbdiagram:column isNull="true" name="SIZE" type="BIGINT"/>
+    <rdbdiagram:column length="2" name="_version" type="INTEGER"/>
+    <rdbdiagram:column name="_starttime" type="TIMESTAMP"/>
+    <rdbdiagram:column name="_endtime" type="TIMESTAMP"/>
+    <rdbdiagram:column length="10" name="_optuserid" type="BIGINT"/>
+    <rdbdiagram:index name="FILE_INDEX">
+      <rdbdiagram:column>id</rdbdiagram:column>
+    </rdbdiagram:index>
+    <rdbdiagram:primaryKey>
+      <rdbdiagram:columnName>id</rdbdiagram:columnName>
+    </rdbdiagram:primaryKey>
+    <rdbdiagram:mapping>
+      <rdbdiagram:businessEntity entityName="org.shaolin.bmdp.test.be.File">
+        <diagramInfo location="/security/src/main/resources/entities/org/shaolin/bmdp/security/diagram/default.bediagram" entityName="org.shaolin.bmdp.security.diagram.default"/>
+      </rdbdiagram:businessEntity>
+      <rdbdiagram:fieldMapping xsi:type="rdbdiagram:SimpleFieldMappingType" beFieldName="name" columnName="NAME"/>
+      <rdbdiagram:fieldMapping xsi:type="rdbdiagram:SimpleFieldMappingType" beFieldName="author" columnName="AUTHOR"/>
+      <rdbdiagram:fieldMapping xsi:type="rdbdiagram:SimpleFieldMappingType" beFieldName="type" columnName="TYPE"/>
+      <rdbdiagram:fieldMapping xsi:type="rdbdiagram:SimpleFieldMappingType" beFieldName="owner" columnName="OWNER"/>
+      <rdbdiagram:fieldMapping xsi:type="rdbdiagram:SimpleFieldMappingType" beFieldName="size" columnName="SIZE"/>
+      <rdbdiagram:fieldMapping xsi:type="rdbdiagram:SimpleFieldMappingType" beFieldName="_version" columnName="_version"/>
+      <rdbdiagram:fieldMapping xsi:type="rdbdiagram:SimpleFieldMappingType" beFieldName="_starttime" columnName="_starttime"/>
+      <rdbdiagram:fieldMapping xsi:type="rdbdiagram:SimpleFieldMappingType" beFieldName="_endtime" columnName="_endtime"/>
+      <rdbdiagram:fieldMapping xsi:type="rdbdiagram:SimpleFieldMappingType" beFieldName="_optuserid" columnName="_optuserid"/>
+      <rdbdiagram:fieldMapping xsi:type="rdbdiagram:SimpleFieldMappingType" beFieldName="id" columnName="id"/>
+    </rdbdiagram:mapping>
+  </rdbdiagram:table>
+  <rdbdiagram:table>
+    <common:entityName>USER</common:entityName>
+    <rdbdiagram:column isNull="true" name="ID" type="BIGINT"/>
+    <rdbdiagram:column isNull="true" name="NAME" type="VARCHAR"/>
+    <rdbdiagram:sequence name="USER_SEQ"/>
+    <rdbdiagram:primaryKey>
+      <rdbdiagram:columnName>ID</rdbdiagram:columnName>
+    </rdbdiagram:primaryKey>
+    <rdbdiagram:mapping>
+      <rdbdiagram:businessEntity entityName="org.shaolin.bmdp.test.be.User">
+        <diagramInfo location="/security/src/main/resources/entities/org/shaolin/bmdp/security/diagram/default.bediagram" entityName="org.shaolin.bmdp.security.diagram.default"/>
+      </rdbdiagram:businessEntity>
+      <rdbdiagram:fieldMapping xsi:type="rdbdiagram:SimpleFieldMappingType" beFieldName="id" columnName="ID"/>
+      <rdbdiagram:fieldMapping xsi:type="rdbdiagram:SimpleFieldMappingType" beFieldName="name" columnName="NAME"/>
+    </rdbdiagram:mapping>
+  </rdbdiagram:table>
+  <rdbdiagram:table>
+    <common:entityName>ADMINISTRATOR</common:entityName>
+    <rdbdiagram:column isNull="true" name="FIELD0" type="VARCHAR"/>
+    <rdbdiagram:inheritAsscociation name="ADMINISTRATOR_InheritAssociation" parentTable="USER"/>
+    <rdbdiagram:mapping>
+      <rdbdiagram:businessEntity entityName="org.shaolin.bmdp.test.be.Administrator">
+        <diagramInfo location="/security/src/main/resources/entities/org/shaolin/bmdp/security/diagram/default.bediagram" entityName="org.shaolin.bmdp.security.diagram.default"/>
+      </rdbdiagram:businessEntity>
+      <rdbdiagram:fieldMapping xsi:type="rdbdiagram:SimpleFieldMappingType" beFieldName="field0" columnName="FIELD0"/>
+    </rdbdiagram:mapping>
+  </rdbdiagram:table>
+  <rdbdiagram:table>
+    <common:entityName>GUEST</common:entityName>
+    <rdbdiagram:column isNull="true" name="FIELD0" type="VARCHAR"/>
+    <rdbdiagram:column isNull="true" name="FIELD1" type="VARCHAR"/>
+    <rdbdiagram:inheritAsscociation name="GUEST_InheritAssociation" parentTable="USER"/>
+    <rdbdiagram:mapping>
+      <rdbdiagram:businessEntity entityName="org.shaolin.bmdp.test.be.Guest">
+        <diagramInfo location="/security/src/main/resources/entities/org/shaolin/bmdp/security/diagram/default.bediagram" entityName="org.shaolin.bmdp.security.diagram.default"/>
+      </rdbdiagram:businessEntity>
+      <rdbdiagram:fieldMapping xsi:type="rdbdiagram:SimpleFieldMappingType" beFieldName="field0" columnName="FIELD0"/>
+      <rdbdiagram:fieldMapping xsi:type="rdbdiagram:SimpleFieldMappingType" beFieldName="field1" columnName="FIELD1"/>
+    </rdbdiagram:mapping>
+  </rdbdiagram:table>
+  <rdbdiagram:query queryName="searchFile">
+  	<rdbdiagram:searchResult name="outFile" notes="" category="BusinessEntity" searchable="false">
+        <common:type entityName="org.shaolin.bmdp.test.be.File" systemVersion="0"/>
+    </rdbdiagram:searchResult>
+    <rdbdiagram:fromData name="inFile" category="BusinessEntity">
+        <common:type entityName="org.shaolin.bmdp.test.be.File"/>
+    </rdbdiagram:fromData>
+    <rdbdiagram:searchResultMapping>
+        <rdbdiagram:fieldMapping>
+            <rdbdiagram:toDataFieldPath>outFile</rdbdiagram:toDataFieldPath>
+            <rdbdiagram:value xsi:type="rdbdiagram:SimpleFieldValueType">
+                <rdbdiagram:valueFieldPath>inFile</rdbdiagram:valueFieldPath>
+            </rdbdiagram:value>
+        </rdbdiagram:fieldMapping>
+    </rdbdiagram:searchResultMapping>
+    <rdbdiagram:searchConditionMapping name="Search">
+        <rdbdiagram:fieldMapping>
+            <rdbdiagram:toDataFieldPath>inFile.name</rdbdiagram:toDataFieldPath>
+            <rdbdiagram:conditionValue>
+                <rdbdiagram:operator isReverse="false" xsi:type="rdbdiagram:LogicOperatorType">
+                    <rdbdiagram:type>LIKE %%</rdbdiagram:type>
+                </rdbdiagram:operator>
+                <rdbdiagram:value xsi:type="rdbdiagram:SimpleFieldValueType">
+                    <rdbdiagram:valueFieldPath>scFile.name</rdbdiagram:valueFieldPath>
+                </rdbdiagram:value>
+                <rdbdiagram:condition>
+                    <common:expressionString><![CDATA[scFile.getName() != null && scFile.getName().length() > 0]]></common:expressionString>
+                </rdbdiagram:condition>
+            </rdbdiagram:conditionValue>
+        </rdbdiagram:fieldMapping>
+        <rdbdiagram:fieldMapping>
+            <rdbdiagram:toDataFieldPath>inFile.size</rdbdiagram:toDataFieldPath>
+            <rdbdiagram:conditionValue>
+                <rdbdiagram:operator isReverse="false" xsi:type="rdbdiagram:LogicOperatorType">
+                    <type>&gt;=</type>
+                </rdbdiagram:operator>
+                <rdbdiagram:value xsi:type="rdbdiagram:SimpleFieldValueType">
+                    <rdbdiagram:valueFieldPath>scFile.size</rdbdiagram:valueFieldPath>
+                </rdbdiagram:value>
+                <rdbdiagram:condition>
+                    <common:expressionString><![CDATA[scFile.getSize() > 0]]></common:expressionString>
+                </rdbdiagram:condition>
+            </rdbdiagram:conditionValue>
+        </rdbdiagram:fieldMapping>
+        <rdbdiagram:fieldMapping>
+            <rdbdiagram:toDataFieldPath>inFile.name</rdbdiagram:toDataFieldPath>
+            <rdbdiagram:conditionValue>
+                <rdbdiagram:operator isReverse="false" xsi:type="rdbdiagram:LogicOperatorType">
+                    <rdbdiagram:type>BETWEEN</rdbdiagram:type>
+                </rdbdiagram:operator>
+                <rdbdiagram:value xsi:type="rdbdiagram:SimpleFieldValueType">
+                	<!-- must be a list with 2 elements -->
+                    <rdbdiagram:valueFieldPath>scFile.files</rdbdiagram:valueFieldPath>
+                </rdbdiagram:value>
+                <rdbdiagram:condition>
+                    <common:expressionString><![CDATA[scFile.getFiles() != null]]></common:expressionString>
+                </rdbdiagram:condition>
+            </rdbdiagram:conditionValue>
+        </rdbdiagram:fieldMapping>
+        <rdbdiagram:fieldMapping>
+            <rdbdiagram:toDataFieldPath>inFile.name</rdbdiagram:toDataFieldPath>
+            <rdbdiagram:conditionValue>
+                <rdbdiagram:operator isReverse="true" xsi:type="rdbdiagram:LogicOperatorType">
+                    <rdbdiagram:type>IN</rdbdiagram:type>
+                </rdbdiagram:operator>
+                <rdbdiagram:value xsi:type="rdbdiagram:SimpleFieldValueType">
+                	<!-- must be a list with 2 elements -->
+                    <rdbdiagram:valueFieldPath>scFile.files</rdbdiagram:valueFieldPath>
+                </rdbdiagram:value>
+                <rdbdiagram:condition>
+                    <common:expressionString><![CDATA[scFile.getName() != null]]></common:expressionString>
+                </rdbdiagram:condition>
+            </rdbdiagram:conditionValue>
+        </rdbdiagram:fieldMapping>
+        <rdbdiagram:searchConditionData name="scFile" category="BusinessEntity" searchable="false">
+            <common:type entityName="org.shaolin.bmdp.test.be.File"/>
+        </rdbdiagram:searchConditionData>
+    </rdbdiagram:searchConditionMapping>
+  </rdbdiagram:query>
+  <rdbdiagram:query queryName="searchFileWithOrderby">
+  	<rdbdiagram:searchResult name="outFile" notes="" category="BusinessEntity" searchable="false">
+        <common:type entityName="org.shaolin.bmdp.test.be.File" systemVersion="0"/>
+    </rdbdiagram:searchResult>
+    <rdbdiagram:fromData name="inFile" category="BusinessEntity">
+        <common:type entityName="org.shaolin.bmdp.test.be.File"/>
+    </rdbdiagram:fromData>
+    <rdbdiagram:searchResultMapping>
+        <rdbdiagram:fieldMapping>
+            <rdbdiagram:toDataFieldPath>outFile.id</rdbdiagram:toDataFieldPath>
+            <rdbdiagram:value xsi:type="rdbdiagram:SimpleFieldValueType">
+                <rdbdiagram:valueFieldPath>inFile.id</rdbdiagram:valueFieldPath>
+            </rdbdiagram:value>
+        </rdbdiagram:fieldMapping>
+        <rdbdiagram:fieldMapping>
+            <rdbdiagram:toDataFieldPath>outFile.name</rdbdiagram:toDataFieldPath>
+            <rdbdiagram:value xsi:type="rdbdiagram:SimpleFieldValueType">
+                <rdbdiagram:valueFieldPath>inFile.name</rdbdiagram:valueFieldPath>
+            </rdbdiagram:value>
+        </rdbdiagram:fieldMapping>
+    </rdbdiagram:searchResultMapping>
+    <rdbdiagram:searchConditionMapping>
+        <rdbdiagram:fieldMapping>
+            <rdbdiagram:toDataFieldPath>inFile.name</rdbdiagram:toDataFieldPath>
+            <rdbdiagram:conditionValue>
+                <rdbdiagram:operator isReverse="false" xsi:type="rdbdiagram:StarLikeOperatorType">
+                    <rdbdiagram:type>LIKE %*</rdbdiagram:type>
+                </rdbdiagram:operator>
+                <rdbdiagram:value xsi:type="rdbdiagram:SimpleFieldValueType">
+                    <rdbdiagram:valueFieldPath>scFile.name</rdbdiagram:valueFieldPath>
+                </rdbdiagram:value>
+                <rdbdiagram:condition>
+                    <common:expressionString><![CDATA[scFile.getName() == null]]></common:expressionString>
+                </rdbdiagram:condition>
+            </rdbdiagram:conditionValue>
+        </rdbdiagram:fieldMapping>
+        <rdbdiagram:fieldMapping>
+            <rdbdiagram:toDataFieldPath>inFile.size</rdbdiagram:toDataFieldPath>
+            <rdbdiagram:conditionValue>
+                <rdbdiagram:operator isReverse="false" xsi:type="rdbdiagram:LogicOperatorType">
+                    <type>&gt;=</type>
+                </rdbdiagram:operator>
+                <rdbdiagram:value xsi:type="rdbdiagram:SimpleFieldValueType">
+                    <rdbdiagram:valueFieldPath>scFile.size</rdbdiagram:valueFieldPath>
+                </rdbdiagram:value>
+                <rdbdiagram:condition>
+                    <common:expressionString><![CDATA[scFile.getSize() == 0]]></common:expressionString>
+                </rdbdiagram:condition>
+            </rdbdiagram:conditionValue>
+        </rdbdiagram:fieldMapping>
+        <rdbdiagram:searchConditionData name="scFile" category="BusinessEntity" searchable="false">
+            <common:type entityName="org.shaolin.bmdp.test.be.File"/>
+        </rdbdiagram:searchConditionData>
+    </rdbdiagram:searchConditionMapping>
+    <rdbdiagram:orderBy isAscending="false">
+        <rdbdiagram:field>inFile.name</rdbdiagram:field>
+    </rdbdiagram:orderBy>
+  </rdbdiagram:query>
+  <rdbdiagram:query queryName="searchFileJoin">
+  	<rdbdiagram:searchResult name="outFile" notes="" category="BusinessEntity" searchable="false">
+        <common:type entityName="org.shaolin.bmdp.test.be.Folder" systemVersion="0"/>
+    </rdbdiagram:searchResult>
+    <rdbdiagram:fromData name="inFoler" category="BusinessEntity">
+        <common:type entityName="org.shaolin.bmdp.test.be.Folder"/>
+    </rdbdiagram:fromData>
+    <rdbdiagram:fromData name="inFile" category="BusinessEntity">
+        <common:type entityName="org.shaolin.bmdp.test.be.File"/>
+    </rdbdiagram:fromData>
+    <rdbdiagram:searchResultMapping>
+        <rdbdiagram:fieldMapping>
+            <rdbdiagram:toDataFieldPath>outFile</rdbdiagram:toDataFieldPath>
+            <rdbdiagram:value xsi:type="rdbdiagram:SimpleFieldValueType">
+                <rdbdiagram:valueFieldPath>inFile</rdbdiagram:valueFieldPath>
+            </rdbdiagram:value>
+        </rdbdiagram:fieldMapping>
+    </rdbdiagram:searchResultMapping>
+    <rdbdiagram:linkMapping>
+        <rdbdiagram:link>
+        	<rdbdiagram:refField>inFoler.files</rdbdiagram:refField>
+            <rdbdiagram:left>inFoler.id</rdbdiagram:left>
+            <rdbdiagram:right>inFile.id</rdbdiagram:right>
+        </rdbdiagram:link>
+    </rdbdiagram:linkMapping>
+    <rdbdiagram:searchConditionMapping>
+        <rdbdiagram:fieldMapping>
+            <rdbdiagram:toDataFieldPath>inFile.name</rdbdiagram:toDataFieldPath>
+            <rdbdiagram:conditionValue>
+                <rdbdiagram:operator isReverse="false" xsi:type="rdbdiagram:StarLikeOperatorType">
+                    <rdbdiagram:type>LIKE %*</rdbdiagram:type>
+                </rdbdiagram:operator>
+                <rdbdiagram:value xsi:type="rdbdiagram:SimpleFieldValueType">
+                    <rdbdiagram:valueFieldPath>scFile.name</rdbdiagram:valueFieldPath>
+                </rdbdiagram:value>
+                <rdbdiagram:condition>
+                    <common:expressionString><![CDATA[scFile.getName() != null]]></common:expressionString>
+                </rdbdiagram:condition>
+            </rdbdiagram:conditionValue>
+        </rdbdiagram:fieldMapping>
+        <rdbdiagram:fieldMapping xsi:type="rdbdiagram:CompositeConditionMappingType">
+            <rdbdiagram:fieldMapping xsi:type="rdbdiagram:ConditionFieldMappingType">
+	            <rdbdiagram:toDataFieldPath>inFile.author</rdbdiagram:toDataFieldPath>
+	            <rdbdiagram:conditionValue>
+	                <rdbdiagram:operator isReverse="false" xsi:type="rdbdiagram:LogicOperatorType">
+	                    <type>=</type>
+	                </rdbdiagram:operator>
+	                <rdbdiagram:value xsi:type="rdbdiagram:SimpleFieldValueType">
+	                    <rdbdiagram:valueFieldPath>scFile.author</rdbdiagram:valueFieldPath>
+	                </rdbdiagram:value>
+	                <rdbdiagram:condition>
+	                    <common:expressionString><![CDATA["System".equals(scFile.getAuthor())]]></common:expressionString>
+	                </rdbdiagram:condition>
+	            </rdbdiagram:conditionValue>
+        	</rdbdiagram:fieldMapping>
+        	<rdbdiagram:logicalOperator>OR</rdbdiagram:logicalOperator>
+        	<rdbdiagram:fieldMapping xsi:type="rdbdiagram:ConditionFieldMappingType">
+	            <rdbdiagram:toDataFieldPath>inFile.author</rdbdiagram:toDataFieldPath>
+	            <rdbdiagram:conditionValue>
+	                <rdbdiagram:operator isReverse="false" xsi:type="rdbdiagram:LogicOperatorType">
+	                    <type>=</type>
+	                </rdbdiagram:operator>
+	                <rdbdiagram:value xsi:type="rdbdiagram:SimpleFieldValueType">
+	                    <rdbdiagram:valueFieldPath>scFile.author</rdbdiagram:valueFieldPath>
+	                </rdbdiagram:value>
+	                <rdbdiagram:condition>
+	                    <common:expressionString><![CDATA["Shaolin".equals(scFile.getAuthor())]]></common:expressionString>
+	                </rdbdiagram:condition>
+	            </rdbdiagram:conditionValue>
+        	</rdbdiagram:fieldMapping>
+        </rdbdiagram:fieldMapping>
+        <rdbdiagram:searchConditionData name="scFile" category="BusinessEntity" searchable="false">
+            <common:type entityName="org.shaolin.bmdp.test.be.File"/>
+        </rdbdiagram:searchConditionData>
+    </rdbdiagram:searchConditionMapping>
+    <rdbdiagram:orderBy isAscending="false">
+        <rdbdiagram:field>inFile.name</rdbdiagram:field>
+    </rdbdiagram:orderBy>
+  </rdbdiagram:query>
+  <rdbdiagram:query queryName="searchFileSubQuery">
+  	<rdbdiagram:searchResult name="outFile" notes="" category="BusinessEntity" searchable="false">
+        <common:type entityName="org.shaolin.bmdp.test.be.File" systemVersion="0"/>
+    </rdbdiagram:searchResult>
+    <rdbdiagram:fromData name="inFile" category="BusinessEntity">
+        <common:type entityName="org.shaolin.bmdp.test.be.File"/>
+    </rdbdiagram:fromData>
+    <rdbdiagram:searchResultMapping>
+        <rdbdiagram:fieldMapping>
+            <rdbdiagram:toDataFieldPath>outFile</rdbdiagram:toDataFieldPath>
+            <rdbdiagram:value xsi:type="rdbdiagram:SimpleFieldValueType">
+                <rdbdiagram:valueFieldPath>inFile</rdbdiagram:valueFieldPath>
+            </rdbdiagram:value>
+        </rdbdiagram:fieldMapping>
+    </rdbdiagram:searchResultMapping>
+    <rdbdiagram:linkMapping/>
+    <rdbdiagram:searchConditionMapping>
+    	<rdbdiagram:fieldMapping>
+            <rdbdiagram:toDataFieldPath>inFile.size</rdbdiagram:toDataFieldPath>
+            <rdbdiagram:conditionValue>
+                <rdbdiagram:operator isReverse="false" xsi:type="rdbdiagram:LogicOperatorType">
+                    <type>&gt;=</type>
+                </rdbdiagram:operator>
+                <rdbdiagram:value xsi:type="rdbdiagram:SimpleFieldValueType">
+                    <rdbdiagram:valueFieldPath>scFile.size</rdbdiagram:valueFieldPath>
+                </rdbdiagram:value>
+                <rdbdiagram:condition>
+                    <common:expressionString><![CDATA[scFile.getSize() == 0]]></common:expressionString>
+                </rdbdiagram:condition>
+            </rdbdiagram:conditionValue>
+        </rdbdiagram:fieldMapping>
+        <rdbdiagram:fieldMapping xsi:type="rdbdiagram:SubQueryMappingType" isDistinct="true">
+        	<rdbdiagram:toDataFieldPath>inFile.name</rdbdiagram:toDataFieldPath>
+        	<rdbdiagram:operator isReverse="false" xsi:type="rdbdiagram:LogicOperatorType">
+                <rdbdiagram:type>IN</rdbdiagram:type>
+            </rdbdiagram:operator>
+            <rdbdiagram:selectedDataFieldPath>subFile.name</rdbdiagram:selectedDataFieldPath>
+            <rdbdiagram:fromData name="subFile" category="BusinessEntity">
+		        <common:type entityName="org.shaolin.bmdp.test.be.File"/>
+		    </rdbdiagram:fromData>
+            <rdbdiagram:fieldMapping xsi:type="rdbdiagram:ConditionFieldMappingType">
+	            <rdbdiagram:toDataFieldPath>subFile.id</rdbdiagram:toDataFieldPath>
+	            <rdbdiagram:conditionValue>
+	                <rdbdiagram:operator isReverse="false" xsi:type="rdbdiagram:LogicOperatorType">
+	                    <rdbdiagram:type>=</rdbdiagram:type>
+	                </rdbdiagram:operator>
+	                <rdbdiagram:value xsi:type="rdbdiagram:SimpleFieldValueType">
+	                    <rdbdiagram:valueFieldPath>scFile.id</rdbdiagram:valueFieldPath>
+	                </rdbdiagram:value>
+	                <rdbdiagram:condition>
+	                    <common:expressionString><![CDATA["Shaolin".equals(scFile.getAuthor())]]></common:expressionString>
+	                </rdbdiagram:condition>
+	            </rdbdiagram:conditionValue>
+	        </rdbdiagram:fieldMapping>
+        </rdbdiagram:fieldMapping>
+        <rdbdiagram:searchConditionData name="scFile" category="BusinessEntity" searchable="false">
+            <common:type entityName="org.shaolin.bmdp.test.be.File"/>
+        </rdbdiagram:searchConditionData>
+    </rdbdiagram:searchConditionMapping>
+  </rdbdiagram:query>
+  
+</rdbdiagram:RDBDiagram>

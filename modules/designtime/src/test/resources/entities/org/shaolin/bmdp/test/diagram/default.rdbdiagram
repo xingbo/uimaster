@@ -1,0 +1,89 @@
+<?xml version="1.0" ?>
+<ns2:RDBDiagram xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns5="http://bmdp.shaolin.org/datamodel/PageDiagram" xmlns:ns4="http://bmdp.shaolin.org/datamodel/Page" xmlns:ns3="http://bmdp.shaolin.org/datamodel/BEDiagram" xmlns:ns2="http://bmdp.shaolin.org/datamodel/RDBDiagram" xmlns="http://bmdp.shaolin.org/datamodel/Common" xsi:schemaLocation="">
+  <name>default</name>
+  <systemVersion>0</systemVersion>
+  <ns2:diagramPackage>org.shaolin.bmdp.test.diagram</ns2:diagramPackage>
+  <ns2:daoPackage>org.shaolin.bmdp.test.dao</ns2:daoPackage>
+  <ns2:table>
+    <entityName>FOLDER</entityName>
+    <systemVersion>0</systemVersion>
+    <ns2:column name="ID" type="BIGINT" isNull="true"></ns2:column>
+    <ns2:column name="NAME" type="VARCHAR" isNull="true"></ns2:column>
+    <ns2:column name="AUTHOR" type="VARCHAR" isNull="true"></ns2:column>
+    <ns2:column name="FILES" type="BIGINT" isNull="true"></ns2:column>
+    <ns2:column name="FOLDERS" type="BIGINT" isNull="true"></ns2:column>
+    <ns2:column name="_enable" type="INTEGER" length="2"></ns2:column>
+    <ns2:mapping>
+      <systemVersion>0</systemVersion>
+      <ns2:businessEntity entityName="org.shaolin.bmdp.test.be.Folder"></ns2:businessEntity>
+      <ns2:fieldMapping beFieldName="id" columnName="ID"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="name" columnName="NAME"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="author" columnName="AUTHOR"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="_enable" columnName="_enable"></ns2:fieldMapping>
+    </ns2:mapping>
+  </ns2:table>
+  <ns2:table>
+    <entityName>FILE</entityName>
+    <systemVersion>0</systemVersion>
+    <ns2:column name="ID" type="BIGINT" isNull="true"></ns2:column>
+    <ns2:column name="NAME" type="VARCHAR" isNull="true"></ns2:column>
+    <ns2:column name="AUTHOR" type="VARCHAR" isNull="true"></ns2:column>
+    <ns2:column name="TYPE" type="INTEGER" length="2" isNull="true"></ns2:column>
+    <ns2:column name="OWNER" type="BIGINT" length="38" isNull="true"></ns2:column>
+    <ns2:column name="id" type="BIGINT" length="38" isNull="true"></ns2:column>
+    <ns2:column name="SIZE" type="BIGINT" isNull="true"></ns2:column>
+    <ns2:column name="FILES" type="BIGINT" isNull="true"></ns2:column>
+    <ns2:column name="MODIFIED" type="DATETIME" isNull="true"></ns2:column>
+    <ns2:column name="_enable" type="INTEGER" length="2"></ns2:column>
+    <ns2:mapping>
+      <systemVersion>0</systemVersion>
+      <ns2:businessEntity entityName="org.shaolin.bmdp.test.be.File"></ns2:businessEntity>
+      <ns2:fieldMapping beFieldName="id" columnName="ID"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="name" columnName="NAME"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="author" columnName="AUTHOR"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="type" columnName="TYPE"></ns2:fieldMapping>
+      <ns2:fieldMapping xsi:type="ns2:ListFieldMappingType" mappingType="One_to_One" beFieldName="owner" columnName="id"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="size" columnName="SIZE"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="modified" columnName="MODIFIED"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="_enable" columnName="_enable"></ns2:fieldMapping>
+    </ns2:mapping>
+  </ns2:table>
+  <ns2:table>
+    <entityName>USER</entityName>
+    <systemVersion>0</systemVersion>
+    <ns2:column name="ID" type="BIGINT" isNull="true"></ns2:column>
+    <ns2:column name="NAME" type="VARCHAR" isNull="true"></ns2:column>
+    <ns2:column name="_enable" type="INTEGER" length="2"></ns2:column>
+    <ns2:mapping>
+      <systemVersion>0</systemVersion>
+      <ns2:businessEntity entityName="org.shaolin.bmdp.test.be.User"></ns2:businessEntity>
+      <ns2:fieldMapping beFieldName="id" columnName="ID"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="name" columnName="NAME"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="_enable" columnName="_enable"></ns2:fieldMapping>
+    </ns2:mapping>
+  </ns2:table>
+  <ns2:table>
+    <entityName>ADMINISTRATOR</entityName>
+    <systemVersion>0</systemVersion>
+    <ns2:column name="FIELD0" type="VARCHAR" isNull="true"></ns2:column>
+    <ns2:inheritAsscociation name="User_Inherit" parentTable="User"></ns2:inheritAsscociation>
+    <ns2:mapping>
+      <systemVersion>0</systemVersion>
+      <ns2:businessEntity entityName="org.shaolin.bmdp.test.be.Administrator"></ns2:businessEntity>
+      <ns2:fieldMapping beFieldName="field0" columnName="FIELD0"></ns2:fieldMapping>
+    </ns2:mapping>
+  </ns2:table>
+  <ns2:table>
+    <entityName>GUEST</entityName>
+    <systemVersion>0</systemVersion>
+    <ns2:column name="FIELD0" type="VARCHAR" isNull="true"></ns2:column>
+    <ns2:column name="FIELD1" type="VARCHAR" isNull="true"></ns2:column>
+    <ns2:inheritAsscociation name="User_Inherit" parentTable="User"></ns2:inheritAsscociation>
+    <ns2:mapping>
+      <systemVersion>0</systemVersion>
+      <ns2:businessEntity entityName="org.shaolin.bmdp.test.be.Guest"></ns2:businessEntity>
+      <ns2:fieldMapping beFieldName="field0" columnName="FIELD0"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="field1" columnName="FIELD1"></ns2:fieldMapping>
+    </ns2:mapping>
+  </ns2:table>
+</ns2:RDBDiagram>

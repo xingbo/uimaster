@@ -1,0 +1,1176 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xs:schema xmlns:BusinessAction="http://bmdp.shaolin.org/datamodel/BusinessAction"
+	xmlns:Common="http://bmdp.shaolin.org/datamodel/Common"
+	xmlns:Page="http://bmdp.shaolin.org/datamodel/Page"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	attributeFormDefault="unqualified" elementFormDefault="qualified"
+	targetNamespace="http://bmdp.shaolin.org/datamodel/Page" version="">
+	
+	<xs:import namespace="http://bmdp.shaolin.org/datamodel/Common" schemaLocation="common.xsd"/>
+	
+	<xs:element name="UIPage" type="Page:UIPageType"/>
+	<xs:element name="UIEntity" type="Page:UIEntityType"/>
+	
+	<!-- Actions -->
+	<xs:complexType name="OpType">
+		<xs:attribute name="description" type="xs:string"/>
+		<xs:attribute name="operationId" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="OpSetVariableType">
+		<xs:annotation>
+			<xs:documentation>Single expression. Most commonly used.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="Page:OpType">
+				<xs:sequence>
+					<xs:element name="exp" type="Common:ExpressionType"/>
+				</xs:sequence>
+				<xs:attribute name="varName" type="xs:string"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+    <xs:complexType name="OpCallAjaxType">
+		<xs:complexContent>
+			<xs:extension base="Page:OpType">
+				<xs:sequence>
+					<xs:element name="exp" type="Common:ExpressionType"/>
+                    <xs:element name="exceptionMessage" type="Common:IPropertyValueType"/>
+				</xs:sequence>
+				<xs:attribute name="name" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="OpExecuteScriptType">
+		<xs:complexContent>
+			<xs:extension base="Page:OpType">
+				<xs:sequence>
+					<xs:element name="expressionString" type="xs:string"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="OpInvokeWorkflowType">
+		<xs:complexContent>
+			<xs:extension base="Page:OpType">
+				<xs:sequence>
+					<xs:element name="condition" type="Common:ExpressionType"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="outDataMapping" type="Common:NameExpressionType"/>
+				</xs:sequence>
+				<xs:attribute name="eventProducer" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<!-- OD mapping definition-->
+	<xs:complexType name="ODMappingType">
+		<xs:complexContent>
+			<xs:extension base="Common:EntityType">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" name="UIEntity" type="Common:ParamType"/>
+					<xs:element maxOccurs="unbounded" name="DataEntity" type="Common:ParamType"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="ComponentMapping" type="Page:ComponentMappingType"/>
+					<xs:element name="DataToUIMappingOperation" type="Common:ExpressionType"/>
+					<xs:element name="UIToDataMappingOperation" type="Common:ExpressionType"/>
+					<xs:element minOccurs="0" name="DataLocale" type="Common:ExpressionType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType abstract="true" name="ComponentMappingType">
+	    <xs:sequence>
+	        <xs:element minOccurs="0" name="DataLocale" type="Common:ExpressionType"/>
+	    </xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="DirectComponentMappingType">
+		<xs:annotation>
+			<xs:documentation>Direct Component Mapping simply means the "=", most probably used in variable mapping</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="Page:ComponentMappingType">
+				<xs:sequence>
+					<xs:element name="UIComponent" type="xs:string"/>
+					<xs:element name="DataComponent" type="Page:DataParamType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="SimpleComponentMappingType">
+		<xs:complexContent>
+			<xs:extension base="Page:ComponentMappingType">
+				<xs:sequence>
+					<xs:element name="mappingRule" type="Common:TargetEntityType">
+						<xs:annotation>
+							<xs:documentation>reference an existing display mapping</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" name="UIComponent" type="Page:UIComponentParamType"/>
+					<xs:element maxOccurs="unbounded" name="DataComponent" type="Page:DataParamType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="DynamicUIMappingType">
+		<xs:complexContent>
+			<xs:extension base="Page:ComponentMappingType">
+				<xs:sequence>
+					<xs:element name="UIComponent" type="Page:UIComponentParamType"/>
+					<xs:element maxOccurs="unbounded" name="DataComponent" type="Page:DataParamType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="UIComponentParamType">
+		<xs:complexContent>
+			<xs:extension base="Page:DataParamType">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="implExpression" type="Common:ExpressionType">
+						<xs:annotation>
+							<xs:documentation>when the ui component is an ui interface, user should specify the real impl uientity variable</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="componentPath" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType abstract="true" name="DataParamType">
+		<xs:attribute name="paramName" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>in direct component mapping for variables, this paramName is not needed.
+in simple component mapping, the paramName is required</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="ComponentParamType">
+		<xs:complexContent>
+			<xs:extension base="Page:DataParamType">
+				<xs:attribute name="componentPath" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ExpressionParamType">
+		<xs:complexContent>
+			<xs:extension base="Page:DataParamType">
+				<xs:sequence>
+					<xs:element name="expression" type="Common:ExpressionType"/>
+					<xs:element minOccurs="0" name="uiToDataExpression" type="Common:NameExpressionType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!--Operation for calling Component Mapping-->
+	<xs:complexType name="CallComponentMappingOp">
+		<xs:complexContent>
+			<xs:extension base="Page:OpType">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="mappingName" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>when the mapping is empty, it means call all the mappings</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<!--start define page-->
+	<xs:complexType name="UIPageType">
+		<xs:annotation>
+			<xs:documentation>the UIPageType extends the UIEntityType, and also have the mapping of dataEntity and UIEntity. Note: the UIPage shouldn't have reconfigurableProperty</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="Common:EntityType">
+				<xs:sequence>
+					<xs:element name="UIEntity" type="Page:UIBaseType"/>
+					<xs:element name="ODMapping" type="Page:PageODMappingType"/>
+					<xs:element minOccurs="0" name="in" type="Page:PageInType"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="out" type="Page:PageOutType"/>
+					<xs:element name="finalize" type="Common:ExpressionType"/>
+				</xs:sequence>
+                <xs:attribute default="false" name="isAjaxHandlingAllowed" type="xs:boolean" use="optional">
+                    <xs:annotation>
+                        <xs:documentation>identify whether ajax invoking to handler page commit is allowed for this page.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PageInType">
+		<xs:sequence>
+			<xs:element name="clientAction" type="Common:ExpressionType">
+				<xs:annotation>
+					<xs:documentation>client side JS</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="serverOperation" type="Common:ExpressionType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PageOutType">
+		<xs:annotation>
+			<xs:documentation>the Out that contains output data Mapping</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element minOccurs="0" name="clientAction" type="Common:ExpressionType">
+				<xs:annotation>
+					<xs:documentation>client side JS</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="serverOperation" type="Common:ExpressionType"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="functionName" type="xs:string" use="required"/>
+		<xs:attribute name="frameName" type="xs:string" use="optional"/>
+		<xs:attribute name="validate" type="xs:boolean" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="PageODMappingType">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" name="DataEntity" type="Common:ParamType"/>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="ComponentMapping" type="Page:ComponentMappingType"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<!--Start define components-->
+    <xs:complexType abstract="true" name="UIComponentType">
+        <xs:annotation>
+            <xs:documentation>in principle, UIComponent should be abstract, if a user uses this type, it means this component is used for component reconfiguration</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="Property" type="Page:PropertyType"/>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="EventListener" type="Page:EventListenerType"/>
+            <xs:element minOccurs="0" name="secure" type="Page:BooleanPropertyType">
+                <xs:annotation>
+                    <xs:documentation>whether this component is the server side value. if yes, the value is not available in the client or 
+                    the widget self will not be impacted by the client data.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="visible" type="Page:PropertyValueType">
+                <xs:annotation>
+                    <xs:documentation>whether this component is visible, should be one of the properties</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="readOnly" type="Page:PropertyValueType">
+                <xs:annotation>
+                    <xs:documentation>whether this component is readOnly, should be one of the properties</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="editable" type="Page:PropertyValueType">
+                <xs:annotation>
+                    <xs:documentation>edit state of this component, it should be one of the component properties</xs:documentation>
+                </xs:annotation>
+            </xs:element> 
+            <xs:element minOccurs="0" name="UIStyle" type="xs:string"/>
+            <xs:element minOccurs="0" name="preIncludePage" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>user can include page here</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="postIncludePage" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>user can include page here</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="UISkin" type="Page:UISkinType"/>
+            <xs:element minOccurs="0" name="widgetLabel" type="Page:PropertyValueType"/>
+            <xs:element minOccurs="0" name="widgetLabelColor" type="Page:PropertyValueType"/>
+            <xs:element minOccurs="0" name="widgetLabelFont" type="Page:PropertyValueType"/>
+            <xs:element minOccurs="0" name="initValidation" type="Page:PropertyValueType"/>
+            <xs:element minOccurs="0" name="validator" type="Page:PropertyValueType"/>
+	    <xs:element minOccurs="0" name="viewPermission" type="Page:PropertyValueType"/>
+	    <xs:element minOccurs="0" name="editPermission" type="Page:PropertyValueType"/>
+        </xs:sequence>
+        <xs:attribute name="UIID" type="xs:string" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="UIButtonType">
+        <xs:complexContent>
+            <xs:extension base="Page:UITextComponentType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType abstract="true" name="UITextComponentType">
+        <xs:complexContent>
+            <xs:extension base="Page:UIComponentType">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="text" type="Page:PropertyValueType">
+                        <xs:annotation>
+                            <xs:documentation>the text of this text component, it should be one of the component properties</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element minOccurs="0" name="allowBlank" type="Page:PropertyValueType"/>
+                    <!-- errMsg & i18nMsg -->
+                    <xs:element minOccurs="0" name="allowBlankText" type="Page:PropertyValueType"/>
+                    <xs:element minOccurs="0" name="regex" type="Page:PropertyValueType"/>
+                    <xs:element minOccurs="0" name="regexText" type="Page:PropertyValueType"/>
+                    <xs:element minOccurs="0" name="minLength" type="Page:PropertyValueType"/>
+                    <xs:element minOccurs="0" name="lengthText" type="Page:PropertyValueType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UITextFieldType">
+        <xs:complexContent>
+            <xs:extension base="Page:UITextComponentType">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="maxLength" type="Page:PropertyValueType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UITextAreaType">
+        <xs:complexContent>
+            <xs:extension base="Page:UITextComponentType">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="maxLength" type="Page:PropertyValueType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UIPasswordFieldType">
+        <xs:complexContent>
+            <xs:extension base="Page:UITextFieldType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UILabelType">
+        <xs:complexContent>
+            <xs:extension base="Page:UITextComponentType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UILinkType">
+        <xs:complexContent>
+            <xs:extension base="Page:UILabelType">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="href" type="Page:FunctionCallType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UIHiddenType">
+        <xs:complexContent>
+            <xs:extension base="Page:UITextComponentType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType abstract="true" name="UIChoiceType">
+        <xs:complexContent>
+            <xs:extension base="Page:UIComponentType">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="optionValue" type="Page:PropertyValueType">
+                        <xs:annotation>
+                            <xs:documentation>all the value listed in the choice</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType abstract="true" name="UISingleChoiceType">
+        <xs:complexContent>
+            <xs:extension base="Page:UIChoiceType">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="selectedValueConstraint" type="Page:PropertyValueType"/>
+                    <xs:element minOccurs="0" name="selectedValueConstraintText" type="Page:PropertyValueType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UIRadioButtonGroupType">
+        <xs:complexContent>
+            <xs:extension base="Page:UISingleChoiceType">
+            	<xs:sequence>
+            		<xs:element minOccurs="0" name="showProgressBar" type="Page:BooleanPropertyType"/>
+            	</xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UIComboBoxType">
+        <xs:complexContent>
+            <xs:extension base="Page:UISingleChoiceType">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="allowBlank" type="Page:PropertyValueType"/>
+                    <xs:element minOccurs="0" name="allowBlankText" type="Page:PropertyValueType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UIMultiChoiceType">
+        <xs:complexContent>
+            <xs:extension base="Page:UIChoiceType">
+                <xs:sequence>
+                    <!-- to UICheckBoxGroup: selectValuesConstraint = value1,value2,value3 -->
+                    <xs:element minOccurs="0" name="selectedValuesConstraint" type="Page:PropertyValueType"/>
+                    <xs:element minOccurs="0" name="selectedValuesConstraintText" type="Page:PropertyValueType"/>   
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UIListType">  
+        <xs:complexContent>
+            <xs:extension base="Page:UIMultiChoiceType">
+                <xs:sequence>
+                  	<xs:element minOccurs="0" name="allowBlank" type="Page:PropertyValueType"/>
+                    <xs:element minOccurs="0" name="allowBlankText" type="Page:PropertyValueType"/>
+                    <xs:element minOccurs="0" name="size" type="Page:PropertyValueType">
+                        <xs:annotation>
+                            <xs:documentation>visible size of this list, it should be one of the component properties</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element minOccurs="0" name="multiple" type="Page:PropertyValueType">
+                        <xs:annotation>
+                            <xs:documentation>whether this list supports multiple selection, it should be one of the component properties</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UICheckBoxGroupType">
+        <xs:complexContent>
+            <xs:extension base="Page:UIMultiChoiceType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType abstract="true" name="UISelectComponentType">
+        <xs:complexContent>
+            <xs:extension base="Page:UIComponentType">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="label" type="Page:PropertyValueType">
+                        <xs:annotation>
+                            <xs:documentation>label of this check box or radio button, it should be one of the component properties</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element minOccurs="0" name="selected" type="Page:PropertyValueType">
+                        <xs:annotation>
+                            <xs:documentation>state of this check box or radio button, it should be one of the component properties</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element minOccurs="0" name="checkedValueConstraint" type="Page:PropertyValueType"/>
+                    <xs:element minOccurs="0" name="checkedValueConstraintText" type="Page:PropertyValueType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UICheckBoxType">
+        <xs:complexContent>
+            <xs:extension base="Page:UISelectComponentType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UIRadioButtonType">
+        <xs:complexContent>
+            <xs:extension base="Page:UISelectComponentType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UIReferenceEntityType">
+        <xs:annotation>
+            <xs:documentation>the reference entity could be either normal entity reference or template reference, in template reference, user should specify the abstract component reconfiguration</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="Page:UIComponentType">
+                <xs:sequence>
+                    <xs:element name="referenceEntity" type="Common:TargetEntityType">
+                        <xs:annotation>
+                            <xs:documentation>name of an UIEntity</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="reconfiguration" type="Page:ReconfigurationType"/>
+                </xs:sequence>
+                <xs:attribute default="false" name="isReferenceInterface" type="xs:boolean"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UIWebTreeType">
+        <xs:complexContent>
+            <xs:extension base="Page:UIComponentType">
+                <xs:sequence>
+                	<xs:element name="opened" type="xs:boolean" />
+                	<xs:element name="nodeIcon" type="xs:string" />
+                	<xs:element name="itemIcon" type="xs:string" />
+                	<xs:element name="selectMode" type="xs:string" />
+                	<xs:element name="expandTreeEvent" type="xs:string" minOccurs="0"/>
+                	<xs:element name="selectNodeEvent" type="xs:string" minOccurs="0"/>
+                	<xs:element name="addNodeEvent" type="xs:string" minOccurs="0"/>
+                	<xs:element name="deleteNodeEvent" type="xs:string" minOccurs="0"/>
+                	<xs:element name="refreshNodeEvent" type="xs:string" minOccurs="0"/>
+                    <xs:element name="action" type="Page:UITableActionType" maxOccurs="unbounded" minOccurs="0" />
+                	<xs:element name="initExpression" type="Page:ExpressionPropertyType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UIFlowDiagramType">
+        <xs:complexContent>
+            <xs:extension base="Page:UIComponentType">
+                <!-- the dynamic flow configuration -->
+                <xs:sequence>
+                    <xs:element name="openToolBar" type="Page:BooleanPropertyType"/>
+                    <xs:element name="loadDateModel" type="Page:ExpressionPropertyType"/>
+                    <xs:element name="loadFlow" type="Page:ExpressionPropertyType"/>
+                    <xs:element name="defaultActions" type="Page:UIFlowDefaultActionType"/>
+                    <xs:element name="actionGroup" type="Page:UITableActionGroupType" maxOccurs="unbounded" minOccurs="0" />
+                </xs:sequence>
+                <!-- the static flow configuration -->
+	            <xs:attribute name="flowName" type="xs:string"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UIFlowDefaultActionType">
+        <xs:sequence>
+            <xs:element name="newNode" type="xs:string" />
+            <xs:element name="openNode" type="xs:string" />
+            <xs:element name="deleteNode" type="xs:string" />
+            <xs:element name="refreshFlow" type="xs:string" />
+            <xs:element name="saveFlow" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="UIWebMenuType">
+        <xs:complexContent>
+            <xs:extension base="Page:UIComponentType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UIImageType">
+        <xs:complexContent>
+            <xs:extension base="Page:UIComponentType">
+                <xs:sequence>
+                    <xs:element name="src" type="Page:PropertyValueType">
+                        <xs:annotation>
+                            <xs:documentation>location of the image, should  be one of the properties</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="isGallery" type="Page:BooleanPropertyType">
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UIFileType">
+        <xs:complexContent>
+            <xs:extension base="Page:UIComponentType">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="text" type="Page:PropertyValueType"/>
+                    <xs:element minOccurs="0" name="isMultiple" type="Page:BooleanPropertyType"/>
+                    <xs:element minOccurs="0" name="suffix" type="Page:StringPropertyType"/>
+                    <xs:element minOccurs="0" name="storedPath" type="Page:PropertyValueType"/>
+                </xs:sequence>    
+            </xs:extension>                
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UIDateType">
+        <xs:complexContent>
+            <xs:extension base="Page:UITextComponentType">
+            	<xs:sequence>
+                    <xs:element minOccurs="0" name="format" type="Page:StringPropertyType"/>
+                    <xs:element minOccurs="0" name="isDataOnly" type="Page:BooleanPropertyType"/>
+                    <xs:element minOccurs="0" name="isBiggerThan" type="Page:BooleanPropertyType"/>
+                    <xs:element minOccurs="0" name="isSmallerThan" type="Page:BooleanPropertyType"/>
+                    <xs:element minOccurs="0" name="dateConstraint" type="Page:StringPropertyType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UIEmptyType">
+        <xs:complexContent>
+            <xs:extension base="Page:UIComponentType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <!--Start define containers-->
+    <xs:complexType abstract="true" name="UIContainerType">
+        <xs:annotation>
+            <xs:documentation>container type should have a layout, a  list of components, a list of component layout constraints and a list of handlers</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="Page:UIComponentType">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="layout" type="Page:UILayoutType"/>
+                    <xs:element minOccurs="0" name="dynamicUIFilter" type="Page:PropertyValueType"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="component" type="Page:UIComponentType"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="layoutConstraint" type="Page:ComponentConstraintType"/>
+                    <xs:element minOccurs="0" name="validationList" type="Page:PropertyValueType"/>
+                    <xs:element minOccurs="0" name="constructorCode" type="xs:string"/>
+                </xs:sequence>
+                <xs:attribute name="dynamicUI" type="xs:boolean"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType final="#all" name="UIPanelType">
+        <xs:complexContent>
+            <xs:extension base="Page:UIContainerType"/>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="UITabPaneType">
+    	<xs:complexContent>
+    		<xs:extension base="Page:UIComponentType">
+                <xs:sequence>
+                    <!-- whether ajax loading only supports for the frame and panel -->
+                    <xs:element name="ajaxLoad" type="xs:boolean" default="false"/>
+                    <xs:element name="tabSelected" type="xs:int"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="tab" type="Page:UITabPaneItemType"/>
+                </xs:sequence>
+    		</xs:extension>
+    	</xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UITabPaneItemType">
+        <xs:sequence>
+            <xs:element name="title" type="Page:PropertyValueType"/>
+            <!-- three types are provided for the tab panel.-->
+            <xs:element name="refEntity" type="Page:UIReferenceEntityType"/>
+            <xs:element name="frame" type="Page:UIFrameType"/>
+            <xs:element name="panel" type="Page:UIPanelType"/>
+        </xs:sequence>
+        <!-- one more type provided for current page panel. -->
+        <xs:attribute name="uiid" type="xs:string"/>
+    </xs:complexType>
+    <xs:complexType name="UIFrameType">
+    	<xs:complexContent>
+            <xs:extension base="Page:UIComponentType">
+		    	<xs:attribute name="chunkName" type="xs:string"/>
+		    	<xs:attribute name="nodeName" type="xs:string"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UITableType">
+        <xs:annotation>
+            <xs:documentation>the sub component of object list could be simple component and reference entity, but no UIPanel</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="Page:UIComponentType">
+                <xs:sequence>
+                	<xs:element name="beElement" type="xs:string" />
+                	<xs:element name="selectMode" type="Page:UITableSelectModeType"  minOccurs="0"/>
+                	<xs:element name="initQuery" type="Page:ExpressionPropertyType"  minOccurs="0"/>
+                	<xs:element name="query" type="Page:ExpressionPropertyType"/>
+                	<xs:element name="totalCount" type="Page:ExpressionPropertyType"/>
+                    <xs:element name="defaultRowSize" type="xs:int" />
+                    <xs:element name="showActionBar" type="xs:boolean" default="true"/>
+                    <xs:element name="showFilter" type="xs:boolean" default="true"/>
+                    <xs:element name="editableCell" type="xs:boolean" default="true"/>
+                    <xs:element name="column" type="Page:UITableColumnType" maxOccurs="unbounded" minOccurs="0" />
+                    <xs:element name="defaultActions" type="Page:UITableDefaultActionType" />
+                    <xs:element name="actionGroup" type="Page:UITableActionGroupType" maxOccurs="unbounded" minOccurs="0" />
+                    <xs:element name="selectedRowAction" type="xs:string" />
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="UITableDefaultActionType">
+        <xs:sequence>
+            <xs:element name="defaultNewAction" type="xs:string" />
+            <xs:element name="defaultOpenAction" type="xs:string" />
+            <xs:element name="defaultEnableAction" type="xs:string" />
+            <xs:element name="defaultDisableAction" type="xs:string" />
+            <xs:element name="defaultDeleteAction" type="xs:string" />
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="UITableActionGroupType">
+        <xs:sequence>
+            <xs:element name="type" type="xs:string"/>
+            <xs:element name="action" type="Page:UITableActionType" maxOccurs="unbounded" minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+	<xs:complexType name="UITableActionType">
+        <xs:sequence>
+            <xs:element name="uiid" type="xs:string"/>
+            <xs:element name="title" type="Page:PropertyValueType"/>
+            <xs:element name="icon" type="xs:string"/>
+            <xs:element name="function" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="UITableColumnType">
+        <xs:sequence>
+            <xs:element name="title" type="Page:PropertyValueType"/>
+            <xs:element name="beFieldId" type="xs:string"/>
+            <xs:element name="uiType" type="Page:UITableColHTMLType"/>
+            <!-- for dynamic combox values -->
+            <xs:element name="comboxExpression" type="Page:ExpressionPropertyType" minOccurs="0"/>
+            <xs:element name="rowExpression" type="Page:ExpressionPropertyType" minOccurs="0"/>
+            <xs:element name="updateCondition" type="Page:ExpressionPropertyType" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+	<xs:simpleType name="UITableSelectModeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Normal"/>
+            <xs:enumeration value="Single"/>
+            <xs:enumeration value="Multiple"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="UITableColHTMLType">
+        <xs:sequence>
+            <xs:element name="type">
+                <xs:simpleType>
+			        <xs:restriction base="xs:string">
+			            <xs:enumeration value="Label"/>
+			            <xs:enumeration value="Text"/>
+			            <xs:enumeration value="ComBox"/>
+			            <xs:enumeration value="CheckBox"/>
+			            <xs:enumeration value="Date"/>
+			            <xs:enumeration value="DateRange"/>
+			        </xs:restriction>
+		        </xs:simpleType>
+            </xs:element>
+	        <xs:element name="startCondition" type="xs:string" minOccurs="0"/>
+	        <xs:element name="endCondition" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+	<!-- charts -->
+    <xs:complexType name="UIChartType">
+        <xs:complexContent>
+            <xs:extension base="Page:UIComponentType">
+                <xs:sequence>
+                	<xs:element name="beElement" type="xs:string" />
+                	<xs:element name="color" type="xs:string" default="rgba(151,187,205,0.2)"/>
+                	<xs:element name="strokeColor" type="xs:string" default="#fff"/>
+                	<!-- reusing the table column definition -->
+                	<xs:element name="column" type="Page:UITableColumnType" maxOccurs="unbounded" minOccurs="1" />
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UIBarChartType">
+        <xs:complexContent>
+            <xs:extension base="Page:UIChartType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UIRadarChartType">
+        <xs:complexContent>
+            <xs:extension base="Page:UIChartType">
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UIPolarChartType">
+        <xs:complexContent>
+            <xs:extension base="Page:UIChartType">
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UIPieChartType">
+        <xs:complexContent>
+            <xs:extension base="Page:UIChartType">
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UILinearChartType">
+        <xs:complexContent>
+            <xs:extension base="Page:UIChartType">
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+	
+	
+    <!--Start to define layouts-->
+    <xs:complexType name="UILayoutType"/>
+    <xs:complexType name="TableLayoutType">
+        <xs:complexContent>
+            <xs:extension base="Page:UILayoutType">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" name="rowHeightWeight" type="xs:double">
+                        <xs:annotation>
+                            <xs:documentation>weight of each row height.if the weight is 0, it means the row height is determined by the inner component;if  the weight is -1, it means the row takes the remain height</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element maxOccurs="unbounded" name="columnWidthWeight" type="xs:double">
+                        <xs:annotation>
+                            <xs:documentation>weight of each column width. if the weight is 0, it means the column width is determined by the inner component; if  the weight is -1, means the column takes the remain width</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+                <xs:attribute default="0" name="spacing" type="xs:int" use="optional"/>
+                <xs:attribute default="0" name="padding" type="xs:int" use="optional"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <!--Component Constraint-->
+    <xs:complexType name="ComponentConstraintType">
+        <xs:sequence>
+            <xs:element name="componentId" type="xs:string"/>
+            <xs:element name="constraint" type="Page:UILayoutConstraintType"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!--start to define Layout Constraint-->
+    <xs:complexType abstract="true" name="UILayoutConstraintType"/>
+    <xs:complexType name="TableLayoutConstraintType">
+        <xs:complexContent>
+            <xs:extension base="Page:UILayoutConstraintType">
+                <xs:attribute default="true" name="visible" type="xs:string" use="optional"/>
+                <xs:attribute name="x" type="xs:int" use="required"/>
+                <xs:attribute name="y" type="xs:int" use="required"/>
+                <xs:attribute default="1" name="width" type="xs:int" use="optional"/>
+                <xs:attribute default="1" name="height" type="xs:int" use="optional"/>
+                <xs:attribute name="align" use="optional">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="left"/>
+                            <xs:enumeration value="center"/>
+                            <xs:enumeration value="right"/>
+                            <xs:enumeration value="full"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+                <xs:attribute name="valign" use="optional">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="top"/>
+                            <xs:enumeration value="center"/>
+                            <xs:enumeration value="bottom"/>
+                            <xs:enumeration value="full"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+                <xs:attribute name="bgColor" type="xs:string" use="optional"/>
+                <xs:attribute name="cellUIStyle" type="xs:string" use="optional"/>
+                <xs:attribute name="cellUIClass" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <!--EventListener-->
+    <xs:complexType name="EventListenerType">
+        <xs:sequence>
+            <xs:element name="handler" type="Page:FunctionCallType"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="ClickListenerType">
+        <xs:complexContent>
+            <xs:extension base="Page:EventListenerType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="DblClickListenerType">
+        <xs:complexContent>
+            <xs:extension base="Page:EventListenerType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="MouseDownListenerType">
+        <xs:complexContent>
+            <xs:extension base="Page:EventListenerType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="MouseUpListenerType">
+        <xs:complexContent>
+            <xs:extension base="Page:EventListenerType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="MouseOverListenerType">
+        <xs:complexContent>
+            <xs:extension base="Page:EventListenerType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="MouseOutListenerType">
+        <xs:complexContent>
+            <xs:extension base="Page:EventListenerType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="KeyPressListenerType">
+        <xs:complexContent>
+            <xs:extension base="Page:EventListenerType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="KeyDownListenerType">
+        <xs:complexContent>
+            <xs:extension base="Page:EventListenerType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="KeyUpListenerType">
+        <xs:complexContent>
+            <xs:extension base="Page:EventListenerType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ItemChangeListenerType">
+        <xs:complexContent>
+            <xs:extension base="Page:EventListenerType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="CustomListenerType">
+        <xs:complexContent>
+            <xs:extension base="Page:EventListenerType">
+                <xs:attribute name="type" type="xs:string" use="required"/>
+                <xs:attribute name="eventName" type="xs:string" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <!--Properties-->
+    <xs:complexType name="PropertyType">
+        <xs:annotation>
+            <xs:documentation>Root type for all component properties. User could extend the type to make customized property type</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element minOccurs="0" name="value" type="Page:PropertyValueType"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+    <xs:complexType abstract="true" name="PropertyValueType">
+        <xs:attribute name="pre-init-code" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>Use could add some java code let here
+				</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="post-init-code" type="xs:string" use="optional"/>
+    </xs:complexType>
+    <xs:complexType name="DatePropertyType">
+        <xs:complexContent>
+            <xs:extension base="Page:PropertyValueType">
+                <xs:sequence>
+                    <xs:element name="value" type="xs:date"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="StringPropertyType">
+        <xs:complexContent>
+            <xs:extension base="Page:PropertyValueType">
+                <xs:sequence>
+                    <xs:element name="value" type="xs:string"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="EntityPropertyType">
+        <xs:complexContent>
+            <xs:extension base="Page:PropertyValueType">
+                <xs:sequence>
+                    <xs:element name="value" type="Common:TargetEntityType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ResourceBundlePropertyType">
+        <xs:complexContent>
+            <xs:extension base="Page:PropertyValueType">
+                <xs:sequence>
+                    <xs:element name="bundle" type="xs:string"/>
+                    <xs:element name="key" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="param" type="xs:string"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ValidatorPropertyType">
+        <xs:complexContent>
+            <xs:extension base="Page:PropertyValueType">
+                <xs:sequence>
+                    <xs:element name="isFuncRef" type="xs:boolean"/>
+                    <xs:element name="funcCode" type="xs:string"/>
+                    <!-- StringPropertyType || EntityPropertyType.entityName: bmiasia.app.xxx.xxx.jsName/BAName -->
+                    <xs:element name="targetEntity" type="Page:PropertyValueType"/>
+                    <!-- textfield1, checkbox1 -->
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="component" type="Page:StringPropertyType"/>
+                    <!-- 1, false, "a" -->
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="param" type="Page:StringPropertyType"/>
+                    <xs:element minOccurs="0" name="i18nMsg" type="Page:ResourceBundlePropertyType"/>
+                    <xs:element minOccurs="0" name="errMsg" type="xs:string"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ValidatorsPropertyType">
+        <xs:complexContent>
+            <xs:extension base="Page:PropertyValueType">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="validator" type="Page:ValidatorPropertyType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="NumericPropertyType">
+        <xs:complexContent>
+            <xs:extension base="Page:PropertyValueType">
+                <xs:sequence>
+                    <xs:element name="type" type="Page:NumericTypeType"/>
+                    <xs:element name="value" type="xs:string"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:simpleType name="NumericTypeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="int"/>
+            <xs:enumeration value="float"/>
+            <xs:enumeration value="long"/>
+            <xs:enumeration value="double"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="BooleanPropertyType">
+        <xs:complexContent>
+            <xs:extension base="Page:PropertyValueType">
+                <xs:sequence>
+                    <xs:element name="value" type="xs:boolean"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="FontPropertyType">
+        <xs:complexContent>
+            <xs:extension base="Page:PropertyValueType">
+                <xs:sequence>
+                    <xs:element name="fontName" type="xs:string"/>
+                    <xs:element name="fontSize" type="xs:int"/>
+                    <xs:element name="fontStyle" type="Page:FontStyleType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:simpleType name="FontStyleType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Plain"/>
+            <xs:enumeration value="Bold"/>
+            <xs:enumeration value="Italic"/>
+            <xs:enumeration value="Bold Italic"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="ColorPropertyType">
+        <xs:complexContent>
+            <xs:extension base="Page:PropertyValueType">
+                <xs:sequence>
+                    <xs:element name="red" type="xs:string"/>
+                    <xs:element name="green" type="xs:string"/>
+                    <xs:element name="blue" type="xs:string"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:simpleType name="ExpressionPropertyTypeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Image"/>
+            <xs:enumeration value="Font"/>
+            <xs:enumeration value="Color"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="ExpressionPropertyType">
+        <xs:complexContent>
+            <xs:extension base="Page:PropertyValueType">
+                <xs:sequence>
+                    <xs:element name="expression" type="Common:ExpressionType"/>
+                </xs:sequence>
+                <xs:attribute name="type" type="Page:ExpressionPropertyTypeType" use="optional"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ImagePropertyType">
+        <xs:complexContent>
+            <xs:extension base="Page:PropertyValueType">
+                <xs:sequence>
+                    <xs:element name="location" type="xs:string"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ArrayPropertyType">
+        <xs:complexContent>
+            <xs:extension base="Page:PropertyValueType">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="property" type="Page:PropertyValueType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="NullPropertyType">
+        <xs:complexContent>
+            <xs:extension base="Page:PropertyValueType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <!--All Functions-->
+    <xs:complexType name="FunctionCallType">
+        <xs:attribute name="functionName" type="xs:string" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="FunctionType">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="ops" type="Page:OpType"/>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="vars" type="Common:VariableType"/>
+        </xs:sequence>
+        <xs:attribute name="functionName" type="xs:string" use="required"/>
+    </xs:complexType>
+    
+    <!--Variable Component-->
+    <!--PropertyReconfiguration-->
+    <xs:complexType name="ReconfigurableType"/>
+    <xs:complexType name="ReconfigurablePropertyType">
+        <xs:complexContent>
+            <xs:extension base="Page:ReconfigurableType">
+                <xs:attribute name="componentId" type="xs:string" use="required"/>
+                <xs:attribute name="propertyName" type="xs:string" use="required"/>
+                <xs:attribute name="newPropertyName" type="xs:string" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ReconfigurableFunctionType">
+        <xs:complexContent>
+            <xs:extension base="Page:ReconfigurableType">
+                <xs:attribute name="functionName" type="xs:string" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ReconfigurableVariableType">
+        <xs:complexContent>
+            <xs:extension base="Page:ReconfigurableType">
+                <xs:attribute name="varName" type="xs:string" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ReconfigurationType"/>
+    <xs:complexType name="PropertyReconfigurationType">
+        <xs:complexContent>
+            <xs:extension base="Page:ReconfigurationType">
+                <xs:sequence>
+                    <xs:element name="value" type="Page:PropertyValueType"/>
+                </xs:sequence>
+                <xs:attribute name="propertyName" type="xs:string" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="FunctionReconfigurationType">
+        <xs:complexContent>
+            <xs:extension base="Page:ReconfigurationType">
+                <xs:attribute name="originFunctionName" type="xs:string" use="required"/>
+                <xs:attribute name="overrideFunctionName" type="xs:string" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="VariableReconfigurationType">
+        <xs:complexContent>
+            <xs:extension base="Page:ReconfigurationType">
+                <xs:sequence>
+                    <xs:element name="expression" type="Common:ExpressionType"/>
+                </xs:sequence>
+                <xs:attribute name="originVarName" type="xs:string" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <!--UIEntity-->
+    <xs:complexType name="UIEntityType">
+    	<xs:complexContent>
+			<xs:extension base="Page:UIBaseType">
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="0" name="body" type="Page:UIContainerType"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="mapping" type="Page:ODMappingType"/>
+            </xs:sequence>
+        	</xs:extension>
+        </xs:complexContent>
+	</xs:complexType>
+    <xs:complexType abstract="true" name="UIBaseType">
+        <xs:complexContent>
+            <xs:extension base="Common:EntityType">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="eventHandler" type="Page:FunctionType">
+                        <xs:annotation>
+                            <xs:documentation>all event handler functions used in this entity</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="variable" type="Common:VariableType"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="reconfigurableProperty" type="Page:ReconfigurableType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <!--UISkinType-->
+    <xs:complexType name="UISkinType">
+        <xs:sequence>
+            <xs:element name="skinName" type="xs:string"/>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="param" type="Page:PropertyType"/>
+        </xs:sequence>
+    </xs:complexType>
+	
+	
+</xs:schema>

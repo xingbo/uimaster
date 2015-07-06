@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+<ns2:BEDiagram xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xmlns:ns2="http://bmdp.shaolin.org/datamodel/BEDiagram" 
+xmlns="http://bmdp.shaolin.org/datamodel/Common" xsi:schemaLocation="">
+  <bePackage>org.shaolin.uimaster.test.be</bePackage>
+  <cePackage>org.shaolin.uimaster.test.ce</cePackage>
+  <diagramPackage>org.shaolin.uimaster.test.diagram</diagramPackage>
+  <ns2:beEntity>
+    <entityName>Customer</entityName>
+    <systemVersion>0</systemVersion>
+    <author>Shaolin</author>
+    <ns2:member>
+      <ns2:name>id</ns2:name>
+      <ns2:type xsi:type="ns2:LongType"></ns2:type>
+    </ns2:member>
+    <ns2:member>
+      <ns2:name>name</ns2:name>
+      <ns2:type xsi:type="ns2:StringType"></ns2:type>
+    </ns2:member>
+    <ns2:member>
+      <ns2:name>gender</ns2:name>
+      <ns2:type xsi:type="ns2:CEObjRefType">
+        <ns2:targetEntity entityName="Gender"/>
+      </ns2:type>
+    </ns2:member>
+  </ns2:beEntity>
+  
+  <ns2:ceEntity>
+    <entityName>Gender</entityName>
+    <systemVersion>0</systemVersion>
+    <ns2:constantValue>
+        <ns2:value>Male</ns2:value>
+        <ns2:intValue>1</ns2:intValue>
+    </ns2:constantValue>
+    <ns2:constantValue>
+        <ns2:value>Female</ns2:value>
+        <ns2:intValue>2</ns2:intValue>
+    </ns2:constantValue>
+  </ns2:ceEntity>
+  
+  
+</ns2:BEDiagram>

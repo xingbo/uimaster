@@ -1,0 +1,65 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>datamodel</artifactId>
+    <packaging>jar</packaging>
+    <name>UI Master Data Model</name>
+    <version>${uimaster.version}</version>
+
+    <parent>
+        <artifactId>build.modules</artifactId>
+        <groupId>org.shaolin.bmdp</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <developers>
+        <developer>
+            <id>shaolin</id>
+            <name>Shaolin</name>
+            <email>shao.lin@live.com</email>
+        </developer>
+    </developers>
+    <dependencies>
+        <dependency>
+			<groupId>org.shaolin.bmdp</groupId>
+			<artifactId>common</artifactId>
+			<version>${uimaster.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.shaolin.bmdp</groupId>
+			<artifactId>javacc</artifactId>
+			<version>${uimaster.version}</version>
+		</dependency>
+		<dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+	    <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.log4j</groupId>
+            <artifactId>com.springsource.org.apache.log4j</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+        	<!-- 
+            <plugin>
+				<groupId>org.jvnet.jaxb2.maven2</groupId>
+				<artifactId>maven-jaxb2-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			 -->
+        </plugins>
+    </build>
+</project>

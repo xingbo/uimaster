@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:UIPage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xmlns:ns2="http://bmdp.shaolin.org/datamodel/Page" 
+xmlns="http://bmdp.shaolin.org/datamodel/Common" xsi:schemaLocation="">
+    <entityName>org.shaolin.uimaster.page.AddCustomer</entityName>
+    <systemVersion>0</systemVersion>
+    <ns2:UIEntity xsi:type="ns2:UIEntityType">
+    	<entityName>org.shaolin.uimaster.page.AddCustomer</entityName>
+    	<ns2:body UIID="Form" xsi:type="ns2:UIPanelType">
+	        <ns2:layout xsi:type="ns2:TableLayoutType">
+	            <ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+	            <ns2:columnWidthWeight>0.0</ns2:columnWidthWeight>
+	        </ns2:layout>
+	        <ns2:component xsi:type="ns2:UIReferenceEntityType" UIID="customer1">
+	            <ns2:visible xsi:type="ns2:StringPropertyType">
+	                <ns2:value>true</ns2:value>
+	            </ns2:visible>
+	            <ns2:readOnly xsi:type="ns2:StringPropertyType">
+	                <ns2:value>parent</ns2:value>
+	            </ns2:readOnly>
+	            <ns2:referenceEntity entityName="org.shaolin.uimaster.form.Customer"/>
+	        </ns2:component>
+	        <ns2:layoutConstraint>
+	            <ns2:componentId>customer1</ns2:componentId>
+	            <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" y="0" x="0" visible="true"/>
+	        </ns2:layoutConstraint>
+        </ns2:body>
+    </ns2:UIEntity>
+    <ns2:ODMapping>
+	    <ns2:DataEntity category="BusinessEntity" name="customer">
+	        <type entityName="org.shaolin.uimaster.test.be.Customer"/>
+	    </ns2:DataEntity>
+        <ns2:ComponentMapping xsi:type="ns2:SimpleComponentMappingType" name="UIEntity_customer1OD">
+        	<ns2:mappingRule entityName="org.shaolin.uimaster.form.Customer"/>
+            <ns2:DataComponent xsi:type="ns2:ComponentParamType" componentPath="customer" paramName="customer"/>
+        	<ns2:UIComponent componentPath="UIEntity.customer1" paramName="customerUI"/>
+        </ns2:ComponentMapping>
+    </ns2:ODMapping>
+    <ns2:in>
+        <ns2:inData category="BusinessEntity" name="customer">
+            <type entityName="org.shaolin.uimaster.test.be.Customer"/>
+            <default>
+                <expressionString><![CDATA[new org.shaolin.uimaster.test.be.CustomerImpl()]]></expressionString>
+            </default>
+        </ns2:inData>
+        <ns2:passInMapping name="customer">
+            <expression>
+                <expressionString><![CDATA[@customer]]></expressionString>
+            </expression>
+        </ns2:passInMapping>
+    </ns2:in>
+    <ns2:out name="Save">
+	    <ns2:outData category="BusinessEntity" name="customer">
+	      <type entityName="org.shaolin.uimaster.test.be.Customer"></type>
+	    </ns2:outData>
+	    <ns2:passInMapping name="customer">
+	      <expression>
+	        <expressionString><![CDATA[@customer]]></expressionString>
+	      </expression>
+	    </ns2:passInMapping>
+	  </ns2:out>
+</ns2:UIPage>

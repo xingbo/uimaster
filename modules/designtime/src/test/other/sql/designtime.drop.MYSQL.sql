@@ -1,0 +1,39 @@
+#---------------------------------------
+-- Drop SQL Generated         --
+--                                    --
+-- Please DO NOT modify !!            --
+-- Generated on 2014-07-28 08:47:58   --
+#---------------------------------------
+
+USE <database name>;
+
+DROP TABLE FOLDER CASCADE;
+
+DROP TABLE FILE CASCADE;
+
+DROP TABLE USER CASCADE;
+
+DROP TABLE ADMINISTRATOR CASCADE;
+
+DROP TABLE GUEST CASCADE;
+
+DROP TABLE FOLDER CASCADE;
+
+DROP TABLE FILE CASCADE;
+
+DROP TABLE USER CASCADE;
+
+DROP TABLE ADMINISTRATOR CASCADE;
+
+DROP TABLE GUEST CASCADE;
+
+DROP TABLE FOLDER CASCADE;
+
+DROP TABLE FILE CASCADE;
+
+DROP TABLE USER CASCADE;
+
+DROP TABLE ADMINISTRATOR CASCADE;
+
+DROP TABLE GUEST CASCADE;
+

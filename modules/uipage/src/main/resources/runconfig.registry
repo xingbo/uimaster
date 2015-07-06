@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<registry xmlns="http://bmdp.shaolin.org/datamodel/Registry">
+    <node name="System">
+    	<node name="caches">
+	        <node name="__sys_uipage_odcache">
+	            <item name="maxSize" value="-1" />
+	            <item name="refreshTimeInMinutes" value="-1" />
+	            <item name="description" value="System default ui cache." />
+	        </node>
+	        <node name="__sys_od_cache">
+	            <item name="maxSize" value="-1" />
+	            <item name="refreshTimeInMinutes" value="-1" />
+	            <item name="description" value="System default ui cache." />
+	        </node>
+	        <node name="__sys_uipage_cache">
+	            <item name="maxSize" value="-1" />
+	            <item name="refreshTimeInMinutes" value="-1" />
+	            <item name="description" value="System default ui cache." />
+	        </node>
+	        <node name="__sys_uientity_cache">
+	            <item name="maxSize" value="-1" />
+	            <item name="refreshTimeInMinutes" value="-1" />
+	            <item name="description" value="System default ui cache." />
+	        </node>
+	        <node name="__system_webflow_cache">
+	            <item name="maxSize" value="-1" />
+	            <item name="refreshTimeInMinutes" value="-1" />
+	            <item name="description" value="System default ui cache." />
+	        </node>
+	        <node name="__system_webflow_pagenode_cache">
+	            <item name="maxSize" value="-1" />
+	            <item name="refreshTimeInMinutes" value="-1" />
+	            <item name="description" value="System default ui cache." />
+	        </node>
+        </node>
+        <node name="webConstant">
+            <item name="contextRoot" value="/uimaster" />
+            <item name="ajaxServiceURL" value="/ajaxservice" />
+            <item name="webport" value="8080" />
+            <item name="hotdeployeable" value="true" />
+            <item name="hiddenValueMask" value="***" />
+            <item name="actionPath" value="/webflow.do" />
+            <item name="loginPath" value="/login.do" />
+            <item name="frameWrap" value="" />
+            <item name="loginPage" value="/jsp/login.jsp" />
+            <item name="iloginPage" value="/jsp/ilogin.jsp" />
+            <item name="indexPage" value="/jsp/index.jsp" />
+            <item name="mainPage" value="/jsp/main.jsp" />
+            <item name="errorPage" value="/jsp/common/Failure.jsp" />
+            <item name="timeoutPage" value="/jsp/common/sessionTimeout.jsp" />
+            <item name="nopermissionPage" value="/jsp/common/noPermission.jsp" />
+            <item name="ajaxHandlingError" value="true" />
+            <item name="isJAAS" value="false" />
+            <item name="formatHTML" value="true" />
+            <node name="commoncss">
+            	<item name="jquery-dataTable" value="/css/jquery-dataTable.css" />
+            	<item name="jquery-jstree" value="/css/jquery-jstree.css" />
+            	<item name="jquery-ui" value="/css/jquery-ui.css" />
+            	<!-- 
+            	<item name="jquery-ui.structure" value="/css/jquery-ui.structure.css" />
+            	<item name="jquery-ui.theme" value="/css/jquery-ui.theme.css" />
+            	 -->
+            	<item name="iumaster" value="/css/iumaster.css" />
+            	<!-- example
+            	<node name="org.shaolin.uimaster.*">
+            		<item name="iumaster1" value="/css/iumaster1.css" />
+            	</node>
+            	-->
+            </node>
+            <node name="commonjs">
+                <!-- support async mode
+                <item name="google-analytics" value="https://www.google-analytics.com/ga.js" />
+                 -->
+            	<item name="jquery" value="/js/jquery.js" />
+            	<item name="jquery-ui" value="/js/jquery-ui.js" />
+            	<item name="jquery-dataTable" value="/js/jquery-dataTable.js" />
+            	<item name="jquery-jstree" value="/js/jquery-jstree.js" />
+            	<item name="uimaster" value="/js/uimaster.js" />
+            </node>
+        </node>
+    </node>
+</registry>
+

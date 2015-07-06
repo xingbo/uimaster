@@ -1,0 +1,30 @@
+@XmlType(name = "ExpressionType", propOrder = {
+    "expressionString",
+    "unit"
+})
+
+	@XmlTransient
+	private Object unit = null;
+
+	public void parse(ParsingContext context) throws ParsingException {
+		if (unit == null) {
+			unit = StatementParser.parse(getExpressionString(), context);
+		}
+	}
+
+	public boolean isParsed() {
+		return unit == null ? false : true;
+	}
+
+	public Class<?> getValueClass() throws ParsingException {
+		if (unit == null) {
+			return null;
+		} else {
+			return ((CompilationUnit)unit).getValueClass();
+		}
+	}
+
+	public Object evaluate(EvaluationContext context)
+			throws EvaluationException {
+		return StatementEvaluator.evaluate((CompilationUnit)unit, context);
+	}

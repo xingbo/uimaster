@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:Common="http://bmdp.shaolin.org/datamodel/Common" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	targetNamespace="http://bmdp.shaolin.org/datamodel/Common" 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	version=""
+	xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+	jaxb:extensionBindingPrefixes="xjc"
+	jaxb:version="1.0">
+    
+    <xs:annotation>
+    	<!-- add the serializable interface for all types, and the xmlrootelemet added as well. -->
+       <xs:appinfo>
+          <jaxb:globalBindings>
+              <xjc:serializable uid="1"/>
+              <xjc:simple/>
+          </jaxb:globalBindings>
+       </xs:appinfo>
+    </xs:annotation>
+    
+	<xs:element name="description" type="xs:string"/>
+	<xs:complexType name="ItemRefType">
+		<xs:complexContent>
+			<xs:extension base="Common:MetaDataType">
+				<xs:sequence>
+					<xs:element name="itemkey" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>key used in inheritance</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="operation" type="Common:RefOperationType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>add, replace, remove and override. used in inheritance</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="childOperation" type="Common:RefOperationType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>override or null, null means inherit</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:simpleType name="RefOperationType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ADD"/>
+			<xs:enumeration value="REPLACE"/>
+			<xs:enumeration value="REMOVE"/>
+			<xs:enumeration value="OVERRIDE"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="TargetEntityType">
+		<xs:annotation>
+			<xs:documentation>entityName may be a constant("Empty") which it indicates undefined. if no typed any words, it would indicate templateRef has been a parent template. when got reference object with returning defined entity of parent.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="Common:ItemRefType">
+				<xs:sequence>
+					<xs:element name="implRuleTemplate" type="Common:TargetEntityType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>System has a default parameter is "EntityName" in TargetEntityType. If it was not empty when got reference object, it'd return the implementing entity of this ruletemplate.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="MatchedEntity" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>stored the matched single entity after applied rule.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="entityName" type="xs:string" use="required"/>
+				<xs:attribute name="systemVersion" type="xs:int" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="TargetJavaType">
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="packageName" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="EntityType">
+		<xs:annotation>
+			<xs:documentation>attributes defined here override sons'.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="entityName" type="xs:string"/>
+			<xs:element name="systemVersion" type="xs:int" default="0">
+				<xs:annotation>
+					<xs:documentation>this filed is mandatory for server to set it, when create a component, the client just set it 0, after it get from the server, client can read it.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="revision" type="xs:string" minOccurs="0"/>
+			<xs:element name="displayName" type="Common:I18NPropertyType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>if not specified, use entityName as display name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="description" type="xs:string" minOccurs="0"/>
+			<xs:element name="author" type="xs:string" minOccurs="0"/>
+			<xs:element name="region" type="xs:string" minOccurs="0"/>
+			<xs:element name="category" type="Common:TargetEntityType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="entityMetaInfo" type="Common:MetaDataInfoType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="extensionProperty" type="Common:ExtensionPropertyType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DiagramType">
+		<xs:annotation>
+			<xs:documentation>attributes defined here override sons'.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="name" type="xs:string"/>
+			<xs:element name="systemVersion" type="xs:int" default="0">
+				<xs:annotation>
+					<xs:documentation>this filed is mandatory for server to set it, when create a component, the client just set it 0, after it get from the server, client can read it.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="revision" type="xs:string"/>
+			<xs:element name="displayName" type="Common:I18NPropertyType">
+				<xs:annotation>
+					<xs:documentation>if not specified, use entityName as display name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="description" type="xs:string"/>
+			<xs:element name="author" type="xs:string"/>
+			<xs:element name="region" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Entity" type="Common:EntityType" abstract="true"/>
+	<xs:element name="Diagram" type="Common:DiagramType" abstract="true"/>
+	<xs:complexType name="NameExpressionType">
+		<xs:complexContent>
+			<xs:extension base="Common:ItemRefType">
+				<xs:sequence>
+					<xs:element name="expression" type="Common:ExpressionType"/>
+				</xs:sequence>
+				<xs:attribute name="name" type="xs:string" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="NameValueType">
+		<xs:complexContent>
+			<xs:extension base="Common:ItemRefType">
+				<xs:attribute name="name" type="xs:string" use="required"/>
+				<xs:attribute name="value" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ExpressionType">
+		<xs:complexContent>
+			<xs:extension base="Common:ItemRefType">
+				<xs:sequence>
+					<xs:element name="expressionString" type="xs:string"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!--Variable Type-->
+	<xs:complexType name="VariableType">
+		<xs:sequence>
+			<xs:element name="type" type="Common:TargetEntityType">
+				<xs:annotation>
+					<xs:documentation>How to reference primitive types?</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="default" type="Common:ExpressionType" minOccurs="0"/>
+			<xs:element name="metaInfo" type="Common:MetaDataInfoType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="i18nNotes" type="Common:I18NPropertyType" minOccurs="0" />
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string"/>
+		<xs:attribute name="notes" type="xs:string" use="optional"/>
+		<xs:attribute name="category" type="Common:VariableCategoryType" use="optional" default="BusinessEntity"/>
+		<xs:attribute name="searchable" type="xs:boolean" use="optional" default="false"/>
+	</xs:complexType>
+	<xs:complexType name="ParamType">
+		<xs:complexContent>
+			<xs:extension base="Common:VariableType">
+				<xs:attribute name="mandatory" type="xs:boolean" use="optional" default="false">
+					<xs:annotation>
+						<xs:documentation>This attribute is effective for param with scope of In and InOut.
+If this attribute is set to true, then no default value expression is allowed to set.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="scope" type="Common:ParamScopeType" use="optional" default="InOut"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:simpleType name="ParamScopeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="In"/>
+			<xs:enumeration value="Out"/>
+			<xs:enumeration value="InOut"/>
+			<xs:enumeration value="Internal"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="VariableCategoryType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="JavaPrimitive"/>
+			<xs:enumeration value="JavaClass"/>
+			<xs:enumeration value="BusinessEntity"/>
+			<xs:enumeration value="ConstantEntity"/>
+			<xs:enumeration value="UIEntity"/>
+			<xs:enumeration value="JoinTable"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="I18NPropertyType">
+		<xs:sequence>
+			<xs:element name="bundle" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>if not specified, use key as display Name.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="key" type="xs:string"/>
+			<xs:element name="param" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="IPropertyValueType" abstract="true">
+		<xs:attribute name="pre-init-code" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Use could add some java code let here</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="post-init-code" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="StringIPropertyType">
+		<xs:complexContent>
+			<xs:extension base="Common:IPropertyValueType">
+				<xs:sequence>
+					<xs:element name="value" type="xs:string"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ResourceBundleIPropertyType">
+		<xs:complexContent>
+			<xs:extension base="Common:IPropertyValueType">
+				<xs:sequence>
+					<xs:element name="bundle" type="xs:string"/>
+					<xs:element name="key" type="xs:string"/>
+					<xs:element name="param" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="Category" type="Common:CategoryType"/>
+	<xs:complexType name="CategoryType">
+		<xs:complexContent>
+			<xs:extension base="Common:EntityType">
+				<xs:sequence>
+					<xs:element name="type" type="xs:string" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="MetaDataDef" type="Common:MetaDataDefType"/>
+	<xs:complexType name="MetaDataDefType" abstract="true">
+		<xs:complexContent>
+			<xs:extension base="Common:EntityType">
+				<xs:sequence>
+					<xs:element name="type" type="xs:string"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="MetaDataType" abstract="true"/>
+	<xs:complexType name="MetaDataInfoType">
+		<xs:sequence>
+			<xs:element name="type" type="Common:TargetEntityType"/>
+			<xs:element name="info" type="Common:MetaDataType"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="ExtensionPropertyType">
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="value" type="xs:string" use="required"/>
+	</xs:complexType>
+    <xs:complexType name="I18NMetaDataType">
+    	<xs:complexContent>
+    		<xs:extension base="Common:MetaDataType">
+    			<xs:sequence>
+    				<xs:element name="item" type="Common:I18NMetaDataItemType" minOccurs="0" maxOccurs="unbounded" />
+    			</xs:sequence>
+    		</xs:extension>
+    	</xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="I18NMetaDataItemType">
+        <xs:sequence>
+            <xs:element name="xpath" type="xs:string"/>
+            <xs:element name="value" type="xs:string"/>
+            <xs:element name="locale" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

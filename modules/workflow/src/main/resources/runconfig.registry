@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<registry xmlns="http://bmdp.shaolin.org/datamodel/Registry">
+    <node name="System">
+    	<node name="services">
+    	   <node name="workflow_service">
+	   	       <expression><![CDATA[
+	   	       import org.shaolin.bmdp.runtime.AppContext;
+	   	       import org.shaolin.bmdp.workflow.internal.WorkflowLifecycleServiceImpl;
+	   	       {
+	   	           AppContext.get().registerLifeCycleProvider(new WorkflowLifecycleServiceImpl());
+	   	       }
+	   	       ]]></expression>
+   	       </node>
+        </node>
+    </node>
+</registry>
+

@@ -1,0 +1,1228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://www.eclipse.org/xwt/presentation" xmlns:x="http://www.eclipse.org/xwt" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.eclipse.org/xwt/presentation">
+  <xsd:import namespace="http://www.eclipse.org/xwt" schemaLocation="xwt_x.xsd"/>
+  <xsd:complexType abstract="true" mixed="true" name="Widget">
+    <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+      <xsd:element name="DataContext" type="xsd:anyType"/>
+    </xsd:sequence>
+    <xsd:attributeGroup ref="EventGroup"/>
+    <xsd:attribute default="NONE" name="style" type="x:style"/>
+  </xsd:complexType>
+  <xsd:complexType abstract="true" mixed="true" name="Control">
+    <xsd:complexContent>
+      <xsd:extension base="Widget">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="menu" type="Menu"/>
+          <xsd:element name="cursor" type="Cursor"/>
+          <xsd:element name="layoutData" type="xsd:anyType"/>
+          <xsd:element name="accessible" type="Accessible"/>
+        </xsd:sequence>
+        <xsd:attribute name="location" type="xsd:string"/>
+        <xsd:attribute name="foreground" type="xsd:string"/>
+        <xsd:attribute name="backgroundImage" type="xsd:string"/>
+        <xsd:attribute name="visible" type="xsd:boolean"/>
+        <xsd:attribute name="bounds" type="xsd:string"/>
+        <xsd:attribute name="enabled" type="xsd:boolean"/>
+        <xsd:attribute name="font" type="xsd:string"/>
+        <xsd:attribute name="size" type="xsd:string"/>
+        <xsd:attribute name="capture" type="xsd:boolean"/>
+        <xsd:attribute name="toolTipText" type="xsd:string"/>
+        <xsd:attribute name="redraw" type="xsd:boolean"/>
+        <xsd:attribute name="background" type="xsd:string"/>
+        <xsd:attribute name="dragDetect" type="xsd:boolean"/>
+        <xsd:attribute name="handle" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType abstract="true" mixed="true" name="Scrollable">
+    <xsd:complexContent>
+      <xsd:extension base="Control">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="horizontalBar" type="ScrollBar"/>
+          <xsd:element name="verticalBar" type="ScrollBar"/>
+        </xsd:sequence>
+        <xsd:attribute name="clientArea" type="xsd:string"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Composite">
+    <xsd:complexContent>
+      <xsd:extension base="Scrollable">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="tabList" type="Control"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="children" type="Control"/>
+          <xsd:element name="layout" type="Layout"/>
+        </xsd:sequence>
+        <xsd:attribute name="layoutDeferred" type="xsd:boolean"/>
+        <xsd:attribute name="backgroundMode" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Canvas">
+    <xsd:complexContent>
+      <xsd:extension base="Composite">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="IME" type="IME"/>
+          <xsd:element name="caret" type="Caret"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="CLabel">
+    <xsd:complexContent>
+      <xsd:extension base="Canvas">
+        <xsd:attribute name="image" type="xsd:string"/>
+        <xsd:attribute name="text" type="xsd:string"/>
+        <xsd:attribute name="alignment" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType abstract="true" mixed="true" name="Viewer">
+    <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+      <xsd:element name="input" type="xsd:anyType"/>
+      <xsd:element name="selection" type="ISelection"/>
+      <xsd:element name="control" type="Control"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType abstract="true" mixed="true" name="ContentViewer">
+    <xsd:complexContent>
+      <xsd:extension base="Viewer">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="contentProvider" type="IContentProvider"/>
+          <xsd:element name="labelProvider" type="IBaseLabelProvider"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType abstract="true" mixed="true" name="StructuredViewer">
+    <xsd:complexContent>
+      <xsd:extension base="ContentViewer">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="comparator" type="ViewerComparator"/>
+          <xsd:element name="comparer" type="IElementComparer"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="filters" type="ViewerFilter"/>
+          <xsd:element name="sorter" type="ViewerSorter"/>
+        </xsd:sequence>
+        <xsd:attribute name="useHashlookup" type="xsd:boolean"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType abstract="true" mixed="true" name="AbstractListViewer">
+    <xsd:complexContent>
+      <xsd:extension base="StructuredViewer"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="ListViewer">
+    <xsd:complexContent>
+      <xsd:extension base="AbstractListViewer">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="list" type="List"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="DefaultCellModifier"/>
+  <xsd:complexType mixed="true" name="Caret">
+    <xsd:complexContent>
+      <xsd:extension base="Widget">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="parent" type="Canvas"/>
+        </xsd:sequence>
+        <xsd:attribute name="location" type="xsd:string"/>
+        <xsd:attribute name="font" type="xsd:string"/>
+        <xsd:attribute name="size" type="xsd:string"/>
+        <xsd:attribute name="bounds" type="xsd:string"/>
+        <xsd:attribute name="image" type="xsd:string"/>
+        <xsd:attribute name="visible" type="xsd:boolean"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType abstract="true" mixed="true" name="ColumnViewer">
+    <xsd:complexContent>
+      <xsd:extension base="StructuredViewer">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="columnViewerEditor" type="ColumnViewerEditor"/>
+          <xsd:element name="cellModifier" type="ICellModifier"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="cellEditors" type="CellEditor"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="columnProperties" type="xsd:anyType"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType abstract="true" mixed="true" name="AbstractTableViewer">
+    <xsd:complexContent>
+      <xsd:extension base="ColumnViewer">
+        <xsd:attribute name="itemCount" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="TableViewer">
+    <xsd:complexContent>
+      <xsd:extension base="AbstractTableViewer">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="table" type="Table"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="StyledText">
+    <xsd:complexContent>
+      <xsd:extension base="Canvas">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="ranges" type="xsd:int"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="styleRanges" type="StyleRange"/>
+          <xsd:element name="styleRange" type="StyleRange"/>
+          <xsd:element name="content" type="StyledTextContent"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="selectionRanges" type="xsd:int"/>
+        </xsd:sequence>
+        <xsd:attribute name="horizontalPixel" type="xsd:int"/>
+        <xsd:attribute name="topIndex" type="xsd:int"/>
+        <xsd:attribute name="horizontalIndex" type="xsd:int"/>
+        <xsd:attribute name="orientation" type="xsd:int"/>
+        <xsd:attribute name="selectionForeground" type="xsd:string"/>
+        <xsd:attribute name="bidiColoring" type="xsd:boolean"/>
+        <xsd:attribute name="textLimit" type="xsd:int"/>
+        <xsd:attribute name="selectionText" type="xsd:string"/>
+        <xsd:attribute name="blockSelection" type="xsd:boolean"/>
+        <xsd:attribute name="doubleClickEnabled" type="xsd:boolean"/>
+        <xsd:attribute name="alignment" type="xsd:int"/>
+        <xsd:attribute name="indent" type="xsd:int"/>
+        <xsd:attribute name="selectionBackground" type="xsd:string"/>
+        <xsd:attribute name="text" type="xsd:string"/>
+        <xsd:attribute name="wordWrap" type="xsd:boolean"/>
+        <xsd:attribute name="lineDelimiter" type="xsd:string"/>
+        <xsd:attribute name="editable" type="xsd:boolean"/>
+        <xsd:attribute name="caretOffset" type="xsd:int"/>
+        <xsd:attribute name="lineSpacing" type="xsd:int"/>
+        <xsd:attribute name="tabs" type="xsd:int"/>
+        <xsd:attribute name="topPixel" type="xsd:int"/>
+        <xsd:attribute name="selection" type="xsd:string"/>
+        <xsd:attribute name="justify" type="xsd:boolean"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType abstract="true" mixed="true" name="AbstractDataProvider">
+    <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+      <xsd:element name="bindingContext" type="IBindingContext"/>
+    </xsd:sequence>
+    <xsd:attribute name="key" type="xsd:string"/>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="XMLDataProvider">
+    <xsd:complexContent>
+      <xsd:extension base="AbstractDataProvider">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="document" type="Document"/>
+          <xsd:element name="source" type="URL"/>
+        </xsd:sequence>
+        <xsd:attribute name="XPath" type="xsd:string"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Button">
+    <xsd:complexContent>
+      <xsd:extension base="Control">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="Command" type="ICommand"/>
+        </xsd:sequence>
+        <xsd:attribute name="selection" type="xsd:boolean"/>
+        <xsd:attribute name="image" type="xsd:string"/>
+        <xsd:attribute name="grayed" type="xsd:boolean"/>
+        <xsd:attribute name="text" type="xsd:string"/>
+        <xsd:attribute name="alignment" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Sash">
+    <xsd:complexContent>
+      <xsd:extension base="Control"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Group">
+    <xsd:complexContent>
+      <xsd:extension base="Composite">
+        <xsd:attribute name="text" type="xsd:string"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Combo">
+    <xsd:complexContent>
+      <xsd:extension base="Composite">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="items" type="xsd:string"/>
+        </xsd:sequence>
+        <xsd:attribute name="orientation" type="xsd:int"/>
+        <xsd:attribute name="textLimit" type="xsd:int"/>
+        <xsd:attribute name="selection" type="xsd:string"/>
+        <xsd:attribute name="text" type="xsd:string"/>
+        <xsd:attribute name="visibleItemCount" type="xsd:int"/>
+        <xsd:attribute name="listVisible" type="xsd:boolean"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="ToolBar">
+    <xsd:complexContent>
+      <xsd:extension base="Composite">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="items" type="ToolItem"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Decorations">
+    <xsd:complexContent>
+      <xsd:extension base="Canvas">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="images" type="xsd:string"/>
+          <xsd:element name="defaultButton" type="Button"/>
+          <xsd:element name="menuBar" type="Menu"/>
+        </xsd:sequence>
+        <xsd:attribute name="maximized" type="xsd:boolean"/>
+        <xsd:attribute name="minimized" type="xsd:boolean"/>
+        <xsd:attribute name="image" type="xsd:string"/>
+        <xsd:attribute name="text" type="xsd:string"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="TabFolder">
+    <xsd:complexContent>
+      <xsd:extension base="Composite">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="items" type="TabItem"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="selection" type="TabItem"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Spinner">
+    <xsd:complexContent>
+      <xsd:extension base="Composite">
+        <xsd:attribute name="increment" type="xsd:int"/>
+        <xsd:attribute name="textLimit" type="xsd:int"/>
+        <xsd:attribute name="selection" type="xsd:int"/>
+        <xsd:attribute name="pageIncrement" type="xsd:int"/>
+        <xsd:attribute name="digits" type="xsd:int"/>
+        <xsd:attribute name="minimum" type="xsd:int"/>
+        <xsd:attribute name="text" type="xsd:string"/>
+        <xsd:attribute name="maximum" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Link">
+    <xsd:complexContent>
+      <xsd:extension base="Control">
+        <xsd:attribute name="text" type="xsd:string"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="CTabFolder">
+    <xsd:complexContent>
+      <xsd:extension base="Composite">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="borderInsideRGB" type="RGB"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="items" type="CTabItem"/>
+          <xsd:element name="topRight" type="Control"/>
+          <xsd:element name="borderOutsideRGB" type="RGB"/>
+          <xsd:element name="selection" type="CTabItem"/>
+          <xsd:element name="borderMiddleRGB" type="RGB"/>
+        </xsd:sequence>
+        <xsd:attribute name="maximized" type="xsd:boolean"/>
+        <xsd:attribute name="maximizeVisible" type="xsd:boolean"/>
+        <xsd:attribute name="selectionForeground" type="xsd:string"/>
+        <xsd:attribute name="minimumCharacters" type="xsd:int"/>
+        <xsd:attribute name="unselectedImageVisible" type="xsd:boolean"/>
+        <xsd:attribute name="borderVisible" type="xsd:boolean"/>
+        <xsd:attribute name="MIN_TAB_WIDTH" type="xsd:int"/>
+        <xsd:attribute name="tabHeight" type="xsd:int"/>
+        <xsd:attribute name="marginHeight" type="xsd:int"/>
+        <xsd:attribute name="selectionBackground" type="xsd:string"/>
+        <xsd:attribute name="tabPosition" type="xsd:int"/>
+        <xsd:attribute name="MRUVisible" type="xsd:boolean"/>
+        <xsd:attribute name="unselectedCloseVisible" type="xsd:boolean"/>
+        <xsd:attribute name="simple" type="xsd:boolean"/>
+        <xsd:attribute name="minimized" type="xsd:boolean"/>
+        <xsd:attribute name="minimizeVisible" type="xsd:boolean"/>
+        <xsd:attribute name="single" type="xsd:boolean"/>
+        <xsd:attribute name="marginWidth" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="ToolTip">
+    <xsd:complexContent>
+      <xsd:extension base="Widget">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="parent" type="Shell"/>
+        </xsd:sequence>
+        <xsd:attribute name="autoHide" type="xsd:boolean"/>
+        <xsd:attribute name="message" type="xsd:string"/>
+        <xsd:attribute name="visible" type="xsd:boolean"/>
+        <xsd:attribute name="text" type="xsd:string"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType abstract="true" mixed="true" name="ViewerColumn"/>
+  <xsd:complexType mixed="true" name="TableViewerColumn">
+    <xsd:complexContent>
+      <xsd:extension base="ViewerColumn">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="column" type="TableColumn"/>
+        </xsd:sequence>
+        <xsd:attribute name="width" type="xsd:int"/>
+        <xsd:attribute name="text" type="xsd:string"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType abstract="true" mixed="true" name="AbstractTreeViewer">
+    <xsd:complexContent>
+      <xsd:extension base="ColumnViewer">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="expandedTreePaths" type="TreePath"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="expandedElements" type="xsd:anyType"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="visibleExpandedElements" type="xsd:anyType"/>
+        </xsd:sequence>
+        <xsd:attribute name="autoExpandLevel" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="FormData">
+    <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+      <xsd:element name="bottom" type="FormAttachment"/>
+      <xsd:element name="right" type="FormAttachment"/>
+      <xsd:element name="left" type="FormAttachment"/>
+      <xsd:element name="top" type="FormAttachment"/>
+    </xsd:sequence>
+    <xsd:attribute name="height" type="xsd:int"/>
+    <xsd:attribute name="width" type="xsd:int"/>
+  </xsd:complexType>
+  <xsd:complexType abstract="true" mixed="true" name="CellEditor">
+    <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+      <xsd:element name="validator" type="ICellEditorValidator"/>
+      <xsd:element name="layoutData" type="LayoutData"/>
+      <xsd:element name="value" type="xsd:anyType"/>
+      <xsd:element name="control" type="Control"/>
+    </xsd:sequence>
+    <xsd:attribute name="errorMessage" type="xsd:string"/>
+    <xsd:attribute name="style" type="xsd:int"/>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="TextCellEditor">
+    <xsd:complexContent>
+      <xsd:extension base="CellEditor"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType abstract="true" mixed="true" name="Item">
+    <xsd:complexContent>
+      <xsd:extension base="Widget">
+        <xsd:attribute name="image" type="xsd:string"/>
+        <xsd:attribute name="text" type="xsd:string"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="TableColumn">
+    <xsd:complexContent>
+      <xsd:extension base="Item">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="editor" type="Element"/>
+          <xsd:element name="parent" type="Table"/>
+        </xsd:sequence>
+        <xsd:attribute name="resizable" type="xsd:boolean"/>
+        <xsd:attribute name="width" type="xsd:int"/>
+        <xsd:attribute name="moveable" type="xsd:boolean"/>
+        <xsd:attribute name="toolTipText" type="xsd:string"/>
+        <xsd:attribute name="alignment" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Cell">
+    <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+      <xsd:element name="parent" type="TableItem"/>
+    </xsd:sequence>
+    <xsd:attribute name="image" type="xsd:string"/>
+    <xsd:attribute name="text" type="xsd:string"/>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="TreeViewer">
+    <xsd:complexContent>
+      <xsd:extension base="AbstractTreeViewer">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="tree" type="Tree"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Tree">
+    <xsd:complexContent>
+      <xsd:extension base="Composite">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="sortColumn" type="TreeColumn"/>
+          <xsd:element name="parentItem" type="TreeItem"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="columns" type="TreeColumn"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="columnOrder" type="xsd:int"/>
+          <xsd:element name="topItem" type="TreeItem"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="items" type="TreeItem"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="selection" type="TreeItem"/>
+        </xsd:sequence>
+        <xsd:attribute name="itemCount" type="xsd:int"/>
+        <xsd:attribute name="linesVisible" type="xsd:boolean"/>
+        <xsd:attribute name="headerVisible" type="xsd:boolean"/>
+        <xsd:attribute name="sortDirection" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType abstract="true" mixed="true" name="Layout"/>
+  <xsd:complexType mixed="true" name="GridLayout">
+    <xsd:complexContent>
+      <xsd:extension base="Layout">
+        <xsd:attribute name="verticalSpacing" type="xsd:int"/>
+        <xsd:attribute name="marginTop" type="xsd:int"/>
+        <xsd:attribute name="marginHeight" type="xsd:int"/>
+        <xsd:attribute name="numColumns" type="xsd:int"/>
+        <xsd:attribute name="marginLeft" type="xsd:int"/>
+        <xsd:attribute name="makeColumnsEqualWidth" type="xsd:boolean"/>
+        <xsd:attribute name="marginBottom" type="xsd:int"/>
+        <xsd:attribute name="horizontalSpacing" type="xsd:int"/>
+        <xsd:attribute name="marginRight" type="xsd:int"/>
+        <xsd:attribute name="marginWidth" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="ExpandItem">
+    <xsd:complexContent>
+      <xsd:extension base="Item">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="parent" type="ExpandBar"/>
+          <xsd:element name="control" type="Control"/>
+        </xsd:sequence>
+        <xsd:attribute name="height" type="xsd:int"/>
+        <xsd:attribute name="expanded" type="xsd:boolean"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="List">
+    <xsd:complexContent>
+      <xsd:extension base="Scrollable">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="items" type="xsd:string"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="selection" type="xsd:string"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="selectionIndices" type="xsd:int"/>
+        </xsd:sequence>
+        <xsd:attribute name="topIndex" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="CCombo">
+    <xsd:complexContent>
+      <xsd:extension base="Composite">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="items" type="xsd:string"/>
+        </xsd:sequence>
+        <xsd:attribute name="editable" type="xsd:boolean"/>
+        <xsd:attribute name="textLimit" type="xsd:int"/>
+        <xsd:attribute name="selection" type="xsd:string"/>
+        <xsd:attribute name="text" type="xsd:string"/>
+        <xsd:attribute name="visibleItemCount" type="xsd:int"/>
+        <xsd:attribute name="listVisible" type="xsd:boolean"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="TableItem">
+    <xsd:complexContent>
+      <xsd:extension base="Item">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="cells" type="Collection"/>
+          <xsd:element name="parent" type="Table"/>
+          <xsd:element name="editors" type="Collection"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="texts" type="xsd:string"/>
+        </xsd:sequence>
+        <xsd:attribute name="imageIndent" type="xsd:int"/>
+        <xsd:attribute name="checked" type="xsd:boolean"/>
+        <xsd:attribute name="grayed" type="xsd:boolean"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Label">
+    <xsd:complexContent>
+      <xsd:extension base="Control">
+        <xsd:attribute name="image" type="xsd:string"/>
+        <xsd:attribute name="text" type="xsd:string"/>
+        <xsd:attribute name="alignment" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="IME">
+    <xsd:complexContent>
+      <xsd:extension base="Widget">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="ranges" type="xsd:int"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="styles" type="TextStyle"/>
+        </xsd:sequence>
+        <xsd:attribute name="text" type="xsd:string"/>
+        <xsd:attribute name="compositionOffset" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType abstract="true" mixed="true" name="Listener"/>
+  <xsd:complexType abstract="true" mixed="true" name="AbstractComboBoxCellEditor">
+    <xsd:complexContent>
+      <xsd:extension base="CellEditor">
+        <xsd:attribute name="activationStyle" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="ComboBoxViewerCellEditor">
+    <xsd:complexContent>
+      <xsd:extension base="AbstractComboBoxCellEditor">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="input" type="xsd:anyType"/>
+          <xsd:element name="contenProvider" type="IStructuredContentProvider"/>
+          <xsd:element name="labelProvider" type="IBaseLabelProvider"/>
+          <xsd:element name="viewer" type="ComboViewer"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="StackLayout">
+    <xsd:complexContent>
+      <xsd:extension base="Layout">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="topControl" type="Control"/>
+        </xsd:sequence>
+        <xsd:attribute name="marginHeight" type="xsd:int"/>
+        <xsd:attribute name="marginWidth" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Scale">
+    <xsd:complexContent>
+      <xsd:extension base="Control">
+        <xsd:attribute name="increment" type="xsd:int"/>
+        <xsd:attribute name="pageIncrement" type="xsd:int"/>
+        <xsd:attribute name="selection" type="xsd:int"/>
+        <xsd:attribute name="minimum" type="xsd:int"/>
+        <xsd:attribute name="maximum" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Tray">
+    <xsd:complexContent>
+      <xsd:extension base="Widget">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="items" type="TrayItem"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Tracker">
+    <xsd:complexContent>
+      <xsd:extension base="Widget">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="rectangles" type="xsd:string"/>
+          <xsd:element name="cursor" type="Cursor"/>
+        </xsd:sequence>
+        <xsd:attribute name="stippled" type="xsd:boolean"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="CoolItem">
+    <xsd:complexContent>
+      <xsd:extension base="Item">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="parent" type="CoolBar"/>
+          <xsd:element name="control" type="Control"/>
+        </xsd:sequence>
+        <xsd:attribute name="preferredSize" type="xsd:string"/>
+        <xsd:attribute name="size" type="xsd:string"/>
+        <xsd:attribute name="minimumSize" type="xsd:string"/>
+        <xsd:attribute name="bounds" type="xsd:string"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType abstract="true" mixed="true" name="Window">
+    <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+      <xsd:element name="windowManager" type="WindowManager"/>
+    </xsd:sequence>
+    <xsd:attribute name="blockOnOpen" type="xsd:boolean"/>
+  </xsd:complexType>
+  <xsd:complexType abstract="true" mixed="true" name="Dialog">
+    <xsd:complexContent>
+      <xsd:extension base="Window">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="buttonBar" type="Control"/>
+          <xsd:element name="blockedHandler" type="IDialogBlockedHandler"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType abstract="true" mixed="true" name="TrayDialog">
+    <xsd:complexContent>
+      <xsd:extension base="Dialog">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="tray" type="DialogTray"/>
+        </xsd:sequence>
+        <xsd:attribute name="helpAvailable" type="xsd:boolean"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="TitleAreaDialog">
+    <xsd:complexContent>
+      <xsd:extension base="TrayDialog">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="titleAreaColor" type="RGB"/>
+        </xsd:sequence>
+        <xsd:attribute name="titleImage" type="xsd:string"/>
+        <xsd:attribute name="errorMessage" type="xsd:string"/>
+        <xsd:attribute name="message" type="xsd:string"/>
+        <xsd:attribute name="title" type="xsd:string"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Menu">
+    <xsd:complexContent>
+      <xsd:extension base="Widget">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="defaultItem" type="MenuItem"/>
+          <xsd:element name="parentItem" type="MenuItem"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="items" type="MenuItem"/>
+          <xsd:element name="parentMenu" type="Menu"/>
+          <xsd:element name="parent" type="Decorations"/>
+        </xsd:sequence>
+        <xsd:attribute name="enabled" type="xsd:boolean"/>
+        <xsd:attribute name="handle" type="xsd:int"/>
+        <xsd:attribute name="visible" type="xsd:boolean"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="TreeColumn">
+    <xsd:complexContent>
+      <xsd:extension base="Item">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="parent" type="Tree"/>
+        </xsd:sequence>
+        <xsd:attribute name="resizable" type="xsd:boolean"/>
+        <xsd:attribute name="width" type="xsd:int"/>
+        <xsd:attribute name="moveable" type="xsd:boolean"/>
+        <xsd:attribute name="toolTipText" type="xsd:string"/>
+        <xsd:attribute name="alignment" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="ControlEditor">
+    <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+      <xsd:element name="editor" type="Control"/>
+    </xsd:sequence>
+    <xsd:attribute name="grabHorizontal" type="xsd:boolean"/>
+    <xsd:attribute name="horizontalAlignment" type="xsd:int"/>
+    <xsd:attribute name="minimumHeight" type="xsd:int"/>
+    <xsd:attribute name="verticalAlignment" type="xsd:int"/>
+    <xsd:attribute name="grabVertical" type="xsd:boolean"/>
+    <xsd:attribute name="minimumWidth" type="xsd:int"/>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="TableEditor">
+    <xsd:complexContent>
+      <xsd:extension base="ControlEditor">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="item" type="TableItem"/>
+        </xsd:sequence>
+        <xsd:attribute name="column" type="xsd:int"/>
+        <xsd:attribute name="dynamic" type="xsd:boolean"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Text">
+    <xsd:complexContent>
+      <xsd:extension base="Scrollable">
+        <xsd:attribute name="caretLocation" type="xsd:string"/>
+        <xsd:attribute name="topIndex" type="xsd:int"/>
+        <xsd:attribute name="orientation" type="xsd:int"/>
+        <xsd:attribute name="editable" type="xsd:boolean"/>
+        <xsd:attribute name="selectionText" type="xsd:string"/>
+        <xsd:attribute name="echoChar">
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:string">
+              <xsd:length value="1"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute name="doubleClickEnabled" type="xsd:boolean"/>
+        <xsd:attribute name="tabs" type="xsd:int"/>
+        <xsd:attribute name="selection" type="xsd:string"/>
+        <xsd:attribute name="textLimit" type="xsd:int"/>
+        <xsd:attribute name="text" type="xsd:string"/>
+        <xsd:attribute name="lineDelimiter" type="xsd:string"/>
+        <xsd:attribute name="message" type="xsd:string"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="ProgressBar">
+    <xsd:complexContent>
+      <xsd:extension base="Control">
+        <xsd:attribute name="selection" type="xsd:int"/>
+        <xsd:attribute name="state" type="xsd:int"/>
+        <xsd:attribute name="minimum" type="xsd:int"/>
+        <xsd:attribute name="maximum" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="DateTime">
+    <xsd:complexContent>
+      <xsd:extension base="Composite">
+        <xsd:attribute name="hours" type="xsd:int"/>
+        <xsd:attribute name="day" type="xsd:int"/>
+        <xsd:attribute name="minutes" type="xsd:int"/>
+        <xsd:attribute name="year" type="xsd:int"/>
+        <xsd:attribute name="month" type="xsd:int"/>
+        <xsd:attribute name="seconds" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="RowLayout">
+    <xsd:complexContent>
+      <xsd:extension base="Layout">
+        <xsd:attribute name="center" type="xsd:boolean"/>
+        <xsd:attribute name="marginTop" type="xsd:int"/>
+        <xsd:attribute name="wrap" type="xsd:boolean"/>
+        <xsd:attribute name="marginHeight" type="xsd:int"/>
+        <xsd:attribute name="justify" type="xsd:boolean"/>
+        <xsd:attribute name="marginLeft" type="xsd:int"/>
+        <xsd:attribute name="marginBottom" type="xsd:int"/>
+        <xsd:attribute name="marginRight" type="xsd:int"/>
+        <xsd:attribute name="spacing" type="xsd:int"/>
+        <xsd:attribute name="type" type="xsd:int"/>
+        <xsd:attribute name="marginWidth" type="xsd:int"/>
+        <xsd:attribute name="pack" type="xsd:boolean"/>
+        <xsd:attribute name="fill" type="xsd:boolean"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Slider">
+    <xsd:complexContent>
+      <xsd:extension base="Control">
+        <xsd:attribute name="increment" type="xsd:int"/>
+        <xsd:attribute name="thumb" type="xsd:int"/>
+        <xsd:attribute name="pageIncrement" type="xsd:int"/>
+        <xsd:attribute name="selection" type="xsd:int"/>
+        <xsd:attribute name="minimum" type="xsd:int"/>
+        <xsd:attribute name="maximum" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType abstract="true" mixed="true" name="DialogCellEditor">
+    <xsd:complexContent>
+      <xsd:extension base="CellEditor"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="MessageBox">
+    <xsd:complexContent>
+      <xsd:extension base="Dialog">
+        <xsd:attribute name="message" type="xsd:string"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="TableTreeViewer">
+    <xsd:complexContent>
+      <xsd:extension base="AbstractTreeViewer">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="tableTree" type="TableTree"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="CheckboxTableViewer">
+    <xsd:complexContent>
+      <xsd:extension base="TableViewer">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="grayedElements" type="xsd:anyType"/>
+          <xsd:element name="checkStateProvider" type="ICheckStateProvider"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="checkedElements" type="xsd:anyType"/>
+        </xsd:sequence>
+        <xsd:attribute name="allChecked" type="xsd:boolean"/>
+        <xsd:attribute name="allGrayed" type="xsd:boolean"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="TabItem">
+    <xsd:complexContent>
+      <xsd:extension base="Item">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="parent" type="TabFolder"/>
+          <xsd:element name="control" type="Control"/>
+        </xsd:sequence>
+        <xsd:attribute name="bounds" type="xsd:string"/>
+        <xsd:attribute name="toolTipText" type="xsd:string"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="GridData">
+    <xsd:attribute name="widthHint" type="xsd:int"/>
+    <xsd:attribute name="exclude" type="xsd:boolean"/>
+    <xsd:attribute name="grabExcessVerticalSpace" type="xsd:boolean"/>
+    <xsd:attribute name="verticalSpan" type="xsd:int"/>
+    <xsd:attribute name="horizontalIndent" type="xsd:int"/>
+    <xsd:attribute name="horizontalSpan" type="xsd:int"/>
+    <xsd:attribute name="verticalAlignment" type="xsd:int"/>
+    <xsd:attribute name="grabExcessHorizontalSpace" type="xsd:boolean"/>
+    <xsd:attribute name="verticalIndent" type="xsd:int"/>
+    <xsd:attribute name="minimumWidth" type="xsd:int"/>
+    <xsd:attribute name="horizontalAlignment" type="xsd:int"/>
+    <xsd:attribute name="heightHint" type="xsd:int"/>
+    <xsd:attribute name="minimumHeight" type="xsd:int"/>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="ObjectDataProvider">
+    <xsd:complexContent>
+      <xsd:extension base="AbstractDataProvider">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="objectType" type="Class"/>
+          <xsd:element name="objectInstance" type="xsd:anyType"/>
+          <xsd:element name="methodParameters" type="List"/>
+        </xsd:sequence>
+        <xsd:attribute name="methodName" type="xsd:string"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="DefaultLabelProvider"/>
+  <xsd:complexType mixed="true" name="Binding">
+    <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+      <xsd:element name="source" type="xsd:anyType"/>
+      <xsd:element name="value" type="xsd:anyType"/>
+      <xsd:element name="control" type="Widget"/>
+    </xsd:sequence>
+    <xsd:attribute name="elementName" type="xsd:string"/>
+    <xsd:attribute name="XPath" type="xsd:string"/>
+    <xsd:attribute name="path" type="xsd:string"/>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="MenuItem">
+    <xsd:complexContent>
+      <xsd:extension base="Item">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="parent" type="Menu"/>
+          <xsd:element name="Command" type="ICommand"/>
+          <xsd:element name="menu" type="Menu"/>
+        </xsd:sequence>
+        <xsd:attribute name="accelerator" type="xsd:int"/>
+        <xsd:attribute name="enabled" type="xsd:boolean"/>
+        <xsd:attribute name="selection" type="xsd:boolean"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Browser">
+    <xsd:complexContent>
+      <xsd:extension base="Composite">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="webBrowser" type="xsd:anyType"/>
+        </xsd:sequence>
+        <xsd:attribute name="browserType" type="xsd:string"/>
+        <xsd:attribute name="url" type="xsd:string"/>
+        <xsd:attribute name="text" type="xsd:string"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Shell">
+    <xsd:complexContent>
+      <xsd:extension base="Decorations">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="shells" type="Shell"/>
+        </xsd:sequence>
+        <xsd:attribute name="fullScreen" type="xsd:boolean"/>
+        <xsd:attribute name="minimumSize" type="xsd:string"/>
+        <xsd:attribute name="imeInputMode" type="xsd:int"/>
+        <xsd:attribute name="alpha" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="ComboBoxCellEditor">
+    <xsd:complexContent>
+      <xsd:extension base="AbstractComboBoxCellEditor"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="TreeItem">
+    <xsd:complexContent>
+      <xsd:extension base="Item">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="parentItem" type="TreeItem"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="texts" type="xsd:string"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="items" type="TreeItem"/>
+          <xsd:element name="parent" type="Tree"/>
+        </xsd:sequence>
+        <xsd:attribute name="itemCount" type="xsd:int"/>
+        <xsd:attribute name="grayed" type="xsd:boolean"/>
+        <xsd:attribute name="handle" type="xsd:int"/>
+        <xsd:attribute name="expanded" type="xsd:boolean"/>
+        <xsd:attribute name="checked" type="xsd:boolean"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="ScrollBar">
+    <xsd:complexContent>
+      <xsd:extension base="Widget">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="parent" type="Scrollable"/>
+        </xsd:sequence>
+        <xsd:attribute name="thumb" type="xsd:int"/>
+        <xsd:attribute name="visible" type="xsd:boolean"/>
+        <xsd:attribute name="maximum" type="xsd:int"/>
+        <xsd:attribute name="enabled" type="xsd:boolean"/>
+        <xsd:attribute name="minimum" type="xsd:int"/>
+        <xsd:attribute name="selection" type="xsd:int"/>
+        <xsd:attribute name="increment" type="xsd:int"/>
+        <xsd:attribute name="pageIncrement" type="xsd:int"/>
+        <xsd:attribute name="size" type="xsd:string"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Table">
+    <xsd:complexContent>
+      <xsd:extension base="Composite">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="sortColumn" type="TableColumn"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="columns" type="TableColumn"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="columnOrder" type="xsd:int"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="items" type="TableItem"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="selection" type="TableItem"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="selectionIndices" type="xsd:int"/>
+        </xsd:sequence>
+        <xsd:attribute name="itemCount" type="xsd:int"/>
+        <xsd:attribute name="linesVisible" type="xsd:boolean"/>
+        <xsd:attribute name="topIndex" type="xsd:int"/>
+        <xsd:attribute name="headerVisible" type="xsd:boolean"/>
+        <xsd:attribute name="sortDirection" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="FillLayout">
+    <xsd:complexContent>
+      <xsd:extension base="Layout">
+        <xsd:attribute name="type" type="xsd:int"/>
+        <xsd:attribute name="marginHeight" type="xsd:int"/>
+        <xsd:attribute name="marginWidth" type="xsd:int"/>
+        <xsd:attribute name="spacing" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="CoolBar">
+    <xsd:complexContent>
+      <xsd:extension base="Composite">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="itemOrder" type="xsd:int"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="wrapIndices" type="xsd:int"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="items" type="CoolItem"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="itemSizes" type="xsd:string"/>
+        </xsd:sequence>
+        <xsd:attribute name="locked" type="xsd:boolean"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="FormAttachment">
+    <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+      <xsd:element name="control" type="Control"/>
+    </xsd:sequence>
+    <xsd:attribute name="numerator" type="xsd:int"/>
+    <xsd:attribute name="offset" type="xsd:int"/>
+    <xsd:attribute name="denominator" type="xsd:int"/>
+    <xsd:attribute name="alignment" type="xsd:int"/>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="CTabItem">
+    <xsd:complexContent>
+      <xsd:extension base="Item">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="parent" type="CTabFolder"/>
+          <xsd:element name="control" type="Control"/>
+        </xsd:sequence>
+        <xsd:attribute name="font" type="xsd:string"/>
+        <xsd:attribute name="bounds" type="xsd:string"/>
+        <xsd:attribute name="showClose" type="xsd:boolean"/>
+        <xsd:attribute name="toolTipText" type="xsd:string"/>
+        <xsd:attribute name="disabledImage" type="xsd:string"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="RowData">
+    <xsd:attribute name="height" type="xsd:int"/>
+    <xsd:attribute name="exclude" type="xsd:boolean"/>
+    <xsd:attribute name="width" type="xsd:int"/>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="SashForm">
+    <xsd:complexContent>
+      <xsd:extension base="Composite">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="maximizedControl" type="Control"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="weights" type="xsd:int"/>
+        </xsd:sequence>
+        <xsd:attribute name="orientation" type="xsd:int"/>
+        <xsd:attribute name="sashWidth" type="xsd:int"/>
+        <xsd:attribute name="SASH_WIDTH" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="ToolItem">
+    <xsd:complexContent>
+      <xsd:extension base="Item">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element name="control" type="Control"/>
+          <xsd:element name="parent" type="ToolBar"/>
+        </xsd:sequence>
+        <xsd:attribute name="bounds" type="xsd:string"/>
+        <xsd:attribute name="hotImage" type="xsd:string"/>
+        <xsd:attribute name="width" type="xsd:int"/>
+        <xsd:attribute name="toolTipText" type="xsd:string"/>
+        <xsd:attribute name="disabledImage" type="xsd:string"/>
+        <xsd:attribute name="enabled" type="xsd:boolean"/>
+        <xsd:attribute name="selection" type="xsd:boolean"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="ColorCellEditor">
+    <xsd:complexContent>
+      <xsd:extension base="DialogCellEditor"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="CheckboxTreeViewer">
+    <xsd:complexContent>
+      <xsd:extension base="TreeViewer">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="grayedElements" type="xsd:anyType"/>
+          <xsd:element name="checkStateProvider" type="ICheckStateProvider"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="checkedElements" type="xsd:anyType"/>
+        </xsd:sequence>
+        <xsd:attribute name="allChecked" type="xsd:boolean"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="FormLayout">
+    <xsd:complexContent>
+      <xsd:extension base="Layout">
+        <xsd:attribute name="marginTop" type="xsd:int"/>
+        <xsd:attribute name="marginLeft" type="xsd:int"/>
+        <xsd:attribute name="marginRight" type="xsd:int"/>
+        <xsd:attribute name="marginHeight" type="xsd:int"/>
+        <xsd:attribute name="marginWidth" type="xsd:int"/>
+        <xsd:attribute name="marginBottom" type="xsd:int"/>
+        <xsd:attribute name="spacing" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="ExpandBar">
+    <xsd:complexContent>
+      <xsd:extension base="Composite">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="items" type="ExpandItem"/>
+        </xsd:sequence>
+        <xsd:attribute name="spacing" type="xsd:int"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="CheckboxCellEditor">
+    <xsd:complexContent>
+      <xsd:extension base="CellEditor"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType abstract="true" mixed="true" name="ICellEditorValidator"/>
+  <xsd:complexType mixed="true" name="LayoutData"/>
+  <xsd:complexType mixed="true" name="TextStyle"/>
+  <xsd:complexType abstract="true" mixed="true" name="IBindingContext"/>
+  <xsd:complexType abstract="true" mixed="true" name="ICommand"/>
+  <xsd:complexType abstract="true" mixed="true" name="Document"/>
+  <xsd:complexType mixed="true" name="URL"/>
+  <xsd:complexType abstract="true" mixed="true" name="Resource"/>
+  <xsd:complexType mixed="true" name="Cursor">
+    <xsd:complexContent>
+      <xsd:extension base="Resource"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Accessible"/>
+  <xsd:complexType mixed="true" name="RGB"/>
+  <xsd:complexType mixed="true" name="WindowManager"/>
+  <xsd:complexType abstract="true" mixed="true" name="ColumnViewerEditor"/>
+  <xsd:complexType abstract="true" mixed="true" name="ICellModifier"/>
+  <xsd:complexType mixed="true" name="ViewerComparator"/>
+  <xsd:complexType abstract="true" mixed="true" name="IElementComparer"/>
+  <xsd:complexType abstract="true" mixed="true" name="ViewerFilter"/>
+  <xsd:complexType mixed="true" name="ViewerSorter">
+    <xsd:complexContent>
+      <xsd:extension base="ViewerComparator"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="StyleRange">
+    <xsd:complexContent>
+      <xsd:extension base="TextStyle"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType abstract="true" mixed="true" name="StyledTextContent"/>
+  <xsd:complexType abstract="true" mixed="true" name="ICheckStateProvider"/>
+  <xsd:complexType mixed="true" name="Class"/>
+  <xsd:complexType abstract="true" mixed="true" name="IContentProvider"/>
+  <xsd:complexType abstract="true" mixed="true" name="IBaseLabelProvider"/>
+  <xsd:complexType abstract="true" mixed="true" name="DialogTray"/>
+  <xsd:complexType mixed="true" name="TrayItem">
+    <xsd:complexContent>
+      <xsd:extension base="Item"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Observable"/>
+  <xsd:complexType mixed="true" name="DocumentObject">
+    <xsd:complexContent>
+      <xsd:extension base="Observable"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="Element">
+    <xsd:complexContent>
+      <xsd:extension base="DocumentObject"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType abstract="true" mixed="true" name="ISelection"/>
+  <xsd:complexType abstract="true" mixed="true" name="Collection"/>
+  <xsd:complexType mixed="true" name="TableTree">
+    <xsd:complexContent>
+      <xsd:extension base="Composite"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType mixed="true" name="TreePath"/>
+  <xsd:complexType abstract="true" mixed="true" name="IDialogBlockedHandler"/>
+  <xsd:complexType abstract="true" mixed="true" name="IStructuredContentProvider"/>
+  <xsd:complexType mixed="true" name="ComboViewer">
+    <xsd:complexContent>
+      <xsd:extension base="AbstractListViewer"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:attributeGroup name="EventGroup">
+    <xsd:attribute name="IconifyEvent" type="xsd:string"/>
+    <xsd:attribute name="MouseExitEvent" type="xsd:string"/>
+    <xsd:attribute name="MouseDoubleClickEvent" type="xsd:string"/>
+    <xsd:attribute name="MouseWheelEvent" type="xsd:string"/>
+    <xsd:attribute name="HardKeyDownEvent" type="xsd:string"/>
+    <xsd:attribute name="DragDetectEvent" type="xsd:string"/>
+    <xsd:attribute name="PaintEvent" type="xsd:string"/>
+    <xsd:attribute name="MouseEnterEvent" type="xsd:string"/>
+    <xsd:attribute name="MoveEvent" type="xsd:string"/>
+    <xsd:attribute name="HelpEvent" type="xsd:string"/>
+    <xsd:attribute name="TraverseEvent" type="xsd:string"/>
+    <xsd:attribute name="KeyUpEvent" type="xsd:string"/>
+    <xsd:attribute name="FocusInEvent" type="xsd:string"/>
+    <xsd:attribute name="DeactivateEvent" type="xsd:string"/>
+    <xsd:attribute name="SetDataEvent" type="xsd:string"/>
+    <xsd:attribute name="VerifyEvent" type="xsd:string"/>
+    <xsd:attribute name="MouseDownEvent" type="xsd:string"/>
+    <xsd:attribute name="DeiconifyEvent" type="xsd:string"/>
+    <xsd:attribute name="ArmEvent" type="xsd:string"/>
+    <xsd:attribute name="MouseMoveEvent" type="xsd:string"/>
+    <xsd:attribute name="ImeCompositionEvent" type="xsd:string"/>
+    <xsd:attribute name="PaintItemEvent" type="xsd:string"/>
+    <xsd:attribute name="ActivateEvent" type="xsd:string"/>
+    <xsd:attribute name="HideEvent" type="xsd:string"/>
+    <xsd:attribute name="HardKeyUpEvent" type="xsd:string"/>
+    <xsd:attribute name="MeasureItemEvent" type="xsd:string"/>
+    <xsd:attribute name="EraseItemEvent" type="xsd:string"/>
+    <xsd:attribute name="ExpandEvent" type="xsd:string"/>
+    <xsd:attribute name="CloseEvent" type="xsd:string"/>
+    <xsd:attribute name="MenuDetectEvent" type="xsd:string"/>
+    <xsd:attribute name="disposeEvent" type="xsd:string"/>
+    <xsd:attribute name="ModifyEvent" type="xsd:string"/>
+    <xsd:attribute name="KeyDownEvent" type="xsd:string"/>
+    <xsd:attribute name="MouseHoverEvent" type="xsd:string"/>
+    <xsd:attribute name="ShowEvent" type="xsd:string"/>
+    <xsd:attribute name="DefaultSelectionEvent" type="xsd:string"/>
+    <xsd:attribute name="FocusOutEvent" type="xsd:string"/>
+    <xsd:attribute name="SelectionEvent" type="xsd:string"/>
+    <xsd:attribute name="ResizeEvent" type="xsd:string"/>
+    <xsd:attribute name="CollapseEvent" type="xsd:string"/>
+    <xsd:attribute name="MouseUpEvent" type="xsd:string"/>
+  </xsd:attributeGroup>
+  <xsd:element name="composite" type="Composite"/>
+  <xsd:element name="dialog" type="Window"/>
+</xsd:schema>

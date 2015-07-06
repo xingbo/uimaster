@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bediagram:BEDiagram xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:bediagram="http://bmdp.shaolin.org/datamodel/BEDiagram"
+	xmlns:common="http://bmdp.shaolin.org/datamodel/Common">
+	<name>NotificationModel</name>
+	<bePackage>org.shaolin.bmdp.workflow.be</bePackage>
+	<cePackage>org.shaolin.bmdp.workflow.ce</cePackage>
+	<diagramPackage>org.shaolin.bmdp.workflow.diagram</diagramPackage>
+	
+	<bediagram:beEntity needPersist="true" needHistory="true">
+		<common:entityName>FlowEntity</common:entityName>
+		<bediagram:member pk="true">
+			<bediagram:name>id</bediagram:name>
+			<bediagram:type xsi:type="bediagram:LongType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>entityName</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>content</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+	</bediagram:beEntity>
+	
+	<bediagram:beEntity needPersist="true">
+		<common:entityName>UIFlows</common:entityName>
+		<bediagram:member pk="true">
+			<bediagram:name>id</bediagram:name>
+			<bediagram:type xsi:type="bediagram:LongType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>name</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>flow</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>moduleItemId</bediagram:name>
+			<bediagram:type xsi:type="bediagram:LongType" />
+		</bediagram:member>
+		<bediagram:member>
+            <bediagram:name>moduleType</bediagram:name>
+            <bediagram:type xsi:type="bediagram:CEObjRefType">
+                <bediagram:targetEntity entityName="ModuleType" />
+            </bediagram:type>
+        </bediagram:member>
+	</bediagram:beEntity>
+	
+	<bediagram:ceEntity>
+		<common:entityName>ModuleType</common:entityName>
+		<bediagram:constantValue>
+			<bediagram:value>Workflow</bediagram:value>
+			<bediagram:intValue>1</bediagram:intValue>
+			<bediagram:description>Workflow Entity</bediagram:description>
+		</bediagram:constantValue>
+		<bediagram:constantValue>
+			<bediagram:value>BusinessFunction</bediagram:value>
+			<bediagram:intValue>2</bediagram:intValue>
+			<bediagram:description>Functionality Modules</bediagram:description>
+		</bediagram:constantValue>
+	</bediagram:ceEntity>
+	
+	
+</bediagram:BEDiagram>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://www.eclipse.org/xwt" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.eclipse.org/xwt">
+  <xsd:simpleType name="style">
+    <xsd:annotation>
+      <xsd:documentation>The Style must be a int value, sometimes you need to get the value from SWT class, such as SWT.BORDER, if you want to apply more than one styles, you can use "|", such as "SWT.BORDER|SWT.PUSH"</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string"/>
+  </xsd:simpleType>
+</xsd:schema>

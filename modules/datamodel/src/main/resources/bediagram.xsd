@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://bmdp.shaolin.org/datamodel/BEDiagram" 
+    xmlns:Common="http://bmdp.shaolin.org/datamodel/Common" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xmlns:BEDiagram="http://bmdp.shaolin.org/datamodel/BEDiagram" 
+    elementFormDefault="qualified" attributeFormDefault="unqualified" version="">
+    
+	<xs:import namespace="http://bmdp.shaolin.org/datamodel/Common" schemaLocation="common.xsd"/>
+	
+	<xs:element name="BEDiagram" type="BEDiagram:BEDiagramType">
+		<xs:annotation>
+			<xs:documentation>BE diagram</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="BEDiagramType">
+		<xs:complexContent>
+			<xs:extension base="Common:DiagramType">
+				<xs:sequence>
+					<xs:element name="diagramPackage" type="xs:string" />
+					<xs:element name="bePackage" type="xs:string" />
+					<xs:element name="cePackage" type="xs:string" />
+					<xs:element name="beEntity" type="BEDiagram:BusinessEntityType" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="ceEntity" type="BEDiagram:ConstantEntityType" minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:complexType name="BusinessEntityType">
+		<xs:complexContent>
+			<xs:extension base="Common:EntityType">
+				<xs:sequence>
+					<xs:element name="parentObject" type="BEDiagram:ObjectRefType" minOccurs="0"/>
+					<xs:element name="member" type="BEDiagram:MemberType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="persistentConfig" type="BEDiagram:PersistentConfigType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="validatorConfig" type="BEDiagram:ValidatorConfigType" minOccurs="0"/>
+					<xs:element name="searchMethod" type="BEDiagram:SearchMethodType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+				<xs:attribute name="needEquals" type="xs:boolean" use="optional" default="true"/>
+				<xs:attribute name="needHistory" type="xs:boolean" use="optional" default="false"/>
+				<xs:attribute name="needPersist" type="xs:boolean" use="optional" default="false"/>
+				<xs:attribute name="needUIEntity" type="xs:boolean" use="optional" default="false"/>
+				<xs:attribute name="needUITableEditor" type="xs:boolean" use="optional" default="false"/>
+				<xs:attribute name="extensible" type="xs:boolean" use="optional" default="true"/>
+				<xs:attribute name="abbreviation" type="xs:string" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="MemberType">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string"/>
+			<xs:element name="description" type="xs:string" minOccurs="0"/>
+			<xs:element name="defaultValue" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>default value expression string</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="type" type="BEDiagram:BEType"/>
+			<xs:element name="metaInfo" type="Common:MetaDataInfoType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="accessible" type="xs:boolean" default="true"/>
+		<xs:attribute name="modifiable" type="xs:boolean" default="true"/>
+        <xs:attribute name="transient" type="xs:boolean" default="false"/>
+        <xs:attribute name="pk" type="xs:boolean" default="false"/>
+	</xs:complexType>
+	<xs:complexType name="BEType"/>
+	<xs:complexType name="BEPrimitiveType">
+		<xs:complexContent>
+			<xs:extension base="BEDiagram:BEType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="BEComplexType">
+		<xs:complexContent>
+			<xs:extension base="BEDiagram:BEType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="BooleanType">
+		<xs:complexContent>
+			<xs:extension base="BEDiagram:BEPrimitiveType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="IntType">
+		<xs:complexContent>
+			<xs:extension base="BEDiagram:BEPrimitiveType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="LongType">
+		<xs:complexContent>
+			<xs:extension base="BEDiagram:BEPrimitiveType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="DoubleType">
+		<xs:complexContent>
+			<xs:extension base="BEDiagram:BEPrimitiveType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="StringType">
+		<xs:complexContent>
+			<xs:extension base="BEDiagram:BEPrimitiveType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="BinaryType">
+		<xs:complexContent>
+			<xs:extension base="BEDiagram:BEPrimitiveType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="TimeType">
+		<xs:complexContent>
+			<xs:extension base="BEDiagram:BEPrimitiveType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="DateTimeType">
+		<xs:complexContent>
+			<xs:extension base="BEDiagram:BEPrimitiveType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="FileType">
+		<xs:complexContent>
+			<xs:extension base="BEDiagram:BEPrimitiveType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="BECollectionType" abstract="true">
+		<xs:complexContent>
+			<xs:extension base="BEDiagram:BEComplexType">
+				<xs:sequence>
+					<xs:element name="elementType" type="BEDiagram:BEType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="BESetType">
+		<xs:complexContent>
+			<xs:extension base="BEDiagram:BECollectionType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="BEListType">
+		<xs:complexContent>
+			<xs:extension base="BEDiagram:BECollectionType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="BEMapType">
+		<xs:complexContent>
+			<xs:extension base="BEDiagram:BECollectionType">
+				<xs:sequence>
+					<xs:element name="keyType" type="BEDiagram:BEType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ObjectRefType" abstract="true">
+		<xs:complexContent>
+			<xs:extension base="BEDiagram:BEComplexType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="BEObjRefType">
+		<xs:annotation>
+			<xs:documentation>BEObjRefType reference BusinessEntity!</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="BEDiagram:ObjectRefType">
+				<xs:sequence>
+					<xs:element name="targetEntity" type="Common:TargetEntityType"/>
+				</xs:sequence>
+				<xs:attribute name="autoVersionUpdate" type="xs:boolean" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="JavaObjRefType">
+		<xs:annotation>
+			<xs:documentation>JavaObjRefType reference java object!</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="BEDiagram:ObjectRefType">
+				<xs:sequence>
+					<xs:element name="targetJava" type="Common:TargetJavaType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="CEObjRefType">
+		<xs:annotation>
+			<xs:documentation>CEObjRefType reference ConstantEntity!</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="BEDiagram:BEComplexType">
+				<xs:sequence>
+					<xs:element name="targetEntity" type="Common:TargetEntityType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PersistentConfigType">
+		<xs:sequence>
+			<xs:element name="supportedPersistenceType" type="BEDiagram:PersistenceTypeType"/>
+			<xs:element name="primaryKeyMember" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="PersistenceTypeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="RDB"/>
+			<xs:enumeration value="XML"/>
+			<xs:enumeration value="LDAP"/>
+			<xs:enumeration value="MEM"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="SearchMethodType">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string"/>
+			<xs:element name="query" type="Common:TargetEntityType"/>
+			<xs:element name="conditionMappingName" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ValidatorConfigType">
+		<xs:sequence>
+			<xs:element name="dummyField" type="BEDiagram:DummyFieldType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="referenceConfig" type="BEDiagram:ReferenceObjectType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="externalReferenceConfig" type="BEDiagram:ExternalReferenceType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DummyFieldType">
+		<xs:sequence>
+			<xs:element name="reference" type="BEDiagram:ReferenceObjectType"/>
+			<xs:element name="refDummyFieldName" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="dummyFieldName" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ReferenceObjectType">
+		<xs:sequence>
+			<xs:element name="refType" type="Common:TargetEntityType"/>
+			<xs:element name="refFieldName" type="xs:string" maxOccurs="unbounded"/>
+			<xs:element name="fieldName" type="xs:string" maxOccurs="unbounded"/>
+			<xs:element name="timeFieldName" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="mustHave" type="xs:boolean" use="optional" default="false"/>
+	</xs:complexType>
+	<xs:complexType name="ExternalReferenceType">
+		<xs:sequence>
+			<xs:element name="expression" type="xs:string"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+	<xs:simpleType name="RelationTypeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="One2One"/>
+			<xs:enumeration value="One2N"/>
+			<xs:enumeration value="N2One"/>
+			<xs:enumeration value="N2N"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="EntityRelationType">
+		<xs:complexContent>
+			<xs:extension base="Common:MetaDataType">
+				<xs:sequence>
+					<xs:element name="entity" type="Common:TargetEntityType"/>
+					<xs:element name="entity2" type="Common:TargetEntityType"/>
+				</xs:sequence>
+				<xs:attribute name="name" type="xs:string" use="required"/>
+				<xs:attribute name="priority" type="xs:int" use="optional"/>
+				<xs:attribute name="refedName" type="xs:string" use="optional"/>
+				<xs:attribute name="refedPriority" type="xs:int" use="optional"/>
+				<xs:attribute name="type" type="BEDiagram:RelationTypeType" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="RelationConstraintType">
+		<xs:complexContent>
+			<xs:extension base="Common:MetaDataType">
+				<xs:sequence>
+					<xs:element name="value" type="Common:ExpressionType"/>
+				</xs:sequence>
+				<xs:attribute name="relationName" type="xs:string" use="required"/>
+				<xs:attribute name="isEntity2" type="xs:boolean" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="RelationKeyType">
+		<xs:complexContent>
+			<xs:extension base="Common:MetaDataType">
+				<xs:attribute name="relationName" type="xs:string" use="required"/>
+				<xs:attribute name="isEntity2" type="xs:boolean" use="optional"/>
+				<xs:attribute name="fieldName" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="MemberWebServiceMappingType">
+		<xs:complexContent>
+			<xs:extension base="Common:MetaDataType">
+				<xs:attribute name="mappedName" type="xs:string" use="optional"/>
+				<xs:attribute name="style" use="optional" default="element">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="attribute"/>
+							<xs:enumeration value="element"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+				<xs:attribute name="ignore" type="xs:boolean" use="optional" default="false"/>
+				<xs:attribute name="collectionWrapped" type="xs:boolean" use="optional" default="true"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="EntityNameWebServiceMappingType">
+		<xs:complexContent>
+			<xs:extension base="Common:MetaDataType">
+				<xs:attribute name="namespaceURI" type="xs:string"/>
+				<xs:attribute name="mappedName" type="xs:string" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:complexType name="ConstantEntityType">
+		<xs:complexContent>
+			<xs:extension base="Common:EntityType">
+				<xs:sequence>
+					<xs:element name="effTime" type="xs:dateTime" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Effective Time</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="expTime" type="xs:dateTime" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Expired Time</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="constantValue" type="BEDiagram:ConstantValueType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ConstantValueType">
+		<xs:sequence>
+			<xs:element name="value" type="xs:string"/>
+			<xs:element name="i18nKey" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>the key of displayname in resource bundle.  if not specified, use entityname + "." + value as i18nKey.  Note:  this element is available only when the constant entity is specified the "bundle" in "displayName". </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="intValue" type="xs:int" default="-1" minOccurs="0"/>
+			<xs:element name="description" type="xs:string" minOccurs="0"/>
+			<xs:element name="effTime" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Effective Time</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="expTime" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Expired Time</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="passivated" type="xs:boolean" default="false" minOccurs="0"/>
+			<xs:element name="priority" type="xs:int" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+</xs:schema>

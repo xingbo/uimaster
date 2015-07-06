@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:UIEntity xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xmlns:ns2="http://bmdp.shaolin.org/datamodel/Page" 
+xmlns="http://bmdp.shaolin.org/datamodel/Common" xsi:schemaLocation="">
+    <entityName>org.shaolin.uimaster.form.Customer</entityName>
+    <systemVersion>0</systemVersion>
+    <ns2:body xsi:type="ns2:UIPanelType" UIID="Form" >
+        <ns2:layout xsi:type="ns2:TableLayoutType">
+            <ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+            <ns2:columnWidthWeight>0.0</ns2:columnWidthWeight>
+            <ns2:columnWidthWeight>0.0</ns2:columnWidthWeight>
+            <ns2:columnWidthWeight>0.0</ns2:columnWidthWeight>
+        </ns2:layout>
+        <ns2:component xsi:type="ns2:UITextFieldType" UIID="idText">
+            <ns2:text xsi:type="ns2:StringPropertyType">
+                <ns2:value>001</ns2:value>
+            </ns2:text>
+        </ns2:component>
+        <ns2:component xsi:type="ns2:UITextFieldType" UIID="nameText">
+        	<ns2:text xsi:type="ns2:StringPropertyType">
+                <ns2:value>002</ns2:value>
+            </ns2:text>
+        </ns2:component>
+        <ns2:component xsi:type="ns2:UIDateType" UIID="birthdayUI">
+            <ns2:text xsi:type="ns2:StringPropertyType">
+                <ns2:value>Birthday</ns2:value>
+            </ns2:text>
+        </ns2:component>
+        <ns2:layoutConstraint>
+            <ns2:componentId>idText</ns2:componentId>
+            <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" y="0" x="0" visible="true"/>
+        </ns2:layoutConstraint>
+        <ns2:layoutConstraint>
+            <ns2:componentId>nameText</ns2:componentId>
+            <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" y="0" x="1" visible="true"/>
+        </ns2:layoutConstraint>
+        <ns2:layoutConstraint>
+            <ns2:componentId>birthdayUI</ns2:componentId>
+            <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" y="0" x="2" visible="true"/>
+        </ns2:layoutConstraint>
+    </ns2:body>
+    <ns2:mapping>
+    	<entityName>org.shaolin.uimaster.form.Customer</entityName>
+	    <systemVersion>0</systemVersion>
+	    <ns2:DataEntity category="BusinessEntity" name="customer">
+	        <type entityName="org.shaolin.uimaster.test.be.Customer"/>
+	    </ns2:DataEntity>
+	    <ns2:ComponentMapping xsi:type="ns2:SimpleComponentMappingType" name="idMapping" >
+	        <ns2:mappingRule entityName="org.shaolin.uimaster.page.od.rules.UITextWithNumber"/>
+	        <ns2:DataComponent xsi:type="ns2:ComponentParamType" componentPath="customer.id" paramName="Number"/>
+	        <ns2:UIComponent componentPath="idText" paramName="UIWidgetType"/>
+	    </ns2:ComponentMapping>
+	    <ns2:ComponentMapping xsi:type="ns2:SimpleComponentMappingType" name="nameMapping" >
+	        <ns2:mappingRule entityName="org.shaolin.uimaster.page.od.rules.UIText"/>
+	        <ns2:DataComponent xsi:type="ns2:ComponentParamType" componentPath="customer.name" paramName="StringData"/>
+	        <ns2:UIComponent componentPath="nameText" paramName="UIWidgetType"/>
+	    </ns2:ComponentMapping>
+    </ns2:mapping>
+</ns2:UIEntity>
+

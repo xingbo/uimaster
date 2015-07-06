@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:UIPage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ns2="http://bmdp.shaolin.org/datamodel/Page" xmlns="http://bmdp.shaolin.org/datamodel/Common"
+	xsi:schemaLocation="">
+	<entityName>org.shaolin.bmdp.adminconsole.page.Login</entityName>
+	<systemVersion>0</systemVersion>
+	<ns2:UIEntity xsi:type="ns2:UIEntityType">
+		<ns2:eventHandler functionName="Login"></ns2:eventHandler>
+		<ns2:body UIID="Form" xsi:type="ns2:UIPanelType">
+			<ns2:layout xsi:type="ns2:TableLayoutType">
+				<ns2:rowHeightWeight>200</ns2:rowHeightWeight>
+				<ns2:rowHeightWeight>350</ns2:rowHeightWeight>
+				<ns2:rowHeightWeight>80</ns2:rowHeightWeight>
+				<ns2:columnWidthWeight>1.0</ns2:columnWidthWeight>
+			</ns2:layout>
+			<ns2:component xsi:type="ns2:UIPanelType" UIID="topPanel">
+				<ns2:UISkin xsi:type="ns2:UISkinType">
+					<ns2:skinName>org.shaolin.uimaster.page.skin.TitlePanel</ns2:skinName>
+					<ns2:param name="text">
+						<ns2:value xsi:type="ns2:StringPropertyType">
+							<ns2:value>Top Panel</ns2:value>
+						</ns2:value>
+					</ns2:param>
+				</ns2:UISkin>
+				<ns2:layout xsi:type="ns2:TableLayoutType">
+					<ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+					<ns2:columnWidthWeight>1.0</ns2:columnWidthWeight>
+				</ns2:layout>
+			</ns2:component>
+			<ns2:component xsi:type="ns2:UIPanelType" UIID="loginPanel">
+				<ns2:UISkin xsi:type="ns2:UISkinType">
+					<ns2:skinName>org.shaolin.uimaster.page.skin.TitlePanel</ns2:skinName>
+					<ns2:param name="text">
+						<ns2:value xsi:type="ns2:StringPropertyType">
+							<ns2:value>Administrative User Login</ns2:value>
+						</ns2:value>
+					</ns2:param>
+				</ns2:UISkin>
+				<ns2:layout xsi:type="ns2:TableLayoutType">
+					<ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+					<ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+					<ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+					<ns2:columnWidthWeight>0.33</ns2:columnWidthWeight>
+					<ns2:columnWidthWeight>0.33</ns2:columnWidthWeight>
+					<ns2:columnWidthWeight>0.0</ns2:columnWidthWeight>
+				</ns2:layout>
+				<ns2:component xsi:type="ns2:UITextFieldType" UIID="userName">
+					<ns2:title xsi:type="ns2:StringPropertyType">
+						<ns2:value>Name</ns2:value>
+					</ns2:title>
+					<ns2:widgetLabel xsi:type="ns2:StringPropertyType">
+						<ns2:value>Name</ns2:value>
+					</ns2:widgetLabel>
+					<ns2:allowBlank xsi:type="ns2:BooleanPropertyType">
+						<ns2:value>false</ns2:value>
+					</ns2:allowBlank>
+					<ns2:allowBlankText xsi:type="ns2:StringPropertyType">
+						<ns2:value>The user name must not be null.</ns2:value>
+					</ns2:allowBlankText>
+				</ns2:component>
+				<ns2:component xsi:type="ns2:UIPasswordFieldType" UIID="password">
+					<ns2:title xsi:type="ns2:StringPropertyType">
+						<ns2:value>Password</ns2:value>
+					</ns2:title>
+					<ns2:widgetLabel xsi:type="ns2:StringPropertyType">
+						<ns2:value>Password</ns2:value>
+					</ns2:widgetLabel>
+					<ns2:allowBlank xsi:type="ns2:BooleanPropertyType">
+						<ns2:value>false</ns2:value>
+					</ns2:allowBlank>
+					<ns2:allowBlankText xsi:type="ns2:StringPropertyType">
+						<ns2:value>The password must not be null.</ns2:value>
+					</ns2:allowBlankText>
+				</ns2:component>
+				<ns2:component xsi:type="ns2:UIButtonType" UIID="submit">
+					<ns2:text xsi:type="ns2:StringPropertyType">
+						<ns2:value>Login</ns2:value>
+					</ns2:text>
+				</ns2:component>
+				<ns2:layoutConstraint>
+					<ns2:componentId>userName</ns2:componentId>
+					<ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+						x="1" y="0" align="FULL"></ns2:constraint>
+				</ns2:layoutConstraint>
+				<ns2:layoutConstraint>
+					<ns2:componentId>password</ns2:componentId>
+					<ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+						x="1" y="1" align="FULL"></ns2:constraint>
+				</ns2:layoutConstraint>
+				<ns2:layoutConstraint>
+					<ns2:componentId>submit</ns2:componentId>
+					<ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+						x="1" y="2" align="FULL"></ns2:constraint>
+				</ns2:layoutConstraint>
+			</ns2:component>
+			<ns2:component xsi:type="ns2:UIPanelType" UIID="bottomPanel">
+				<ns2:UISkin xsi:type="ns2:UISkinType">
+					<ns2:skinName>org.shaolin.uimaster.page.skin.TitlePanel</ns2:skinName>
+					<ns2:param name="text">
+						<ns2:value xsi:type="ns2:StringPropertyType">
+							<ns2:value>Mercury Version 0.1</ns2:value>
+						</ns2:value>
+					</ns2:param>
+				</ns2:UISkin>
+				<ns2:layout xsi:type="ns2:TableLayoutType">
+					<ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+					<ns2:columnWidthWeight>1.0</ns2:columnWidthWeight>
+				</ns2:layout>
+			</ns2:component>
+			<ns2:layoutConstraint>
+				<ns2:componentId>topPanel</ns2:componentId>
+				<ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+					x="0" y="0" align="FULL"></ns2:constraint>
+			</ns2:layoutConstraint>
+			<ns2:layoutConstraint>
+				<ns2:componentId>loginPanel</ns2:componentId>
+				<ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+					x="0" y="1" align="FULL"></ns2:constraint>
+			</ns2:layoutConstraint>
+			<ns2:layoutConstraint>
+				<ns2:componentId>bottomPanel</ns2:componentId>
+				<ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+					x="0" y="2" align="FULL"></ns2:constraint>
+			</ns2:layoutConstraint>
+		</ns2:body>
+	</ns2:UIEntity>
+	<ns2:ODMapping>
+		<ns2:DataEntity category="JavaClass" name="userName" scope="InOut">
+			<ns2:type entityName="java.lang.String" />
+		</ns2:DataEntity>
+		<ns2:DataEntity category="JavaClass" name="password" scope="InOut">
+			<ns2:type entityName="java.lang.String" />
+		</ns2:DataEntity>
+		<ns2:DataEntity category="JavaClass" name="errorCode" scope="In">
+			<ns2:type entityName="java.lang.Integer" />
+		</ns2:DataEntity>
+		<ns2:ComponentMapping xsi:type="ns2:SimpleComponentMappingType"
+			name="simpleMapping0">
+			<ns2:mappingRule
+				entityName="org.shaolin.uimaster.page.od.rules.UIText"></ns2:mappingRule>
+			<ns2:UIComponent componentPath="userName"
+				paramName="UIWidgetType"></ns2:UIComponent>
+			<ns2:DataComponent xsi:type="ns2:ComponentParamType"
+				componentPath="userName" paramName="Number"></ns2:DataComponent>
+		</ns2:ComponentMapping>
+		<ns2:ComponentMapping xsi:type="ns2:SimpleComponentMappingType"
+			name="simpleMapping0">
+			<ns2:mappingRule
+				entityName="org.shaolin.uimaster.page.od.rules.UIText"></ns2:mappingRule>
+			<ns2:UIComponent componentPath="password"
+				paramName="UIWidgetType"></ns2:UIComponent>
+			<ns2:DataComponent xsi:type="ns2:ComponentParamType"
+				componentPath="password" paramName="Number"></ns2:DataComponent>
+		</ns2:ComponentMapping>
+	</ns2:ODMapping>
+	<ns2:in>
+	</ns2:in>
+	<ns2:out name="Login">
+		<ns2:serverOperation xsi:type="ns2:ExpressionParamType" />
+	</ns2:out>
+</ns2:UIPage>

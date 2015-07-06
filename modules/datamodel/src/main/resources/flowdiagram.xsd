@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xs:schema xmlns:Common="http://bmdp.shaolin.org/datamodel/Common"
+	xmlns:Flow="http://bmdp.shaolin.org/datamodel/FlowDiagram"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://bmdp.shaolin.org/datamodel/FlowDiagram"
+	elementFormDefault="qualified" version="">
+	
+	<xs:import namespace="http://bmdp.shaolin.org/datamodel/Common" schemaLocation="common.xsd"/>
+
+	<!-- This is flow ui diagram schema. -->
+	<xs:element name="FlowChunk" type="Flow:FlowChunkType">
+        <xs:annotation>
+            <xs:documentation>the root element.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+	<xs:complexType name="FlowChunkType">
+        <xs:complexContent>
+            <xs:extension base="Common:EntityType">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="node" type="Flow:NodeType"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="connection" type="Flow:Connection"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+	<xs:complexType abstract="true" name="NodeType">
+	    <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="description" type="xs:string" use="optional"/>
+        <xs:attribute name="displayName" type="xs:string" use="optional"/>
+        <xs:attribute name="x" type="xs:int"/>
+        <xs:attribute name="y" type="xs:int"/>
+        <xs:attribute name="rotation" type="xs:int"/>
+    </xs:complexType>
+    <xs:complexType name="EndPoint">
+        <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="iconType" type="xs:string" default="Dot"/>
+        <xs:attribute name="anchors" type="xs:string" default="TopCenter,BottomCenter,LeftMiddle,RightMiddle"/>
+        <xs:attribute name="isSourceType" type="xs:boolean" default="true"/><!-- false means the target -->
+    </xs:complexType>
+    <xs:complexType name="Connection">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="route" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string"/>
+        <xs:attribute name="sourceAnchor" type="xs:string" />
+        <xs:attribute name="targetAnchor" type="xs:string" />
+        <xs:attribute name="isEditable" type="xs:boolean" />
+    </xs:complexType>
+    
+	<xs:complexType name="RectangleNodeType">
+	   <xs:complexContent>
+            <xs:extension base="Flow:NodeType">
+	        </xs:extension>
+        </xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="EllipseNodeType">
+       <xs:complexContent>
+            <xs:extension base="Flow:NodeType">
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+	<xs:complexType name="CircleNodeType">
+       <xs:complexContent>
+            <xs:extension base="Flow:NodeType">
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="DiamondNodeType">
+       <xs:complexContent>
+            <xs:extension base="Flow:NodeType">
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="TriangleNodeType">
+       <xs:complexContent>
+            <xs:extension base="Flow:NodeType">
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="JoinTriangleNodeType">
+       <xs:complexContent>
+            <xs:extension base="Flow:NodeType">
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="SplitTriangleNodeType">
+       <xs:complexContent>
+            <xs:extension base="Flow:NodeType">
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="RefFlowNodeType">
+       <xs:complexContent>
+            <xs:extension base="Flow:NodeType">
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>

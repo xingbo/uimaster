@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xs:schema xmlns:Common="http://bmdp.shaolin.org/datamodel/Common"
+	xmlns:RDBDiagram="http://bmdp.shaolin.org/datamodel/RDBDiagram"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	attributeFormDefault="unqualified" elementFormDefault="qualified"
+	targetNamespace="http://bmdp.shaolin.org/datamodel/RDBDiagram" version="">
+	
+	<xs:import namespace="http://bmdp.shaolin.org/datamodel/Common" schemaLocation="common.xsd"/>
+	
+	<xs:element name="RDBDiagram" type="RDBDiagram:RDBDiagramType">
+		<xs:annotation>
+			<xs:documentation>BE diagram</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="RDBDiagramType">
+		<xs:complexContent>
+			<xs:extension base="Common:DiagramType">
+				<xs:sequence>
+					<xs:element name="diagramPackage" type="xs:string"/>
+					<xs:element name="daoPackage" type="xs:string"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="table" type="RDBDiagram:TableType"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="view" type="RDBDiagram:ViewType"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="joinTable" type="RDBDiagram:JoinTableType"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="query" type="RDBDiagram:SearchQueryType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:complexType name="JoinTableType">
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="srcTable" type="xs:string" use="required"/>
+		<xs:attribute name="srcPKColumn" type="xs:string" use="required"/>
+		<xs:attribute name="tarTable" type="xs:string" use="required"/>
+		<xs:attribute name="tarPKColumn" type="xs:string" use="required"/>
+	</xs:complexType>
+	
+	<xs:complexType name="SequenceType">
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute default="1" name="startWith" type="xs:int" use="optional"/>
+		<xs:attribute default="10" name="span" type="xs:int" use="optional"/>
+		<xs:attribute default="20" name="dbcache" type="xs:int" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="TableType">
+		<xs:complexContent>
+			<xs:extension base="RDBDiagram:RDBType">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="column" type="RDBDiagram:ColumnType"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="index" type="RDBDiagram:IndexType"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="sequence" type="RDBDiagram:SequenceType"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="primaryKey" type="RDBDiagram:PKType"/>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="foreignKey" type="RDBDiagram:FKType"/>
+					<xs:element maxOccurs="1" minOccurs="0" name="inheritAsscociation" type="RDBDiagram:InheritAssociationType"/>
+					<xs:element maxOccurs="1" minOccurs="0" name="mapping" type="RDBDiagram:ClassMappingType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="IndexType">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" name="column" type="xs:string"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute default="false" name="isUnique" type="xs:boolean" use="optional"/>
+		<xs:attribute default="false" name="isClustered" type="xs:boolean" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="ColumnType">
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="type" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="BIGINT"/>
+					<xs:enumeration value="BIT"/>
+					<xs:enumeration value="BLOB"/>
+					<xs:enumeration value="BLOB2"/>
+					<xs:enumeration value="CLOB"/>
+					<xs:enumeration value="CLOB2"/>
+					<xs:enumeration value="DECIMAL"/>
+					<xs:enumeration value="INTEGER"/>
+					<xs:enumeration value="DATE"/>
+					<xs:enumeration value="DATETIME"/>
+					<xs:enumeration value="TIMESTAMP"/>
+					<xs:enumeration value="VARCHAR"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="length" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation source="DB2 BLOB type need length like &quot;10M&quot;, so we use String as the type of length"/>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="precision" type="xs:int" use="optional"/>
+		<xs:attribute default="true" name="isNull" type="xs:boolean" use="optional"/>
+		<xs:attribute default="false" name="redundant" type="xs:boolean" use="optional"/>
+		<xs:attribute default="false" name="default" type="xs:string" use="optional"/>
+		<xs:attribute name="comment" type="xs:string" use="optional"/>
+		<!-- My sql attribute -->
+		<xs:attribute default="false" name="autoIncrement" type="xs:boolean" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="ViewType">
+		<xs:complexContent>
+			<xs:extension base="RDBDiagram:RDBType">
+				<xs:sequence>
+					<xs:element name="baseTable" type="Common:TargetEntityType"/>
+					<xs:element name="extTable" type="Common:TargetEntityType"/>
+					<xs:element minOccurs="0" name="op" type="RDBDiagram:ViewOpType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="RDBType">
+		<xs:complexContent>
+			<xs:extension base="Common:EntityType">
+				<xs:attribute name="name" type="xs:string" use="required"/>
+				<xs:attribute name="comment" type="xs:string" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PKType">
+		<xs:sequence>
+			<xs:element name="columnName" type="xs:string"/>
+			<xs:element name="sequenceName" type="xs:string"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="FKType">
+		<xs:sequence>
+			<xs:element name="columnName" type="xs:string"/>
+			<xs:element name="refTable" type="Common:TargetEntityType"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="optional"/>
+		<xs:attribute name="onDelete" type="RDBDiagram:OnDeleteType" use="optional"/>
+	</xs:complexType>
+	<xs:simpleType name="ViewOpType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="JOIN"/>
+			<xs:enumeration value="UNION"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="OnDeleteType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CASCADE"/>
+			<xs:enumeration value="SET_NULL"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:complexType name="ClassMappingType">
+		<xs:annotation>
+			<xs:documentation>Persistence mapping, If this class is a base class, 
+				if rootTableName specified, engine will use that 
+				table to store pk to oid relation; 
+				if the rootTableName is not specified, engine 
+				will ignore oid(then doesn't support polymorphism). 
+				If this class is not a base class, the rootTableName must be null. 
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="Common:EntityType">
+				<xs:sequence>
+					<xs:element name="businessEntity" type="Common:TargetEntityType"/>
+					<xs:element name="table" type="Common:TargetEntityType"/>
+					<xs:element minOccurs="0" name="historyTable" type="Common:TargetEntityType"/>
+					<xs:element minOccurs="0" name="view" type="Common:TargetEntityType"/>
+					<xs:element minOccurs="0" name="parentClassMapping" type="Common:TargetEntityType"/>
+					<xs:element maxOccurs="unbounded" name="fieldMapping" type="RDBDiagram:FieldMappingType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="FieldMappingType">
+		<xs:annotation>
+			<xs:documentation>Primitive type fields or File type fields</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="beFieldName" type="xs:string" use="required"/>
+		<xs:attribute name="columnName" type="xs:string" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="ListFieldMappingType">
+		<xs:annotation>
+			<xs:documentation>List mapping</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="RDBDiagram:FieldMappingType">
+				<xs:attribute name="associationName" type="xs:string" use="required"/>
+				<xs:attribute name="collectionElement" type="xs:string" use="required"/>
+				<xs:attribute name="mappingType" use="required">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="One-to-One"/>
+							<xs:enumeration value="One-to-Many"/>
+							<xs:enumeration value="Many-to-Many"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="InheritAssociationType">
+		<xs:annotation>
+			<xs:documentation>Hibernate supports the three basic inheritance mapping strategies.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="parentTable" type="xs:string" use="required"/>
+	</xs:complexType>
+	
+    <xs:complexType name="SearchQueryType">
+    	<xs:annotation>
+			<xs:documentation>SQL search query definition.</xs:documentation>
+		</xs:annotation>
+        <xs:sequence>
+            <xs:element name="searchResult" type="Common:VariableType"/>
+            <xs:element name="fromData" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:complexContent>
+                        <xs:extension base="Common:VariableType">
+                            <xs:sequence>
+                                <xs:element name="customerRDBName" type="xs:string" minOccurs="0"/>
+                            </xs:sequence>
+                        </xs:extension>
+                    </xs:complexContent>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="searchResultMapping" type="RDBDiagram:SearchResultMappingType"/>
+            <xs:element name="linkMapping" type="RDBDiagram:LinkConditionMappingType"/>
+            <xs:element name="searchConditionMapping" type="RDBDiagram:SearchConditionMappingType"/>
+            <xs:element name="orderBy" type="RDBDiagram:OrderingType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="postSearch" type="Common:ExpressionType"/>
+        </xs:sequence>
+        <xs:attribute name="timeoutSeconds" type="xs:int" use="optional" default="0"/>
+        <xs:attribute name="isDistinct" type="xs:boolean" use="optional" default="true"/>
+        <xs:attribute name="queryName" type="xs:string" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="OrderingType">
+        <xs:sequence>
+            <xs:element name="field" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="isAscending" type="xs:boolean" use="optional" default="true"/>
+    </xs:complexType>
+    <xs:complexType name="SearchResultMappingType">
+        <xs:sequence>
+            <xs:element name="fieldMapping" type="RDBDiagram:SQLFieldMappingType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="LinkConditionMappingType">
+        <xs:sequence>
+            <xs:element name="link" type="RDBDiagram:LinkFieldType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="LinkFieldType">
+        <xs:sequence>
+            <xs:element name="refField" type="xs:string" minOccurs="0"/>
+            <xs:element name="left" type="xs:string" minOccurs="0"/>
+            <xs:element name="right" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="SearchConditionMappingType">
+         <xs:sequence>
+             <xs:element name="fieldMapping" type="RDBDiagram:ConditionFieldMappingType" minOccurs="0" maxOccurs="unbounded"/>
+             <xs:element name="searchConditionData" type="Common:VariableType" maxOccurs="unbounded"/>
+         </xs:sequence>
+         <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="SQLFieldMappingType">
+        <xs:sequence>
+            <xs:element name="toDataFieldPath" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>field path uses '.' for seperating</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="value" type="RDBDiagram:FieldValueType"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="FieldValueType" abstract="true"/>
+    <xs:complexType name="SimpleFieldValueType">
+        <xs:complexContent>
+            <xs:extension base="RDBDiagram:FieldValueType">
+                <xs:sequence>
+                    <xs:element name="valueFieldPath" type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation>field path uses '.' for seperating</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ExpressionFieldValueType">
+        <xs:complexContent>
+            <xs:extension base="RDBDiagram:FieldValueType">
+                <xs:sequence>
+                    <xs:element name="expression" type="Common:ExpressionType" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ConditionFieldMappingType">
+        <xs:complexContent>
+            <xs:extension base="RDBDiagram:FilterMappingType">
+                <xs:sequence>
+                    <xs:element name="toDataFieldPath" type="xs:string" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>field path uses '.' for seperating</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="conditionValue" type="RDBDiagram:ConditionFieldValueType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+                <xs:attribute name="useParamBinding" type="xs:boolean" default="false"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ConditionFieldValueType">
+        <xs:sequence>
+            <xs:element name="operator" type="RDBDiagram:OperatorType"/>
+            <xs:element name="value" type="RDBDiagram:FieldValueType" minOccurs="0"/>
+            <xs:element name="condition" type="Common:ExpressionType" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="OperatorType">
+        <xs:attribute name="isReverse" type="xs:boolean" default="false"/>
+    </xs:complexType>
+    <xs:complexType name="LogicOperatorType">
+        <xs:complexContent>
+            <xs:extension base="RDBDiagram:OperatorType">
+                <xs:sequence>
+                    <xs:element name="type" type="xs:string"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="StarLikeOperatorType">
+        <xs:complexContent>
+            <xs:extension base="RDBDiagram:OperatorType">
+            	<xs:sequence>
+                    <xs:element name="type" type="xs:string"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="CEEqualsOperatorType">
+        <xs:complexContent>
+            <xs:extension base="RDBDiagram:OperatorType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="CompositeConditionMappingType">
+        <xs:complexContent>
+            <xs:extension base="RDBDiagram:ConditionFieldMappingType">
+                <xs:sequence>
+                    <xs:element name="fieldMapping" type="RDBDiagram:FilterMappingType" maxOccurs="unbounded"/>
+                    <xs:element name="logicalOperator" type="xs:string"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="FilterMappingType" abstract="true"/>
+    <xs:complexType name="SubQueryMappingType">
+        <xs:complexContent>
+            <xs:extension base="RDBDiagram:ConditionFieldMappingType">
+                <xs:sequence>
+                    <xs:element name="operator" type="RDBDiagram:OperatorType"/>
+                    <xs:element name="selectedDataFieldPath" type="xs:string" minOccurs="0"/>
+                    <xs:element name="fromData" maxOccurs="unbounded">
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="Common:VariableType">
+                                    <xs:sequence>
+                                        <xs:element name="customerRDBName" type="xs:string" minOccurs="0"/>
+                                    </xs:sequence>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="linkMapping" type="RDBDiagram:LinkConditionMappingType"/>
+                    <xs:element name="fieldMapping" type="RDBDiagram:FilterMappingType" maxOccurs="unbounded"/>
+                    <xs:element name="condition" type="Common:ExpressionType" minOccurs="0"/>
+                </xs:sequence>
+                <xs:attribute name="isDistinct" type="xs:boolean" use="optional" default="false"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+	
+	
+</xs:schema>

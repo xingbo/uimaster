@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:UIPage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ns2="http://bmdp.shaolin.org/datamodel/Page" xmlns="http://bmdp.shaolin.org/datamodel/Common"
+	xsi:schemaLocation="">
+	<entityName>org.shaolin.bmdp.workflow.page.FlowManagement</entityName>
+	<systemVersion>0</systemVersion>
+	<ns2:UIEntity xsi:type="ns2:UIEntityType">
+	    <ns2:eventHandler functionName="newWorkflow">
+           <ns2:ops xsi:type="ns2:OpCallAjaxType" name="newWorkflow35433">
+                <ns2:exp>
+                    <ns2:expressionString><![CDATA[
+                    import java.util.HashMap;
+                    import org.shaolin.uimaster.page.AjaxContext;
+                    import org.shaolin.uimaster.page.AjaxActionHelper;
+                    import org.shaolin.uimaster.page.ajax.*;
+                    import org.shaolin.bmdp.datamodel.workflow.Workflow;
+                    import org.shaolin.bmdp.datamodel.workflow.FlowType;
+                    import org.shaolin.bmdp.datamodel.flowdiagram.FlowChunk;
+                    import java.lang.Math; 
+                    {
+                    	Workflow wf = new Workflow();
+						wf.setEntityName("NewWorkflow_" + (int)(Math.random() * 100000));
+						FlowType subFlow = new FlowType();
+						subFlow.setName("Newflow_" + (int)(Math.random() * 100000));
+						wf.getFlows().add(subFlow);
+						
+						FlowChunk chunk = new FlowChunk();
+						chunk.setEntityName(wf.getEntityName());
+                    	WorkFlowDiagram diagram = (WorkFlowDiagram)@page.getElement("flowDiagram");
+                    	diagram.setWorkflow(subFlow.getName(), wf, chunk);
+                    	diagram.refreshModel();
+                    }
+                    ]]></ns2:expressionString>
+                </ns2:exp>
+            </ns2:ops>
+        </ns2:eventHandler>
+        <ns2:eventHandler functionName="openWorkflow">
+           <ns2:ops xsi:type="ns2:OpCallAjaxType" name="openWorkflow543543">
+                <ns2:exp>
+                    <ns2:expressionString><![CDATA[
+                    import java.util.HashMap;
+                    import java.util.List;
+                    import java.io.StringReader;
+                    import org.shaolin.bmdp.runtime.AppContext;
+                    import org.shaolin.uimaster.page.AjaxContext;
+                    import org.shaolin.uimaster.page.AjaxActionHelper;
+                    import org.shaolin.uimaster.page.ajax.*;
+                    import org.shaolin.vogerp.commonmodel.be.ModuleGroupImpl;
+                    import org.shaolin.bmdp.runtime.be.IBusinessEntity;
+                    import org.shaolin.bmdp.runtime.entity.EntityUtil;
+					import org.shaolin.bmdp.datamodel.workflow.Workflow;
+                    import org.shaolin.bmdp.workflow.dao.WorkflowModel;
+                    import org.shaolin.bmdp.workflow.ce.ModuleType;
+                    import org.shaolin.bmdp.workflow.be.FlowEntityImpl;
+                    import org.shaolin.bmdp.datamodel.flowdiagram.FlowChunk;
+                    import org.shaolin.bmdp.workflow.be.UIFlowsImpl;
+                    import org.shaolin.bmdp.workflow.ui.PageUtil;
+                    {
+                    	Tree flowTree = @page.getTree("functionTree");
+                    	if(flowTree.getSelectedItemId() == null || flowTree.getSelectedItemId().isEmpty()) {
+                    		return;
+                    	}
+                    	System.out.println("flowTree.getSelectedItemId(): " + flowTree.getSelectedItemId() 
+                    	+ ",parent: " + flowTree.getSelectedParentItemId());
+                        String workflowName = flowTree.getSelectedParentItemId();
+                        String currentFlowName = flowTree.getSelectedItemId();
+				        Workflow flowModel = (Workflow)AppContext.get().getEntityManager().getEntity(flowTree.getSelectedParentItemId(), Workflow.class);
+				        FlowChunk flowView = null;
+				        UIFlowsImpl searchCriteria = new UIFlowsImpl();
+						searchCriteria.setModuleType(ModuleType.WORKFLOW);
+						searchCriteria.setName(workflowName + "." + currentFlowName);
+						int count = (int)WorkflowModel.INSTANCE.searchFlowsCount(searchCriteria);
+						if (count == 0) {
+							flowView = new FlowChunk();
+							flowView.setEntityName(workflowName + "." + currentFlowName);
+							WorkFlowDiagram.syncFlow(currentFlowName, flowModel, flowView);
+						} else {
+							List groupflow = WorkflowModel.INSTANCE.searchFlows(searchCriteria, null, 0, 1);
+							String xml = ((UIFlowsImpl)groupflow.get(0)).getFlow();
+							StringReader reader = new StringReader(xml);
+							flowView = (FlowChunk)EntityUtil.unmarshaller(FlowChunk.class, reader);
+						}
+						
+                        WorkFlowDiagram diagram = (WorkFlowDiagram)@page.getElement("flowDiagram");
+						diagram.setWorkflow(currentFlowName, flowModel, flowView);
+						diagram.refreshModel();
+                    }
+                    ]]></ns2:expressionString>
+                </ns2:exp>
+            </ns2:ops>
+        </ns2:eventHandler>
+        <ns2:eventHandler functionName="addFlow">
+           <ns2:ops xsi:type="ns2:OpCallAjaxType" name="addFlow543543">
+                <ns2:exp>
+                    <ns2:expressionString><![CDATA[
+                    import java.util.HashMap;
+                    import java.util.List;
+                    import org.shaolin.bmdp.runtime.AppContext;
+                    import org.shaolin.uimaster.page.AjaxContext;
+                    import org.shaolin.uimaster.page.AjaxActionHelper;
+                    import org.shaolin.uimaster.page.ajax.*;
+                    import org.shaolin.vogerp.commonmodel.be.ModuleGroupImpl;
+                    import org.shaolin.bmdp.runtime.be.IBusinessEntity;
+                    import org.shaolin.bmdp.runtime.entity.EntityUtil;
+					import org.shaolin.bmdp.datamodel.workflow.Workflow;
+                    import org.shaolin.bmdp.workflow.dao.WorkflowModel;
+                    import org.shaolin.bmdp.workflow.ce.ModuleType;
+                    import org.shaolin.bmdp.workflow.be.FlowEntityImpl;
+                    import org.shaolin.bmdp.datamodel.flowdiagram.FlowChunk;
+                    import org.shaolin.bmdp.workflow.be.UIFlowsImpl;
+                    import org.shaolin.bmdp.workflow.ui.PageUtil;
+                    {
+                    	WorkFlowDiagram diagram = (WorkFlowDiagram)@page.getElement("flowDiagram");
+                    	diagram.createFlow();
+						diagram.refreshModel();
+                    }
+                    ]]></ns2:expressionString>
+                </ns2:exp>
+            </ns2:ops>
+        </ns2:eventHandler>
+        <ns2:eventHandler functionName="addFlowNode">
+           <ns2:ops xsi:type="ns2:OpCallAjaxType" name="addFlowNode543543">
+                <ns2:exp>
+                    <ns2:expressionString><![CDATA[
+                    import java.util.HashMap;
+                    import java.util.List;
+                    import org.shaolin.bmdp.runtime.AppContext;
+                    import org.shaolin.uimaster.page.AjaxContext;
+                    import org.shaolin.uimaster.page.AjaxActionHelper;
+                    import org.shaolin.uimaster.page.ajax.*;
+                    import org.shaolin.vogerp.commonmodel.be.ModuleGroupImpl;
+                    import org.shaolin.bmdp.runtime.be.IBusinessEntity;
+                    import org.shaolin.bmdp.runtime.entity.EntityUtil;
+					import org.shaolin.bmdp.datamodel.workflow.Workflow;
+                    import org.shaolin.bmdp.workflow.dao.WorkflowModel;
+                    import org.shaolin.bmdp.workflow.ce.ModuleType;
+                    import org.shaolin.bmdp.workflow.be.FlowEntityImpl;
+                    import org.shaolin.bmdp.datamodel.flowdiagram.FlowChunk;
+                    import org.shaolin.bmdp.workflow.be.UIFlowsImpl;
+                    import org.shaolin.bmdp.workflow.ui.PageUtil;
+                    import org.shaolin.bmdp.datamodel.workflow.GeneralNodeType;
+                    {
+                    	WorkFlowDiagram diagram = (WorkFlowDiagram)@page.getElement("flowDiagram");
+                    	diagram.addNode("newNode", GeneralNodeType.class.getName());
+						diagram.refreshModel();
+                    }
+                    ]]></ns2:expressionString>
+                </ns2:exp>
+            </ns2:ops>
+        </ns2:eventHandler>
+        <ns2:eventHandler functionName="saveWorkflow">
+           <ns2:ops xsi:type="ns2:OpCallAjaxType" name="saveWorkflow432423">
+                <ns2:exp>
+                    <ns2:expressionString><![CDATA[
+                    import java.util.ArrayList;
+                    import java.util.List;
+                    import org.shaolin.bmdp.runtime.entity.EntityUtil;
+                    import org.shaolin.vogerp.commonmodel.be.IModule;
+                    import org.shaolin.vogerp.commonmodel.be.ModuleImpl;
+                    import org.shaolin.bmdp.workflow.be.UIFlowsImpl;
+                    import org.shaolin.bmdp.datamodel.flowdiagram.NodeType;
+                    import org.shaolin.uimaster.page.AjaxContext;
+                    import org.shaolin.uimaster.page.ajax.*;
+                    import org.shaolin.bmdp.workflow.dao.WorkflowModel;
+                    import org.shaolin.bmdp.workflow.ce.ModuleType;
+                    import org.shaolin.bmdp.workflow.be.FlowEntityImpl;
+                    {
+                        WorkFlowDiagram flow = (WorkFlowDiagram)@page.getElement("flowDiagram");
+                        FlowEntityImpl flowModel = new FlowEntityImpl();
+                        flowModel.setEntityName(flow.getWorflowModel().getEntityName());
+                        int count = (int)WorkflowModel.INSTANCE.searchFlowEntitiesCount(flowModel);
+                        if (count == 0) {
+	                        flowModel.setContent(flow.getFlowModelXML());
+                            WorkflowModel.INSTANCE.create(flowModel);
+                        } else {
+                        	List groupflow = WorkflowModel.INSTANCE.searchFlowEntities(flowModel, null, 0, 1);
+                            ((FlowEntityImpl)groupflow.get(0)).setContent(flow.getFlowModelXML());
+                            WorkflowModel.INSTANCE.update((FlowEntityImpl)groupflow.get(0));
+                        }
+                        
+                        String flowViewName = flow.getWorflowView().getEntityName();
+                        UIFlowsImpl searchCriteria = new UIFlowsImpl();
+                        searchCriteria.setModuleType(ModuleType.WORKFLOW);
+                        searchCriteria.setName(flowViewName);
+                        count = (int)WorkflowModel.INSTANCE.searchFlowsCount(searchCriteria);
+                        if (count == 0) {
+                            searchCriteria.setFlow(flow.getFlowViewXML());
+                            WorkflowModel.INSTANCE.create(searchCriteria);
+                        } else {
+	                        List groupflow = WorkflowModel.INSTANCE.searchFlows(searchCriteria, null, 0, 1);
+                            ((UIFlowsImpl)groupflow.get(0)).setFlow(flow.getFlowViewXML());
+                            WorkflowModel.INSTANCE.update((UIFlowsImpl)groupflow.get(0));
+                        }
+                        
+                        flow.saveSuccess();
+                    }
+                    ]]></ns2:expressionString>
+                </ns2:exp>
+            </ns2:ops>
+        </ns2:eventHandler>
+        <ns2:eventHandler functionName="refreshModuleGroup">
+           <ns2:ops xsi:type="ns2:OpCallAjaxType" name="refreshModuleGroup432423">
+                <ns2:exp>
+                    <ns2:expressionString><![CDATA[
+                    import java.util.ArrayList;
+                    import java.util.List;
+                    import java.io.StringWriter;
+                    import org.shaolin.uimaster.page.AjaxContext;
+                    import org.shaolin.uimaster.page.ajax.*;
+                    {
+                        WorkFlowDiagram flow = (WorkFlowDiagram)@page.getElement("flowDiagram");
+                    }
+                    ]]></ns2:expressionString>
+                </ns2:exp>
+            </ns2:ops>
+        </ns2:eventHandler>
+		<ns2:body UIID="Form" xsi:type="ns2:UIPanelType">
+			<ns2:layout xsi:type="ns2:TableLayoutType">
+				<ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+				<ns2:columnWidthWeight>1.0</ns2:columnWidthWeight>
+			</ns2:layout>
+			<ns2:component xsi:type="ns2:UIPanelType" UIID="topPanel">
+				<ns2:layout xsi:type="ns2:TableLayoutType">
+					<ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+					<ns2:columnWidthWeight>0.8</ns2:columnWidthWeight>
+					<ns2:columnWidthWeight>80</ns2:columnWidthWeight>
+				</ns2:layout>
+				<ns2:component xsi:type="ns2:UIFlowDiagramType" UIID="flowDiagram">
+				    <ns2:loadDateModel xsi:type="ns2:ExpressionPropertyType">
+                        <ns2:expression xsi:type="ns2:ExpressionType">
+                            <ns2:expressionString><![CDATA[
+							import org.shaolin.bmdp.datamodel.workflow.Workflow;
+                            {
+                            	// create a empty flow initially.
+                            	return new Workflow();
+                            }]]></ns2:expressionString>
+                        </ns2:expression>
+                    </ns2:loadDateModel>
+				    <ns2:loadFlow xsi:type="ns2:ExpressionPropertyType">
+                        <ns2:expression xsi:type="ns2:ExpressionType">
+                            <ns2:expressionString><![CDATA[
+							import org.shaolin.bmdp.datamodel.flowdiagram.FlowChunk;
+                            {
+                            	return new FlowChunk();
+                            }]]></ns2:expressionString>
+                        </ns2:expression>
+                    </ns2:loadFlow>
+                    <ns2:defaultActions>
+                        <ns2:newNode>newWorkflow</ns2:newNode>
+                        <ns2:saveFlow>saveWorkflow</ns2:saveFlow>                        
+                        <ns2:refreshFlow>refreshModuleGroup</ns2:refreshFlow>
+                        <ns2:discardChange>discardChange</ns2:discardChange>
+                        <!-- addFlowNode -->
+                    </ns2:defaultActions>
+                </ns2:component>
+                <ns2:component xsi:type="ns2:UIPanelType" UIID="propertiesPanel">
+					<ns2:layout xsi:type="ns2:TableLayoutType">
+						<ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+						<ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+						<ns2:columnWidthWeight>0.0</ns2:columnWidthWeight>
+					</ns2:layout>
+	                <ns2:component xsi:type="ns2:UIWebTreeType" UIID="functionTree">
+						<ns2:title xsi:type="ns2:StringPropertyType">
+							<ns2:value>Flows</ns2:value>
+						</ns2:title>
+						<ns2:opened>true</ns2:opened>
+						<ns2:nodeIcon>/images/nodeicon.jpg</ns2:nodeIcon>
+						<ns2:itemIcon>/images/itemicon.jpg</ns2:itemIcon>
+						<ns2:selectMode>Multiple</ns2:selectMode>
+						<ns2:expandTreeEvent>expandTree</ns2:expandTreeEvent>
+                        <ns2:selectNodeEvent>openWorkflow</ns2:selectNodeEvent>
+						<ns2:initExpression xsi:type="ns2:ExpressionPropertyType">
+							<ns2:expression xsi:type="ns2:ExpressionType">
+								<ns2:expressionString><![CDATA[
+                            	import org.shaolin.bmdp.workflow.ui.PageUtil;
+								{
+									return PageUtil.loadWorkflowTree();
+								}]]></ns2:expressionString>
+							</ns2:expression>
+						</ns2:initExpression>
+					</ns2:component>
+		            <ns2:layoutConstraint>
+		                <ns2:componentId>functionTree</ns2:componentId>
+		                <ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+		                    x="0" y="0" align="FULL"></ns2:constraint>
+		            </ns2:layoutConstraint>
+	           </ns2:component> 
+	           <ns2:layoutConstraint>
+	                <ns2:componentId>flowDiagram</ns2:componentId>
+	                <ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+	                    x="0" y="0" align="FULL"></ns2:constraint>
+	            </ns2:layoutConstraint>
+	            <ns2:layoutConstraint>
+	                <ns2:componentId>propertiesPanel</ns2:componentId>
+	                <ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+	                    x="1" y="0" align="FULL"></ns2:constraint>
+	            </ns2:layoutConstraint>
+			</ns2:component>
+			<ns2:layoutConstraint>
+				<ns2:componentId>topPanel</ns2:componentId>
+				<ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+					x="0" y="0" align="FULL"></ns2:constraint>
+			</ns2:layoutConstraint>
+		</ns2:body>
+	</ns2:UIEntity>
+	<ns2:ODMapping>
+		<ns2:DataEntity category="JavaClass" name="workflowName" scope="Internal">
+			<ns2:type entityName="java.lang.String" />
+			<ns2:default><ns2:expressionString><![CDATA["t"]]></ns2:expressionString></ns2:default>
+		</ns2:DataEntity>
+		<ns2:DataEntity category="JavaPrimitive" name="workflowId" scope="Internal">
+			<ns2:type entityName="long" />
+			<ns2:default><ns2:expressionString><![CDATA[-1]]></ns2:expressionString></ns2:default>
+		</ns2:DataEntity>
+	</ns2:ODMapping>
+</ns2:UIPage>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bediagram:BEDiagram xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bediagram="http://bmdp.shaolin.org/datamodel/BEDiagram" xmlns:common="http://bmdp.shaolin.org/datamodel/Common" >
+  <name>default</name>
+  <bePackage>org.shaolin.bmdp.test.be</bePackage>
+  <cePackage>org.shaolin.bmdp.test.ce</cePackage>
+  <diagramPackage>org.shaolin.bmdp.test.diagram</diagramPackage>
+  <bediagram:beEntity needPersist="true" needUIEntity="true" parent="">
+    <common:entityName>Folder</common:entityName>
+    <bediagram:member refEntity="" keyType="">
+      <bediagram:name>id</bediagram:name>
+      <bediagram:type xsi:type="bediagram:LongType"/>
+    </bediagram:member>
+    <bediagram:member refEntity="" keyType="">
+      <bediagram:name>name</bediagram:name>
+      <bediagram:type xsi:type="bediagram:StringType"/>
+    </bediagram:member>
+    <bediagram:member refEntity="" keyType="">
+      <bediagram:name>author</bediagram:name>
+      <bediagram:type xsi:type="bediagram:StringType"/>
+    </bediagram:member>
+    <bediagram:member refEntity="File" keyType="">
+      <bediagram:name>files</bediagram:name>
+      <bediagram:type xsi:type="bediagram:BEListType">
+        <bediagram:elementType xsi:type="bediagram:BEObjRefType">
+          <bediagram:targetEntity entityName="File"/>
+        </bediagram:elementType>
+      </bediagram:type>
+    </bediagram:member>
+    <bediagram:member refEntity="Folder" keyType="">
+      <bediagram:name>folders</bediagram:name>
+      <bediagram:type xsi:type="bediagram:BEListType">
+        <bediagram:elementType xsi:type="bediagram:BEObjRefType">
+          <bediagram:targetEntity entityName="Folder"/>
+        </bediagram:elementType>
+      </bediagram:type>
+    </bediagram:member>
+  </bediagram:beEntity>
+  <bediagram:beEntity needPersist="true" needUIEntity="true" parent="">
+    <common:entityName>File</common:entityName>
+    <bediagram:member refEntity="" keyType="">
+      <bediagram:name>id</bediagram:name>
+      <bediagram:type xsi:type="bediagram:LongType"/>
+    </bediagram:member>
+    <bediagram:member refEntity="" keyType="">
+      <bediagram:name>name</bediagram:name>
+      <bediagram:type xsi:type="bediagram:StringType"/>
+    </bediagram:member>
+    <bediagram:member refEntity="" keyType="">
+      <bediagram:name>author</bediagram:name>
+      <bediagram:type xsi:type="bediagram:StringType"/>
+    </bediagram:member>
+    <bediagram:member refEntity="FileType" keyType="">
+      <bediagram:name>type</bediagram:name>
+      <bediagram:type xsi:type="bediagram:CEObjRefType">
+        <bediagram:targetEntity entityName="org.shaolin.bmdp.test.ce.FileType"/>
+      </bediagram:type>
+    </bediagram:member>
+    <bediagram:member refEntity="User" keyType="">
+      <bediagram:name>owner</bediagram:name>
+      <bediagram:type xsi:type="bediagram:BEObjRefType">
+        <bediagram:targetEntity entityName="User"/>
+      </bediagram:type>
+    </bediagram:member>
+    <bediagram:member refEntity="" keyType="">
+      <bediagram:name>size</bediagram:name>
+      <bediagram:type xsi:type="bediagram:LongType"/>
+    </bediagram:member>
+    <bediagram:member refEntity="" keyType="">
+      <bediagram:name>files</bediagram:name>
+      <bediagram:type xsi:type="bediagram:BEListType">
+        <bediagram:elementType xsi:type="bediagram:BEObjRefType">
+          <bediagram:targetEntity entityName="File"/>
+        </bediagram:elementType>
+      </bediagram:type>
+    </bediagram:member>
+    <bediagram:member>
+      <bediagram:name>modified</bediagram:name>
+      <bediagram:type xsi:type="bediagram:DateTimeType"/>
+    </bediagram:member>
+  </bediagram:beEntity>
+  <bediagram:beEntity needPersist="true" parent="">
+    <common:entityName>User</common:entityName>
+    <bediagram:member refEntity="" keyType="">
+      <bediagram:name>id</bediagram:name>
+      <bediagram:type xsi:type="bediagram:LongType"/>
+    </bediagram:member>
+    <bediagram:member refEntity="" keyType="">
+      <bediagram:name>name</bediagram:name>
+      <bediagram:type xsi:type="bediagram:StringType"/>
+    </bediagram:member>
+  </bediagram:beEntity>
+  <bediagram:beEntity parent="User">
+    <common:entityName>Administrator</common:entityName>
+    <bediagram:parentObject xsi:type="bediagram:BEObjRefType">
+      <bediagram:targetEntity entityName="User"/>
+    </bediagram:parentObject>
+    <bediagram:member refEntity="" keyType="">
+      <bediagram:name>field0</bediagram:name>
+      <bediagram:type xsi:type="bediagram:StringType"/>
+    </bediagram:member>
+  </bediagram:beEntity>
+  <bediagram:beEntity parent="User">
+    <common:entityName>Guest</common:entityName>
+    <bediagram:parentObject xsi:type="bediagram:BEObjRefType">
+      <bediagram:targetEntity entityName="User"/>
+    </bediagram:parentObject>
+    <bediagram:member refEntity="" keyType="">
+      <bediagram:name>field0</bediagram:name>
+      <bediagram:type xsi:type="bediagram:StringType"/>
+    </bediagram:member>
+    <bediagram:member refEntity="" keyType="">
+      <bediagram:name>field1</bediagram:name>
+      <bediagram:type xsi:type="bediagram:StringType"/>
+    </bediagram:member>
+  </bediagram:beEntity>
+  <bediagram:ceEntity>
+    <common:entityName>FileType</common:entityName>
+    <bediagram:constantValue>
+      <bediagram:value>System</bediagram:value>
+      <bediagram:intValue>0</bediagram:intValue>
+      <bediagram:description>This is Constant0 item.</bediagram:description>
+    </bediagram:constantValue>
+    <bediagram:constantValue>
+      <bediagram:value>Word</bediagram:value>
+      <bediagram:intValue>1</bediagram:intValue>
+      <bediagram:description>This is Constant1 item.</bediagram:description>
+    </bediagram:constantValue>
+    <bediagram:constantValue>
+      <bediagram:value>Java</bediagram:value>
+      <bediagram:intValue>2</bediagram:intValue>
+      <bediagram:description>This is Constant2 item.</bediagram:description>
+    </bediagram:constantValue>
+  </bediagram:ceEntity>
+</bediagram:BEDiagram>

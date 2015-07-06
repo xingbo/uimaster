@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:UIPage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ns2="http://bmdp.shaolin.org/datamodel/Page" xmlns="http://bmdp.shaolin.org/datamodel/Common"
+	xsi:schemaLocation="">
+	<entityName>org.shaolin.uimaster.page.SearchCustomer</entityName>
+	<systemVersion>0</systemVersion>
+	<ns2:UIEntity xsi:type="ns2:UIEntityType">
+		<entityName>org.shaolin.uimaster.page.SearchCustomer</entityName>
+		<ns2:eventHandler functionName="Submit"></ns2:eventHandler>
+		<ns2:body UIID="Form" xsi:type="ns2:UIPanelType">
+			<ns2:layout xsi:type="ns2:TableLayoutType">
+				<ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+				<ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+				<ns2:columnWidthWeight>1.0</ns2:columnWidthWeight>
+			</ns2:layout>
+			<ns2:component xsi:type="ns2:UIPanelType" UIID="searchConditionPanel">
+				<ns2:UISkin xsi:type="ns2:UISkinType">
+					<ns2:skinName>org.shaolin.uimaster.page.skin.TitlePanel</ns2:skinName>
+					<ns2:param name="text">
+						<ns2:value xsi:type="ns2:StringPropertyType">
+							<ns2:value>Search Condition Panel</ns2:value>
+						</ns2:value>
+					</ns2:param>
+				</ns2:UISkin>
+				<ns2:layout xsi:type="ns2:TableLayoutType">
+					<ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+					<ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+					<ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+					<ns2:columnWidthWeight>0.0</ns2:columnWidthWeight>
+					<ns2:columnWidthWeight>0.0</ns2:columnWidthWeight>
+					<ns2:columnWidthWeight>0.0</ns2:columnWidthWeight>
+					<ns2:columnWidthWeight>0.0</ns2:columnWidthWeight>
+				</ns2:layout>
+				<ns2:component xsi:type="ns2:UITextFieldType" UIID="customer_id">
+					<ns2:title xsi:type="ns2:StringPropertyType">
+						<ns2:value>Customer Id</ns2:value>
+					</ns2:title>
+					<ns2:widgetLabel xsi:type="ns2:StringPropertyType">
+						<ns2:value>Customer Id</ns2:value>
+					</ns2:widgetLabel>
+				</ns2:component>
+				<ns2:component xsi:type="ns2:UITextFieldType" UIID="customer_name">
+					<ns2:title xsi:type="ns2:StringPropertyType">
+						<ns2:value>Customer Name</ns2:value>
+					</ns2:title>
+					<ns2:widgetLabel xsi:type="ns2:StringPropertyType">
+						<ns2:value>Customer Name</ns2:value>
+					</ns2:widgetLabel>
+				</ns2:component>
+				<ns2:component xsi:type="ns2:UIComboBoxType" UIID="customer_gender">
+					<ns2:title xsi:type="ns2:StringPropertyType">
+						<ns2:value>Customer Gender</ns2:value>
+					</ns2:title>
+					<ns2:widgetLabel xsi:type="ns2:StringPropertyType">
+						<ns2:value>Customer Gender</ns2:value>
+					</ns2:widgetLabel>
+				</ns2:component>
+				<ns2:component xsi:type="ns2:UIListType" UIID="uilist">
+					<ns2:widgetLabel xsi:type="ns2:StringPropertyType">
+						<ns2:value>List Widget</ns2:value>
+					</ns2:widgetLabel>
+					<ns2:size xsi:type="ns2:StringPropertyType">
+						<ns2:value>5</ns2:value>
+					</ns2:size>
+					<ns2:multiple xsi:type="ns2:StringPropertyType">
+						<ns2:value>multiple</ns2:value>
+					</ns2:multiple>
+					<ns2:optionValue xsi:type="ns2:ArrayPropertyType">
+						<ns2:property xsi:type="ns2:StringPropertyType">
+							<ns2:value>item1</ns2:value>
+						</ns2:property>
+						<ns2:property xsi:type="ns2:StringPropertyType">
+							<ns2:value>item2</ns2:value>
+						</ns2:property>
+						<ns2:property xsi:type="ns2:StringPropertyType">
+							<ns2:value>item3</ns2:value>
+						</ns2:property>
+					</ns2:optionValue>
+				</ns2:component>
+				<ns2:component xsi:type="ns2:UIRadioButtonGroupType" UIID="radioBtnGroup">
+					<ns2:widgetLabel xsi:type="ns2:StringPropertyType">
+						<ns2:value>Radio Button Group</ns2:value>
+					</ns2:widgetLabel>
+					<ns2:optionValue xsi:type="ns2:ArrayPropertyType">
+						<ns2:property xsi:type="ns2:StringPropertyType">
+							<ns2:value>Radio Button 1</ns2:value>
+						</ns2:property>
+						<ns2:property xsi:type="ns2:StringPropertyType">
+							<ns2:value>Radio Button 2</ns2:value>
+						</ns2:property>
+						<ns2:property xsi:type="ns2:StringPropertyType">
+							<ns2:value>Radio Button 3</ns2:value>
+						</ns2:property>
+					</ns2:optionValue>
+				</ns2:component>
+				<ns2:component xsi:type="ns2:UICheckBoxGroupType" UIID="checkbBoxGroup">
+					<ns2:widgetLabel xsi:type="ns2:StringPropertyType">
+						<ns2:value>CheckBox Group</ns2:value>
+					</ns2:widgetLabel>
+					<ns2:optionValue xsi:type="ns2:ArrayPropertyType">
+						<ns2:property xsi:type="ns2:StringPropertyType">
+							<ns2:value>check box1</ns2:value>
+						</ns2:property>
+						<ns2:property xsi:type="ns2:StringPropertyType">
+							<ns2:value>check box2</ns2:value>
+						</ns2:property>
+						<ns2:property xsi:type="ns2:StringPropertyType">
+							<ns2:value>check box3</ns2:value>
+						</ns2:property>
+					</ns2:optionValue>
+				</ns2:component>
+				<ns2:component xsi:type="ns2:UIButtonType" UIID="searchButton">
+					<ns2:EventListener xsi:type="ns2:ClickListenerType">
+						<ns2:handler functionName="Submit" />
+					</ns2:EventListener>
+					<ns2:text xsi:type="ns2:StringPropertyType">
+						<ns2:value>Search</ns2:value>
+					</ns2:text>
+				</ns2:component>
+				<ns2:layoutConstraint>
+					<ns2:componentId>customer_id</ns2:componentId>
+					<ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+						x="0" y="0" align="FULL"></ns2:constraint>
+				</ns2:layoutConstraint>
+				<ns2:layoutConstraint>
+					<ns2:componentId>customer_name</ns2:componentId>
+					<ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+						x="1" y="0" align="FULL"></ns2:constraint>
+				</ns2:layoutConstraint>
+				<ns2:layoutConstraint>
+					<ns2:componentId>customer_gender</ns2:componentId>
+					<ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+						x="2" y="0" align="FULL"></ns2:constraint>
+				</ns2:layoutConstraint>
+				<ns2:layoutConstraint>
+					<ns2:componentId>radioBtnGroup</ns2:componentId>
+					<ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+						x="0" y="1" align="FULL"></ns2:constraint>
+				</ns2:layoutConstraint>
+				<ns2:layoutConstraint>
+					<ns2:componentId>checkbBoxGroup</ns2:componentId>
+					<ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+						x="1" y="1" align="FULL"></ns2:constraint>
+				</ns2:layoutConstraint>
+				<ns2:layoutConstraint>
+					<ns2:componentId>uilist</ns2:componentId>
+					<ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+						x="2" y="1" align="FULL"></ns2:constraint>
+				</ns2:layoutConstraint>
+				<ns2:layoutConstraint>
+					<ns2:componentId>searchButton</ns2:componentId>
+					<ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+						x="0" y="2" align="FULL"></ns2:constraint>
+				</ns2:layoutConstraint>
+			</ns2:component>
+			<ns2:component xsi:type="ns2:UIPanelType" UIID="searchResultPanel">
+				<ns2:UISkin xsi:type="ns2:UISkinType">
+					<ns2:skinName>org.shaolin.uimaster.page.skin.TitlePanel</ns2:skinName>
+					<ns2:param name="text">
+						<ns2:value xsi:type="ns2:StringPropertyType">
+							<ns2:value>Search Result Panel</ns2:value>
+						</ns2:value>
+					</ns2:param>
+				</ns2:UISkin>
+				<ns2:layout xsi:type="ns2:TableLayoutType">
+					<ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+					<ns2:columnWidthWeight>1.0</ns2:columnWidthWeight>
+				</ns2:layout>
+				<ns2:component xsi:type="ns2:UITableType" UIID="searchResultTable">
+					<ns2:beElement>org.shaolin.uimaster.test.be.Customer</ns2:beElement>
+					<ns2:selectMode xsi:type="ns2:UITableSelectModeType">Multiple</ns2:selectMode>
+					<ns2:defaultRowSize>10</ns2:defaultRowSize>
+					<ns2:query xsi:type="ns2:ExpressionPropertyType">
+						<ns2:expression xsi:type="ns2:ExpressionType">
+							<ns2:expressionString><![CDATA[
+							import org.shaolin.uimaster.test.be.ICustomer;
+							import org.shaolin.uimaster.test.be.CustomerImpl;
+							import org.shaolin.uimaster.test.ce.Gender;
+							import org.shaolin.uimaster.page.ajax.TableCondition;
+							{
+								$tableCondition.getCount();
+								$tableCondition.getOffset();
+								java.util.List result = new java.util.ArrayList();
+								
+								for (int i=0; i < 10; i++) {
+									ICustomer customerOne = new CustomerImpl();
+							        customerOne.setId(110 + i);
+							        customerOne.setName("Shaolin Wu");
+							        customerOne.setGender(Gender.MALE);
+									result.add(customerOne);
+								}
+								
+								return result;
+							}]]></ns2:expressionString>
+						</ns2:expression>
+					</ns2:query>
+					<ns2:totalCount xsi:type="ns2:ExpressionPropertyType">
+						<ns2:expression xsi:type="ns2:ExpressionType">
+							<ns2:expressionString><![CDATA[
+							import org.shaolin.uimaster.test.be.ICustomer;
+							import org.shaolin.uimaster.test.be.CustomerImpl;
+							import org.shaolin.uimaster.page.ajax.TableCondition;
+							{
+								$tableCondition.getCount();
+								return 10;
+							}]]></ns2:expressionString>
+						</ns2:expression>
+					</ns2:totalCount>
+					<ns2:column xsi:type="ns2:UITableColumnType">
+						<ns2:title xsi:type="ns2:StringPropertyType">
+							<ns2:value>Customer Id</ns2:value>
+						</ns2:title>
+						<ns2:uiid>custId_col</ns2:uiid>
+						<ns2:uiType xsi:type="ns2:UITableColHTMLType">Label</ns2:uiType>
+						<ns2:rowExpression xsi:type="ns2:ExpressionPropertyType">
+							<ns2:expression xsi:type="ns2:ExpressionType">
+								<ns2:expressionString><![CDATA[$rowBE.getId()]]></ns2:expressionString>
+							</ns2:expression>
+						</ns2:rowExpression>
+					</ns2:column>
+					<ns2:column xsi:type="ns2:UITableColumnType">
+						<ns2:title xsi:type="ns2:StringPropertyType">
+							<ns2:value>Customer Name</ns2:value>
+						</ns2:title>
+						<ns2:uiid>custName_col</ns2:uiid>
+						<ns2:uiType xsi:type="ns2:UITableColHTMLType">Label</ns2:uiType>
+						<ns2:rowExpression xsi:type="ns2:ExpressionPropertyType">
+							<ns2:expression xsi:type="ns2:ExpressionType">
+								<ns2:expressionString><![CDATA[$rowBE.getName()]]></ns2:expressionString>
+							</ns2:expression>
+						</ns2:rowExpression>
+					</ns2:column>
+					<ns2:column xsi:type="ns2:UITableColumnType">
+						<ns2:title xsi:type="ns2:StringPropertyType">
+							<ns2:value>Customer Gender</ns2:value>
+						</ns2:title>
+						<ns2:uiid>custGender_col</ns2:uiid>
+						<ns2:uiType xsi:type="ns2:UITableColHTMLType">Label</ns2:uiType>
+						<ns2:rowExpression xsi:type="ns2:ExpressionPropertyType">
+							<ns2:expression xsi:type="ns2:ExpressionType">
+								<ns2:expressionString><![CDATA[$rowBE.getGender()]]></ns2:expressionString>
+							</ns2:expression>
+						</ns2:rowExpression>
+					</ns2:column>
+				</ns2:component>
+				<ns2:layoutConstraint>
+					<ns2:componentId>searchResultTable</ns2:componentId>
+					<ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+						x="0" y="0" align="FULL"></ns2:constraint>
+				</ns2:layoutConstraint>
+			</ns2:component>
+			<ns2:layoutConstraint>
+				<ns2:componentId>searchConditionPanel</ns2:componentId>
+				<ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+					x="0" y="0" align="FULL"></ns2:constraint>
+			</ns2:layoutConstraint>
+			<ns2:layoutConstraint>
+				<ns2:componentId>searchResultPanel</ns2:componentId>
+				<ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+					x="0" y="1" align="FULL"></ns2:constraint>
+			</ns2:layoutConstraint>
+		</ns2:body>
+	</ns2:UIEntity>
+	<ns2:ODMapping>
+		<ns2:DataEntity category="BusinessEntity" name="customer">
+			<ns2:type entityName="org.shaolin.uimaster.test.be.Customer" />
+		</ns2:DataEntity>
+		<ns2:DataEntity category="JavaClass" name="tableCondition" scope="Internal">
+			<ns2:type entityName="org.shaolin.uimaster.page.ajax.TableConditions" />
+			<ns2:default><ns2:expressionString><![CDATA[org.shaolin.uimaster.page.ajax.TableConditions.createCondition()]]></ns2:expressionString></ns2:default>
+		</ns2:DataEntity>
+		<ns2:ComponentMapping xsi:type="ns2:SimpleComponentMappingType"
+			name="simpleMapping0">
+			<ns2:mappingRule
+				entityName="org.shaolin.uimaster.page.od.rules.UITextWithNumber"></ns2:mappingRule>
+			<ns2:UIComponent componentPath="customer_id"
+				paramName="UIWidgetType"></ns2:UIComponent>
+			<ns2:DataComponent xsi:type="ns2:ComponentParamType"
+				componentPath="customer.id" paramName="Number"></ns2:DataComponent>
+		</ns2:ComponentMapping>
+		<ns2:ComponentMapping xsi:type="ns2:SimpleComponentMappingType"
+			name="simpleMapping1">
+			<ns2:mappingRule entityName="org.shaolin.uimaster.page.od.rules.UIText"></ns2:mappingRule>
+			<ns2:UIComponent componentPath="customer_name"
+				paramName="UIWidgetType"></ns2:UIComponent>
+			<ns2:DataComponent xsi:type="ns2:ComponentParamType"
+				componentPath="customer.name" paramName="StringData"></ns2:DataComponent>
+		</ns2:ComponentMapping>
+		<ns2:ComponentMapping xsi:type="ns2:SimpleComponentMappingType"
+			name="simpleMapping2">
+			<ns2:mappingRule
+				entityName="org.shaolin.uimaster.page.od.rules.UISingleChoiceAndCE"></ns2:mappingRule>
+			<ns2:UIComponent componentPath="customer_gender"
+				paramName="UIWidgetType"></ns2:UIComponent>
+			<ns2:DataComponent xsi:type="ns2:ExpressionParamType"
+				paramName="CEType">
+				<ns2:expression>
+					<ns2:expressionString><![CDATA[org.shaolin.uimaster.test.ce.Gender.ENTITY_NAME]]></ns2:expressionString>
+				</ns2:expression>
+			</ns2:DataComponent>
+			<DataComponent xsi:type="ns2:ComponentParamType"
+				componentPath="customer.gender" paramName="CEValue" />
+		</ns2:ComponentMapping>
+		<ns2:ComponentMapping xsi:type="ns2:SimpleComponentMappingType"
+			name="simpleMapping3">
+			<ns2:mappingRule entityName="org.shaolin.uimaster.page.od.rules.UITable"></ns2:mappingRule>
+			<ns2:UIComponent componentPath="searchResultTable"
+				paramName="UIWidgetType"></ns2:UIComponent>
+			<ns2:DataComponent xsi:type="ns2:ComponentParamType"
+				componentPath="tableCondition" paramName="Condition"></ns2:DataComponent>
+		</ns2:ComponentMapping>
+	</ns2:ODMapping>
+	<ns2:in>
+		<ns2:serverOperation xsi:type="ns2:ExpressionParamType">
+			<ns2:expressionString><![CDATA[{
+				$tableCondition.setBECondition($customer);
+				@odContext.executeAllMappings();
+			}]]></ns2:expressionString>
+		</ns2:serverOperation>
+	</ns2:in>
+	<ns2:out name="out1">
+		<ns2:serverOperation xsi:type="ns2:ExpressionParamType" />
+	</ns2:out>
+</ns2:UIPage>

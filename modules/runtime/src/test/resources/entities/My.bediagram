@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bediagram:BEDiagram xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xmlns:bediagram="http://bmdp.shaolin.org/datamodel/BEDiagram" 
+xmlns:common="http://bmdp.shaolin.org/datamodel/Common" 
+bePackage="org.shaolin.uimaster.be" cePackage="org.shaolin.uimaster.ce" diagramPackage="org.shaolin.uimaster.bediagram">
+  <bediagram:beEntity parent="">
+    <common:entityName>Customer</common:entityName>
+    <common:description>s</common:description>
+    <common:author>Shaolin2</common:author>
+    <bediagram:member refEntity="" keyType="">
+      <bediagram:name>id</bediagram:name>
+      <bediagram:description>Hello</bediagram:description>
+      <bediagram:defaultValue>1</bediagram:defaultValue>
+      <bediagram:type xsi:type="bediagram:LongType"/>
+    </bediagram:member>
+    <bediagram:member refEntity="" keyType="">
+      <bediagram:name>name</bediagram:name>
+      <bediagram:description></bediagram:description>
+      <bediagram:defaultValue>&quot;hello&quot;</bediagram:defaultValue>
+      <bediagram:type xsi:type="bediagram:StringType"/>
+    </bediagram:member>
+    <bediagram:member refEntity="Gender" keyType="">
+      <bediagram:name>gender</bediagram:name>
+      <bediagram:description>h1</bediagram:description>
+      <bediagram:defaultValue></bediagram:defaultValue>
+      <bediagram:type xsi:type="bediagram:CEObjRefType">
+        <bediagram:targetEntity entityName="org.shaolin.uimaster.ce.Gender"/>
+      </bediagram:type>
+    </bediagram:member>
+    <bediagram:member refEntity="Address" keyType="">
+      <bediagram:name>address</bediagram:name>
+      <bediagram:description>Appearently, this is perfect1</bediagram:description>
+      <bediagram:defaultValue></bediagram:defaultValue>
+      <bediagram:type xsi:type="bediagram:BEObjRefType">
+        <bediagram:targetEntity entityName="org.shaolin.uimaster.be.Address"/>
+      </bediagram:type>
+    </bediagram:member>
+    <bediagram:member refEntity="Customer" keyType="java.lang.String">
+      <bediagram:name>map</bediagram:name>
+      <bediagram:defaultValue>true</bediagram:defaultValue>
+      <bediagram:type xsi:type="bediagram:BEMapType">
+        <bediagram:elementType xsi:type="bediagram:BEObjRefType">
+          <bediagram:targetEntity entityName="org.shaolin.uimaster.be.Customer"/>
+        </bediagram:elementType>
+        <bediagram:keyType xsi:type="bediagram:StringType"/>
+      </bediagram:type>
+    </bediagram:member>
+    <bediagram:member refEntity="java.lang.String" keyType="">
+      <bediagram:name>javaref</bediagram:name>
+      <bediagram:description></bediagram:description>
+      <bediagram:type xsi:type="bediagram:JavaObjRefType">
+        <bediagram:targetJava name="java.lang.String"/>
+      </bediagram:type>
+    </bediagram:member>
+    <bediagram:member refEntity="java.lang.String" keyType="">
+      <bediagram:name>list</bediagram:name>
+      <bediagram:type xsi:type="bediagram:BEListType">
+        <bediagram:elementType xsi:type="bediagram:BEObjRefType">
+          <bediagram:targetEntity entityName="org.shaolin.uimaster.be.Customer"/>
+        </bediagram:elementType>
+      </bediagram:type>
+    </bediagram:member>
+  </bediagram:beEntity>
+  <bediagram:beEntity parent="Customer">
+    <common:entityName>Address</common:entityName>
+    <common:description>hello</common:description>
+    <common:author></common:author>
+    <bediagram:parentObject xsi:type="bediagram:BEObjRefType">
+      <bediagram:targetEntity entityName="org.shaolin.uimaster.be.Customer"/>
+    </bediagram:parentObject>
+    <bediagram:member refEntity="" keyType="">
+      <bediagram:name>id</bediagram:name>
+      <bediagram:type xsi:type="bediagram:LongType"/>
+    </bediagram:member>
+    <bediagram:member refEntity="" keyType="">
+      <bediagram:name>street</bediagram:name>
+      <bediagram:type xsi:type="bediagram:StringType"/>
+    </bediagram:member>
+    <bediagram:member refEntity="" keyType="">
+      <bediagram:name>zipcode</bediagram:name>
+      <bediagram:type xsi:type="bediagram:StringType"/>
+    </bediagram:member>
+    <bediagram:member refEntity="" keyType="">
+      <bediagram:name>phone</bediagram:name>
+      <bediagram:type xsi:type="bediagram:StringType"/>
+    </bediagram:member>
+    <bediagram:member refEntity="" keyType="">
+      <bediagram:name>additional</bediagram:name>
+      <bediagram:type xsi:type="bediagram:StringType"/>
+    </bediagram:member>
+  </bediagram:beEntity>
+  <bediagram:ceEntity>
+    <common:entityName>Gender</common:entityName>
+    <bediagram:constantValue>
+      <bediagram:value>Male</bediagram:value>
+      <bediagram:intValue>1</bediagram:intValue>
+    </bediagram:constantValue>
+    <bediagram:constantValue>
+      <bediagram:value>Female</bediagram:value>
+      <bediagram:intValue>2</bediagram:intValue>
+    </bediagram:constantValue>
+    <bediagram:constantValue>
+      <bediagram:value>constant3</bediagram:value>
+      <bediagram:intValue>3</bediagram:intValue>
+      <bediagram:description>This is constant0 item.</bediagram:description>
+    </bediagram:constantValue>
+    <bediagram:constantValue>
+      <bediagram:value>constant7</bediagram:value>
+      <bediagram:intValue>7</bediagram:intValue>
+      <bediagram:description>This is constant0 item.</bediagram:description>
+    </bediagram:constantValue>
+  </bediagram:ceEntity>
+</bediagram:BEDiagram>
