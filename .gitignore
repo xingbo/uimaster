@@ -5,3 +5,6 @@ target
 be
 ce
 sql
+.classpath
+.project
+.settings
