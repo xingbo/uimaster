@@ -153,36 +153,38 @@ public class HibernateMappingGenerator implements IEntityEventListener<TableType
 						// Specifying unique="true", changes the multiplicity from many-to-many to one-to-many.
 						String targetBEClass =  BEUtil.getBEImplementClassName(listMapping.getCollectionElement());
 						JoinTableType joinTable = getJoinTable(diagram, listMapping.getAssociationName());
-						out.write("    <set name=\"");
+						out.write("    <list name=\"");
 						out.print(listMapping.getBeFieldName());
 						out.write("\" table=\"");
 						out.print(joinTable.getName());
 						//cascade="all|none|save-update|delete|all-delete-orphan|(6)delete-orphan"
 					    //sort="unsorted|natural|comparatorClass"     
 						//TODO: cascading decision is difficult here.
-						out.write("\" cascade=\"none\" lazy=\"true\">\n");
+						out.write("\" cascade=\"all\" lazy=\"true\">\n");
 						out.write("        <key column=\"");
 						out.print(joinTable.getTarPKColumn());
 						out.write("\"/>\n");
+						out.write("        <index column=\"_index\"/>\n");
 						out.write("        <many-to-many unique=\"true\" class=\"");
 						out.print(targetBEClass);
 						out.write("\"/>\n");
-						out.write("    </set>\n");
+						out.write("    </list>\n");
 					} else if ("Many-to-Many".equals(listMapping.getMappingType())) {
 						String targetBEClass =  BEUtil.getBEImplementClassName(listMapping.getCollectionElement());
 						JoinTableType joinTable = getJoinTable(diagram, listMapping.getAssociationName());
-						out.write("    <set name=\"");
+						out.write("    <list name=\"");
 						out.print(listMapping.getBeFieldName());
 						out.write("\" table=\"");
 						out.print(joinTable.getName());
-						out.write("\" cascade=\"none\" lazy=\"true\">\n");
+						out.write("\" cascade=\"all\" lazy=\"true\">\n");
 						out.write("        <key column=\"");
 						out.print(joinTable.getTarPKColumn());
 						out.write("\"/>\n");
+						out.write("        <index column=\"_index\"/>\n");
 						out.write("        <many-to-many class=\"");
 						out.print(targetBEClass);
 						out.write("\"/>\n");
-						out.write("    </set>\n");
+						out.write("    </list>\n");
 					}
 				} else {
 					// 8.1.1. Basic types hibernate-release-4.2.3.Final/
