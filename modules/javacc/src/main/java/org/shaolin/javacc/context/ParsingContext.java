@@ -11,7 +11,6 @@ import org.shaolin.javacc.exception.ParsingException;
 /**
  * The parsing context interface for parsing
  *
- * @author Xiao Yi
  */
 public interface ParsingContext extends Serializable
 {

@@ -1,6 +1,7 @@
 package org.shaolin.javacc.context;
 
 //imports
+import java.io.Serializable;
 import java.util.List;
 
 import org.shaolin.javacc.exception.EvaluationException;
@@ -8,10 +9,8 @@ import org.shaolin.javacc.exception.EvaluationException;
 
 /**
  * The evaluation context interface for evaluation
- *
- * @author Xiao Yi
  */
-public interface EvaluationContext
+public interface EvaluationContext extends Serializable
 {
 	/**
 	 *  Get the value of a variable with the specified name
