@@ -45,6 +45,10 @@ public final class MySQLProvider extends AbstractDBMSProvider {
 			String len = column.getLength();
 			return "BIGINT(" + ((len != null) ? len : "38") + ")";
 		}
+		if (type.equals("INT")) {
+			String len = column.getLength();
+			return "INT(" + ((len != null) ? len : "5") + ")";
+		}
 		if (type.equals("BIT")) {
 			return "TINYINT(1)";
 		}

@@ -160,7 +160,7 @@ public class HibernateMappingGenerator implements IEntityEventListener<TableType
 						//cascade="all|none|save-update|delete|all-delete-orphan|(6)delete-orphan"
 					    //sort="unsorted|natural|comparatorClass"     
 						//TODO: cascading decision is difficult here.
-						out.write("\" cascade=\"all\" lazy=\"true\">\n");
+						out.write("\" cascade=\"all\" lazy=\"false\">\n");
 						out.write("        <key column=\"");
 						out.print(joinTable.getTarPKColumn());
 						out.write("\"/>\n");
@@ -176,7 +176,7 @@ public class HibernateMappingGenerator implements IEntityEventListener<TableType
 						out.print(listMapping.getBeFieldName());
 						out.write("\" table=\"");
 						out.print(joinTable.getName());
-						out.write("\" cascade=\"all\" lazy=\"true\">\n");
+						out.write("\" cascade=\"all\" lazy=\"false\">\n");
 						out.write("        <key column=\"");
 						out.print(joinTable.getTarPKColumn());
 						out.write("\"/>\n");

@@ -36,6 +36,7 @@ import org.shaolin.bmdp.datamodel.page.FunctionCallType;
 import org.shaolin.bmdp.datamodel.page.FunctionType;
 import org.shaolin.bmdp.datamodel.page.ODMappingType;
 import org.shaolin.bmdp.datamodel.page.OpCallAjaxType;
+import org.shaolin.bmdp.datamodel.page.OpExecuteScriptType;
 import org.shaolin.bmdp.datamodel.page.OpInvokeWorkflowType;
 import org.shaolin.bmdp.datamodel.page.ResourceBundlePropertyType;
 import org.shaolin.bmdp.datamodel.page.SimpleComponentMappingType;
@@ -114,6 +115,18 @@ public final class UIPageGenerator implements IEntityEventListener<BusinessEntit
 		} 
 		File formFile = new File(formDir, uiformName);
 		if (formFile.exists()) {
+			if (event.getEntity().isNeedUITableEditor()) {
+				File tableFile = new File(formDir, name + "Table.form");
+				if (tableFile.exists()) {
+					return;
+				}
+				try {
+					createTableEditorForm(formDir, event.getEntity().getMembers(), formPackage, name, beImpl, beImplName, entityName);
+				} catch (Exception e) {
+					logger.error("Error when generate form table for " + entityName,
+							e);
+				}
+			}
 			return;// already existed.
 		}
 		
@@ -352,6 +365,11 @@ public final class UIPageGenerator implements IEntityEventListener<BusinessEntit
 		
 		FunctionType saveFunc = new FunctionType();
 		saveFunc.setFunctionName("Save");
+		
+		OpExecuteScriptType scriptCall = new OpExecuteScriptType();
+		scriptCall.setExpressionString("{this.itemTable.syncBodyDataToServer();}");
+		saveFunc.getOps().add(scriptCall);
+		
 		OpCallAjaxType ajaxCall2 = new OpCallAjaxType();
 		ajaxCall2.setName("saveItem_" + (new Random()).nextInt());
 		ExpressionType expr2 = new ExpressionType();

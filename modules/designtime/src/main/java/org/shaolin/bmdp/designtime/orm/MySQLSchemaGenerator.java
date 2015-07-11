@@ -284,9 +284,16 @@ flush privileges;
         elt.setType("BIGINT");
         elt.setPrecision(38);
         elt.setIsNull(false);
+        ColumnType index = new ColumnType();
+        index.setName("_index");
+        index.setType("INT");
+        index.setPrecision(11);
+        index.setIsNull(false);
         generateColumnSql(provider, pkCol);
         out.write(",\n ");
         generateColumnSql(provider, elt);
+        out.write(",\n ");
+        generateColumnSql(provider, index);
         out.write(");\n");
         
     }
