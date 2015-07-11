@@ -1,6 +1,5 @@
 package org.shaolin.javacc.util;
 
-//imports
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -20,12 +19,131 @@ import org.shaolin.javacc.exception.ParsingException;
 
 /**
  * The util class for expression parsing and evaluation
- * 
- * @author Xiao Yi
  */
 public class ExpressionUtil
 {
-    /**
+
+    public static final int BYTE_PRECISION = -2;
+    public static final int SHORT_PRECISION = -1;
+    public static final int CHAR_PRECISION = 1;
+    public static final int INTEGER_PRECISION = 2;
+    public static final int LONG_PRECISION = 3;
+    public static final int FLOAT_PRECISION = 4;
+    public static final int DOUBLE_PRECISION = 5;
+
+    private static List importedClass;
+
+    private static Map primitiveClassMap = new HashMap();
+    private static Map primitiveLangClassMap = new HashMap();
+    private static final Map javaLangMap = new HashMap(80);
+
+    static
+    {
+        importedClass = new ArrayList();
+        // importedClass.add("java.lang.*");
+
+        primitiveClassMap.put("boolean", boolean.class);
+        primitiveClassMap.put("byte", byte.class);
+        primitiveClassMap.put("short", short.class);
+        primitiveClassMap.put("char", char.class);
+        primitiveClassMap.put("int", int.class);
+        primitiveClassMap.put("long", long.class);
+        primitiveClassMap.put("float", float.class);
+        primitiveClassMap.put("double", double.class);
+        primitiveClassMap.put("void", void.class);
+
+        primitiveLangClassMap.put(Boolean.class, Boolean.class);
+        primitiveLangClassMap.put(Byte.class, Byte.class);
+        primitiveLangClassMap.put(Short.class, Short.class);
+        primitiveLangClassMap.put(Character.class, Character.class);
+        primitiveLangClassMap.put(Integer.class, Integer.class);
+        primitiveLangClassMap.put(Long.class, Long.class);
+        primitiveLangClassMap.put(Float.class, Float.class);
+        primitiveLangClassMap.put(Double.class, Double.class);
+        
+        javaLangMap.put("CharSequence", CharSequence.class);
+        javaLangMap.put("Cloneable", Cloneable.class);
+        javaLangMap.put("Comparable", Comparable.class);
+        javaLangMap.put("Runnable", Runnable.class);
+        javaLangMap.put("Boolean", Boolean.class);
+        javaLangMap.put("Byte", Byte.class);
+        javaLangMap.put("Character", Character.class);
+        javaLangMap.put("Class", Class.class);
+        javaLangMap.put("ClassLoader", ClassLoader.class);
+        javaLangMap.put("Compiler", Compiler.class);
+        javaLangMap.put("Double", Double.class);
+        javaLangMap.put("Float", Float.class);
+        javaLangMap.put("InheritableThreadLocal", InheritableThreadLocal.class);
+        javaLangMap.put("Integer", Integer.class);
+        javaLangMap.put("Long", Long.class);
+        javaLangMap.put("Math", Math.class);
+        javaLangMap.put("Number", Number.class);
+        javaLangMap.put("Object", Object.class);
+        javaLangMap.put("Package", Package.class);
+        javaLangMap.put("Process", Process.class);
+        javaLangMap.put("Runtime", Runtime.class);
+        javaLangMap.put("RuntimePermission", RuntimePermission.class);
+        javaLangMap.put("SecurityManager", SecurityManager.class);
+        javaLangMap.put("Short", Short.class);
+        javaLangMap.put("StackTraceElement", StackTraceElement.class);
+        javaLangMap.put("StrictMath", StrictMath.class);
+        javaLangMap.put("String", String.class);
+        javaLangMap.put("StringBuffer", StringBuffer.class);
+        javaLangMap.put("System", System.class);
+        javaLangMap.put("Thread", Thread.class);
+        javaLangMap.put("ThreadGroup", ThreadGroup.class);
+        javaLangMap.put("ThreadLocal", ThreadLocal.class);
+        javaLangMap.put("Throwable", Throwable.class);
+        javaLangMap.put("Void", Void.class);
+        javaLangMap.put("ArithmeticException", ArithmeticException.class);
+        javaLangMap.put("ArrayIndexOutOfBoundsException", ArrayIndexOutOfBoundsException.class);
+        javaLangMap.put("ArrayStoreException", ArrayStoreException.class);
+        javaLangMap.put("ClassCastException", ClassCastException.class);
+        javaLangMap.put("ClassNotFoundException", ClassNotFoundException.class);
+        javaLangMap.put("CloneNotSupportedException", CloneNotSupportedException.class);
+        javaLangMap.put("Exception", Exception.class);
+        javaLangMap.put("IllegalAccessException", IllegalAccessException.class);
+        javaLangMap.put("IllegalArgumentException", IllegalArgumentException.class);
+        javaLangMap.put("IllegalMonitorStateException", IllegalMonitorStateException.class);
+        javaLangMap.put("IllegalStateException", IllegalStateException.class);
+        javaLangMap.put("IllegalThreadStateException", IllegalThreadStateException.class);
+        javaLangMap.put("IndexOutOfBoundsException", IndexOutOfBoundsException.class);
+        javaLangMap.put("InstantiationException", InstantiationException.class);
+        javaLangMap.put("InterruptedException", InterruptedException.class);
+        javaLangMap.put("NegativeArraySizeException", NegativeArraySizeException.class);
+        javaLangMap.put("NoSuchFieldException", NoSuchFieldException.class);
+        javaLangMap.put("NoSuchMethodException", NoSuchMethodException.class);
+        javaLangMap.put("NullPointerException", NullPointerException.class);
+        javaLangMap.put("NumberFormatException", NumberFormatException.class);
+        javaLangMap.put("RuntimeException", RuntimeException.class);
+        javaLangMap.put("SecurityException", SecurityException.class);
+        javaLangMap.put("StringIndexOutOfBoundsException", StringIndexOutOfBoundsException.class);
+        javaLangMap.put("UnsupportedOperationException", UnsupportedOperationException.class);
+        javaLangMap.put("AbstractMethodError", AbstractMethodError.class);
+        javaLangMap.put("AssertionError", AssertionError.class);
+        javaLangMap.put("ClassCircularityError", ClassCircularityError.class);
+        javaLangMap.put("ClassFormatError", ClassFormatError.class);
+        javaLangMap.put("Error", Error.class);
+        javaLangMap.put("ExceptionInInitializerError", ExceptionInInitializerError.class);
+        javaLangMap.put("IllegalAccessError", IllegalAccessError.class);
+        javaLangMap.put("IncompatibleClassChangeError", IncompatibleClassChangeError.class);
+        javaLangMap.put("InstantiationError", InstantiationError.class);
+        javaLangMap.put("InternalError", InternalError.class);
+        javaLangMap.put("LinkageError", LinkageError.class);
+        javaLangMap.put("NoClassDefFoundError", NoClassDefFoundError.class);
+        javaLangMap.put("NoSuchFieldError", NoSuchFieldError.class);
+        javaLangMap.put("NoSuchMethodError", NoSuchMethodError.class);
+        javaLangMap.put("OutOfMemoryError", OutOfMemoryError.class);
+        javaLangMap.put("StackOverflowError", StackOverflowError.class);
+        javaLangMap.put("ThreadDeath", ThreadDeath.class);
+        javaLangMap.put("UnknownError", UnknownError.class);
+        javaLangMap.put("UnsatisfiedLinkError", UnsatisfiedLinkError.class);
+        javaLangMap.put("UnsupportedClassVersionError", UnsupportedClassVersionError.class);
+        javaLangMap.put("VerifyError", VerifyError.class);
+        javaLangMap.put("VirtualMachineError", VirtualMachineError.class);
+    }
+	
+	/**
      * Determine whether the operand of type operandClass can be a numeric
      * operand
      * 
@@ -36,9 +154,14 @@ public class ExpressionUtil
      */
     public static boolean isNumeric(Class operandClass)
     {
-        if (operandClass == null || !operandClass.isPrimitive() || operandClass == boolean.class
+        if (operandClass == null 
+        		|| !operandClass.isPrimitive() 
+        		|| operandClass == boolean.class
                 || operandClass == void.class)
         {
+        	if (primitiveLangClassMap.containsKey(operandClass)) {
+        		return true;
+        	}
             return false;
         }
 
@@ -141,7 +264,6 @@ public class ExpressionUtil
             throws ParsingException
     {
         Object result = null;
-
         if (originObject != null && originObject.getClass() == valueClass)
         {
             result = originObject;
@@ -154,6 +276,10 @@ public class ExpressionUtil
         {
             char value = ((Character) originObject).charValue();
             result = getNumericReturnObject(new Integer(value), valueClass);
+        }
+        else if (originObject instanceof Boolean) 
+        {
+        	result = originObject;
         }
         else
         {
@@ -176,7 +302,6 @@ public class ExpressionUtil
     private static Object getNumericReturnObject(Number value, Class valueClass)
     {
         Object result = null;
-
         if (valueClass == byte.class)
         {
             result = new Byte(value.byteValue());
@@ -221,42 +346,31 @@ public class ExpressionUtil
     public static int getNumericPrecision(Class numberClass) throws ParsingException
     {
         int precision;
-
-        /*
-         * if(className.equals("byte")) { precision = BYTE_PRECISION; } else
-         * if(className.equals("short")) { precision = SHORT_PRECISION; } else
-         * if(className.equals("char")) { precision = CHAR_PRECISION; } else
-         * if(className.equals("int")) { precision = INTEGER_PRECISION; } else
-         * if(className.equals("long")) { precision = LONG_PRECISION; } else
-         * if(className.equals("float")) { precision = FLOAT_PRECISION; } else
-         * if(className.equals("double")) { precision = DOUBLE_PRECISION; }
-         */
-
-        if (numberClass == byte.class)
+        if (numberClass == byte.class || numberClass == Byte.class)
         {
             precision = BYTE_PRECISION;
         }
-        else if (numberClass == short.class)
+        else if (numberClass == short.class || numberClass == Short.class)
         {
             precision = SHORT_PRECISION;
         }
-        else if (numberClass == char.class)
+        else if (numberClass == char.class || numberClass == Character.class)
         {
             precision = CHAR_PRECISION;
         }
-        else if (numberClass == int.class)
+        else if (numberClass == int.class || numberClass == Integer.class)
         {
             precision = INTEGER_PRECISION;
         }
-        else if (numberClass == long.class)
+        else if (numberClass == long.class || numberClass == Long.class)
         {
             precision = LONG_PRECISION;
         }
-        else if (numberClass == float.class)
+        else if (numberClass == float.class || numberClass == Float.class)
         {
             precision = FLOAT_PRECISION;
         }
-        else if (numberClass == double.class)
+        else if (numberClass == double.class || numberClass == Double.class)
         {
             precision = DOUBLE_PRECISION;
         }
@@ -264,7 +378,6 @@ public class ExpressionUtil
         {
             throw new ParsingException(numberClass + " is not a primitive type class of number");
         }
-
         return precision;
     }
 
@@ -810,6 +923,10 @@ public class ExpressionUtil
                 }
             }
         }
+        else if (targetClass.isAssignableFrom(fromClass)
+                        && fromClass.isAssignableFrom(targetClass)) {
+        	result = true;
+        }
 
         return result;
     }
@@ -846,116 +963,6 @@ public class ExpressionUtil
     public static void setCurrentClassLoader(ClassLoader classLoader)
     {
         ClassLoaderUtil.setCurrentClassLoader(classLoader);
-    }
-
-    public static final int BYTE_PRECISION = -2;
-    public static final int SHORT_PRECISION = -1;
-    public static final int CHAR_PRECISION = 1;
-    public static final int INTEGER_PRECISION = 2;
-    public static final int LONG_PRECISION = 3;
-    public static final int FLOAT_PRECISION = 4;
-    public static final int DOUBLE_PRECISION = 5;
-
-    private static List importedClass;
-
-    private static Map primitiveClassMap = new HashMap();
-    private static final Map javaLangMap = new HashMap(80);
-
-    static
-    {
-        importedClass = new ArrayList();
-        // importedClass.add("java.lang.*");
-
-        primitiveClassMap.put("boolean", boolean.class);
-        primitiveClassMap.put("byte", byte.class);
-        primitiveClassMap.put("short", short.class);
-        primitiveClassMap.put("char", char.class);
-        primitiveClassMap.put("int", int.class);
-        primitiveClassMap.put("long", long.class);
-        primitiveClassMap.put("float", float.class);
-        primitiveClassMap.put("double", double.class);
-        primitiveClassMap.put("void", void.class);
-
-        javaLangMap.put("CharSequence", CharSequence.class);
-        javaLangMap.put("Cloneable", Cloneable.class);
-        javaLangMap.put("Comparable", Comparable.class);
-        javaLangMap.put("Runnable", Runnable.class);
-        javaLangMap.put("Boolean", Boolean.class);
-        javaLangMap.put("Byte", Byte.class);
-        javaLangMap.put("Character", Character.class);
-        javaLangMap.put("Class", Class.class);
-        javaLangMap.put("ClassLoader", ClassLoader.class);
-        javaLangMap.put("Compiler", Compiler.class);
-        javaLangMap.put("Double", Double.class);
-        javaLangMap.put("Float", Float.class);
-        javaLangMap.put("InheritableThreadLocal", InheritableThreadLocal.class);
-        javaLangMap.put("Integer", Integer.class);
-        javaLangMap.put("Long", Long.class);
-        javaLangMap.put("Math", Math.class);
-        javaLangMap.put("Number", Number.class);
-        javaLangMap.put("Object", Object.class);
-        javaLangMap.put("Package", Package.class);
-        javaLangMap.put("Process", Process.class);
-        javaLangMap.put("Runtime", Runtime.class);
-        javaLangMap.put("RuntimePermission", RuntimePermission.class);
-        javaLangMap.put("SecurityManager", SecurityManager.class);
-        javaLangMap.put("Short", Short.class);
-        javaLangMap.put("StackTraceElement", StackTraceElement.class);
-        javaLangMap.put("StrictMath", StrictMath.class);
-        javaLangMap.put("String", String.class);
-        javaLangMap.put("StringBuffer", StringBuffer.class);
-        javaLangMap.put("System", System.class);
-        javaLangMap.put("Thread", Thread.class);
-        javaLangMap.put("ThreadGroup", ThreadGroup.class);
-        javaLangMap.put("ThreadLocal", ThreadLocal.class);
-        javaLangMap.put("Throwable", Throwable.class);
-        javaLangMap.put("Void", Void.class);
-        javaLangMap.put("ArithmeticException", ArithmeticException.class);
-        javaLangMap.put("ArrayIndexOutOfBoundsException", ArrayIndexOutOfBoundsException.class);
-        javaLangMap.put("ArrayStoreException", ArrayStoreException.class);
-        javaLangMap.put("ClassCastException", ClassCastException.class);
-        javaLangMap.put("ClassNotFoundException", ClassNotFoundException.class);
-        javaLangMap.put("CloneNotSupportedException", CloneNotSupportedException.class);
-        javaLangMap.put("Exception", Exception.class);
-        javaLangMap.put("IllegalAccessException", IllegalAccessException.class);
-        javaLangMap.put("IllegalArgumentException", IllegalArgumentException.class);
-        javaLangMap.put("IllegalMonitorStateException", IllegalMonitorStateException.class);
-        javaLangMap.put("IllegalStateException", IllegalStateException.class);
-        javaLangMap.put("IllegalThreadStateException", IllegalThreadStateException.class);
-        javaLangMap.put("IndexOutOfBoundsException", IndexOutOfBoundsException.class);
-        javaLangMap.put("InstantiationException", InstantiationException.class);
-        javaLangMap.put("InterruptedException", InterruptedException.class);
-        javaLangMap.put("NegativeArraySizeException", NegativeArraySizeException.class);
-        javaLangMap.put("NoSuchFieldException", NoSuchFieldException.class);
-        javaLangMap.put("NoSuchMethodException", NoSuchMethodException.class);
-        javaLangMap.put("NullPointerException", NullPointerException.class);
-        javaLangMap.put("NumberFormatException", NumberFormatException.class);
-        javaLangMap.put("RuntimeException", RuntimeException.class);
-        javaLangMap.put("SecurityException", SecurityException.class);
-        javaLangMap.put("StringIndexOutOfBoundsException", StringIndexOutOfBoundsException.class);
-        javaLangMap.put("UnsupportedOperationException", UnsupportedOperationException.class);
-        javaLangMap.put("AbstractMethodError", AbstractMethodError.class);
-        javaLangMap.put("AssertionError", AssertionError.class);
-        javaLangMap.put("ClassCircularityError", ClassCircularityError.class);
-        javaLangMap.put("ClassFormatError", ClassFormatError.class);
-        javaLangMap.put("Error", Error.class);
-        javaLangMap.put("ExceptionInInitializerError", ExceptionInInitializerError.class);
-        javaLangMap.put("IllegalAccessError", IllegalAccessError.class);
-        javaLangMap.put("IncompatibleClassChangeError", IncompatibleClassChangeError.class);
-        javaLangMap.put("InstantiationError", InstantiationError.class);
-        javaLangMap.put("InternalError", InternalError.class);
-        javaLangMap.put("LinkageError", LinkageError.class);
-        javaLangMap.put("NoClassDefFoundError", NoClassDefFoundError.class);
-        javaLangMap.put("NoSuchFieldError", NoSuchFieldError.class);
-        javaLangMap.put("NoSuchMethodError", NoSuchMethodError.class);
-        javaLangMap.put("OutOfMemoryError", OutOfMemoryError.class);
-        javaLangMap.put("StackOverflowError", StackOverflowError.class);
-        javaLangMap.put("ThreadDeath", ThreadDeath.class);
-        javaLangMap.put("UnknownError", UnknownError.class);
-        javaLangMap.put("UnsatisfiedLinkError", UnsatisfiedLinkError.class);
-        javaLangMap.put("UnsupportedClassVersionError", UnsupportedClassVersionError.class);
-        javaLangMap.put("VerifyError", VerifyError.class);
-        javaLangMap.put("VirtualMachineError", VirtualMachineError.class);
     }
 
     /**

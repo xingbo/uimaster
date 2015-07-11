@@ -55,7 +55,10 @@ public class AssignmentOperator extends Operator
         
         if(!ExpressionUtil.isAssignableFrom(valueClass, rClass))
         {
-            if(rChild instanceof Literal &&
+        	if (valueClass == Boolean.class || valueClass == boolean.class) {
+        		needConvert = true;
+        	}
+        	else if(rChild instanceof Literal &&
                ExpressionUtil.isNumeric(valueClass) && ExpressionUtil.isNumeric(rClass)
                && ExpressionUtil.getNumericPrecision(valueClass) < ExpressionUtil.INTEGER_PRECISION
                && ExpressionUtil.getNumericPrecision(rClass) == ExpressionUtil.INTEGER_PRECISION)

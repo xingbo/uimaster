@@ -1,16 +1,20 @@
 package org.shaolin.javacc.context;
 
-import java.util.*;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.shaolin.bmdp.exceptions.I18NRuntimeException;
 import org.shaolin.bmdp.i18n.ExceptionConstants;
 import org.shaolin.javacc.exception.EvaluationException;
+import org.shaolin.javacc.exception.ParsingException;
 
 
 /**
  * The default evaluation context implementation
  */
-public class DefaultEvaluationContext implements EvaluationContext, CustomFieldEvaluationContext, Cloneable
+public class DefaultEvaluationContext implements EvaluationContext, CustomFieldEvaluationContext, Cloneable, Serializable
 {
     protected Map variableObjects;
     

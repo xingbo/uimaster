@@ -17,10 +17,15 @@ package org.shaolin.javacc.test.numeric;
 
 //imports
 //junit
-import org.shaolin.javacc.*;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
+import org.shaolin.javacc.Expression;
+import org.shaolin.javacc.ExpressionEvaluator;
+import org.shaolin.javacc.ExpressionParser;
+import org.shaolin.javacc.StatementEvaluator;
+import org.shaolin.javacc.StatementParser;
+import org.shaolin.javacc.statement.CompilationUnit;
 
 //ooee
 
@@ -126,5 +131,52 @@ public class NumericTest extends TestCase
     	
     	Object expressionValue = ExpressionEvaluator.evaluate(expression);
     	assertEquals(new Integer(-2), expressionValue);
-    }    
+    } 
+    
+    /**
+     *  Test With Lang primitive
+     */
+    public void testCase7() throws Exception
+    {
+    	String expressionStr = "{int i = 0; Integer b = new Integer(1); i=b; b=i; System.out.println(i +\" \"+b);}";
+    	CompilationUnit expression = StatementParser.parse(expressionStr);
+    	StatementEvaluator.evaluate(expression);
+    }
+    
+    /**
+     *  Test With Lang primitive
+     */
+    public void testCase8() throws Exception
+    {
+    	String expressionStr = "{long i = 0; Long b = new Long(1); i=b; b=i; System.out.println(i +\" \"+b);}";
+    	CompilationUnit expression = StatementParser.parse(expressionStr);
+    	StatementEvaluator.evaluate(expression);
+    }
+    
+    /**
+     *  Test With Lang primitive
+     */
+    public void testCase9() throws Exception
+    {
+    	String expressionStr = "{float i = 2; Float b = new Float(2.0); i=b; b=i; System.out.println(i +\" \"+b);}";
+    	CompilationUnit expression = StatementParser.parse(expressionStr);
+    	StatementEvaluator.evaluate(expression);
+    }
+    
+    /**
+     *  Test With Lang primitive
+     */
+    public void testCase10() throws Exception
+    {
+    	String expressionStr = "{double i = 3; Double b = new Double(3.0); i=b; b=i; System.out.println(i +\" \"+b);}";
+    	CompilationUnit expression = StatementParser.parse(expressionStr);
+    	StatementEvaluator.evaluate(expression);
+    }
+    
+    public void testCase11() throws Exception
+    {
+    	String expressionStr = "{boolean i = true;  Boolean b = new Boolean(true); i=b; b=i; System.out.println(i +\" \"+b);}";
+    	CompilationUnit expression = StatementParser.parse(expressionStr);
+    	StatementEvaluator.evaluate(expression);
+    }
 }
