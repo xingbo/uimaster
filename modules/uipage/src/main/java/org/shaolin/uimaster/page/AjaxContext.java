@@ -200,7 +200,7 @@ public class AjaxContext extends OpExecuteContext implements Serializable
         }
     }
     
-    public void registerPageAjaxContext(String pageName)
+    public static void registerPageAjaxContext(String pageName, HttpServletRequest request)
     {
         try
         {
@@ -212,7 +212,7 @@ public class AjaxContext extends OpExecuteContext implements Serializable
             requestData.setUiid("");
             AjaxContext context = new AjaxContext(uiMap, requestData);
             context.initData();
-            context.setRequest(request, response);
+            context.setRequest(request, null);
             AjaxActionHelper.createAjaxContext(context);
         }
         catch (EvaluationException e)

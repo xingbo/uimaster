@@ -17,7 +17,7 @@ import org.shaolin.bmdp.datamodel.page.UILayoutType;
 import org.shaolin.bmdp.datamodel.page.UIPanelType;
 import org.shaolin.bmdp.datamodel.page.UIReferenceEntityType;
 import org.shaolin.bmdp.datamodel.page.UITabPaneType;
-import org.shaolin.javacc.context.OOEEContext;
+import org.shaolin.javacc.context.ParsingContext;
 import org.shaolin.javacc.exception.EvaluationException;
 import org.shaolin.uimaster.page.HTMLSnapshotContext;
 import org.shaolin.uimaster.page.HTMLUtil;
@@ -43,7 +43,7 @@ public abstract class HTMLLayout
 
     protected int rowCount;
 
-    protected OOEEContext parsingContext;
+    protected ParsingContext parsingContext;
 
     private List hiddenList = null;
     
@@ -53,7 +53,7 @@ public abstract class HTMLLayout
 	 */
     public HTMLLayout() {}
 
-    public HTMLLayout(UIFormObject entity, OOEEContext parsingContext)
+    public HTMLLayout(UIFormObject entity, ParsingContext parsingContext)
     {
         this.entity = entity;
         this.parsingContext = parsingContext;

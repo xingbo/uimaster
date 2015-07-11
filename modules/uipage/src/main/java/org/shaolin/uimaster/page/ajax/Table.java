@@ -258,7 +258,7 @@ public class Table extends Widget implements Serializable {
 				col.getUpdateCondition().getExpression().evaluate(ooeeContext);
 			}
 		} catch (Exception e) {
-			logger.error("error occurrs while updating table conditions.", e);
+			logger.error("error occurrs while updating table conditions. "  + this.getId(), e);
 		}
 	}
 	
@@ -283,7 +283,7 @@ public class Table extends Widget implements Serializable {
 						col.getUpdateCondition().getExpression().evaluate(ooeeContext);
 					}
 				} catch (Exception e) {
-					logger.error("error occurrs while updating table conditions.", e);
+					logger.error("error occurrs while updating table conditions."  + this.getId(), e);
 				}
 				break;
 			}
@@ -388,7 +388,7 @@ public class Table extends Widget implements Serializable {
 	        
 	        return sb.toString();
 		} catch (Exception e) {
-			logger.error("error occurrs while refreshing table.", e);
+			logger.error("error occurrs while refreshing table: " + this.getId(), e);
 		}
 		return "";
 	}

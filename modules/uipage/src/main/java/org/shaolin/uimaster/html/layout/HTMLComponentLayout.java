@@ -12,6 +12,7 @@ import org.shaolin.javacc.Expression;
 import org.shaolin.javacc.ExpressionParser;
 import org.shaolin.javacc.context.DefaultEvaluationContext;
 import org.shaolin.javacc.context.OOEEContext;
+import org.shaolin.javacc.context.ParsingContext;
 import org.shaolin.javacc.exception.EvaluationException;
 import org.shaolin.javacc.exception.ParsingException;
 import org.shaolin.uimaster.page.HTMLSnapshotContext;
@@ -80,7 +81,7 @@ public class HTMLComponentLayout extends AbstractHTMLLayout
      * to corresponding attribute.
      *
      */
-    public void setConstraints(TableLayoutConstraintType constraint,  OOEEContext parsingContext)
+    public void setConstraints(TableLayoutConstraintType constraint,  ParsingContext parsingContext)
     {
         attributeMap = new HashMap();
         
@@ -284,6 +285,7 @@ public class HTMLComponentLayout extends AbstractHTMLLayout
         	}
 			tempValuesMap = HTMLUtil.evaluateExpression(propMap, expMap, tempValuesMap, ee);
 		} catch (EvaluationException e1) {
+			logger.warn("Failed to evaluate expressions in UI widget: " + context.getHTMLPrefix() + UIID);
 			throw new JspException(e1);
 		}
         tempValuesMap = HTMLUtil.internationalization(propMap, i18nMap, tempValuesMap, context);

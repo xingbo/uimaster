@@ -17,9 +17,7 @@ package org.shaolin.uimaster.page.widgets;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.shaolin.bmdp.datamodel.page.ResourceBundlePropertyType;
 import org.shaolin.bmdp.datamodel.page.StringPropertyType;
@@ -27,8 +25,6 @@ import org.shaolin.bmdp.datamodel.page.TableLayoutConstraintType;
 import org.shaolin.bmdp.datamodel.page.UIReferenceEntityType;
 import org.shaolin.bmdp.datamodel.page.UITabPaneItemType;
 import org.shaolin.bmdp.i18n.ResourceUtil;
-import org.shaolin.javacc.context.DefaultEvaluationContext;
-import org.shaolin.javacc.context.EvaluationContext;
 import org.shaolin.javacc.context.OOEEContext;
 import org.shaolin.javacc.context.OOEEContextFactory;
 import org.shaolin.uimaster.html.layout.HTMLPanelLayout;
@@ -38,7 +34,6 @@ import org.shaolin.uimaster.page.ajax.TabPane;
 import org.shaolin.uimaster.page.ajax.Widget;
 import org.shaolin.uimaster.page.cache.UIFormObject;
 import org.shaolin.uimaster.page.javacc.VariableEvaluator;
-import org.shaolin.uimaster.page.od.ODContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +58,10 @@ public class HTMLTabPaneType extends HTMLContainerType
     {
         super(context, id);
         selectedIndex = 0;
+    }
+    
+    public boolean isAjaxLoading() {
+    	return (boolean)this.removeAttribute("ajaxLoad");
     }
 
     public void generateBeginHTML(HTMLSnapshotContext context, UIFormObject ownerEntity, int depth)
@@ -148,6 +147,12 @@ public class HTMLTabPaneType extends HTMLContainerType
             	context.generateHTML(tabs.get(i).getUiid());
             	context.generateHTML("\">");
             	
+            	if (ajaxLoad && i > 0) {
+            		// save context if it's ajax loading.
+            		String uiid = tabs.get(i).getUiid();
+                	TabPane tabPane = (TabPane)context.getAjaxWidget(getName());
+                	tabPane.addODMapperContext(uiid, context.getODMapperContext(uiid));
+            	}
             	if (!ajaxLoad || i==0) {
 	                UITabPaneItemType tab = tabs.get(i);
 	                if (tab.getPanel() != null) {
@@ -256,23 +261,22 @@ public class HTMLTabPaneType extends HTMLContainerType
     
     public Widget createAjaxWidget(VariableEvaluator ee)
     {
-        this.ee = ee;
-        List<UITabPaneItemType> tabs = null;
-        HashMap tempVars = null;
-        boolean ajaxLoad = (boolean)this.getAttribute("ajaxLoad");
-        if (ajaxLoad) {
-        	// save the input variables to this tab panel.
-        	EvaluationContext tempContext = ee.getExpressionContext(ODContext.LOCAL_TAG);
-        	if (tempContext == null) {
-        		tempContext = ee.getExpressionContext();
-        	}
-        	if (tempContext instanceof DefaultEvaluationContext) {
-        		Map vars = ((DefaultEvaluationContext)tempContext).getVariableObjects();
-        		tempVars = new HashMap(vars);
-        	}
-        	tabs = (List<UITabPaneItemType>)this.getAttribute("tabPaneItems");
-        }
-    	TabPane panel = new TabPane(getName(), tabs, tempVars, selectedIndex, new CellLayout());
+    	this.ee = ee;
+//        HashMap tempVars = null;
+//        boolean ajaxLoad = (boolean)this.getAttribute("ajaxLoad");
+//        if (ajaxLoad) {
+//        	// save the input variables to this tab panel.
+//        	EvaluationContext tempContext = ee.getExpressionContext(ODContext.LOCAL_TAG);
+//        	if (tempContext == null) {
+//        		tempContext = ee.getExpressionContext();
+//        	}
+//        	if (tempContext instanceof DefaultEvaluationContext) {
+//        		Map vars = ((DefaultEvaluationContext)tempContext).getVariableObjects();
+//        		tempVars = new HashMap(vars);
+//        	}
+//        }
+    	List<UITabPaneItemType> tabs = (List<UITabPaneItemType>)this.getAttribute("tabPaneItems");
+    	TabPane panel = new TabPane(getName(), tabs, selectedIndex, new CellLayout());
         panel.setReadOnly(getReadOnly());
         panel.setUIEntityName(getUIEntityName());
         

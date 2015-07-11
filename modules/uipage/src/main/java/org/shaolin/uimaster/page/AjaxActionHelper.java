@@ -20,6 +20,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.shaolin.javacc.exception.EvaluationException;
 import org.shaolin.uimaster.page.ajax.Widget;
 import org.shaolin.uimaster.page.ajax.json.DataItem;
 import org.shaolin.uimaster.page.ajax.json.IDataItem;
@@ -58,6 +59,23 @@ public class AjaxActionHelper {
 		threadLocal.set(null);
 	}
 
+	public static AjaxContext createAjaxContext(String entityUiid, String uiform, HttpServletRequest request) 
+			throws EvaluationException {
+		Map uiMap = AjaxActionHelper.getFrameMap(request);
+		IRequestData requestData = AjaxActionHelper.createRequestData();
+		requestData.setUiid(entityUiid);
+		requestData.setEntityName(uiform);
+		requestData.setEntityUiid(entityUiid);
+        requestData.setFrameId("");
+		Widget comp = (Widget)uiMap.get(requestData.getUiid());
+        if (comp == null) {
+            throw new IllegalStateException("Can not find this component[" + requestData.getUiid() + "] in the UI map!");
+        }
+        AjaxContext context = new AjaxContext(uiMap, requestData);
+        context.initData();
+        return context;
+	}
+	
 	/**
 	 * get frame map which is decide to the '_framePrefix' parameter.
 	 * 

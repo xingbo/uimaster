@@ -12,6 +12,8 @@ import org.shaolin.javacc.context.DefaultEvaluationContext;
 import org.shaolin.javacc.context.DefaultParsingContext;
 import org.shaolin.javacc.exception.EvaluationException;
 import org.shaolin.javacc.exception.ParsingException;
+import org.shaolin.uimaster.page.AjaxActionHelper;
+import org.shaolin.uimaster.page.AjaxContext;
 import org.shaolin.uimaster.page.HTMLSnapshotContext;
 import org.shaolin.uimaster.page.cache.ODObject;
 import org.shaolin.uimaster.page.cache.ODPageObject;
@@ -91,7 +93,10 @@ public class ODPageContext extends ODContext
 		this.setEvaluationContextObject(LOCAL_TAG, localEContext);
 		this.setEvaluationContextObject(GLOBAL_TAG, defaultEContext);
 		if (!this.isDataToUI()) {
-			localEContext.setVariableValue(AJAX_UICOMP_NAME, this);
+			if (AjaxActionHelper.getAjaxContext() == null) {
+				AjaxContext.registerPageAjaxContext(uiEntityName, htmlContext.getRequest());
+			}
+			defaultEContext.setVariableValue(AJAX_UICOMP_NAME, AjaxActionHelper.getAjaxContext());
 			this.outName = htmlContext.getRequest().getParameter(ODPageContext.OUT_NAME);
 		}
     }

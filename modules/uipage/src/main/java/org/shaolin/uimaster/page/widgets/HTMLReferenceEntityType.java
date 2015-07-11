@@ -325,7 +325,7 @@ public class HTMLReferenceEntityType extends HTMLWidgetType implements Serializa
     {
     	UIFormObject entity = HTMLUtil.parseUIEntity(getReferenceEntity());
     	
-    	EvaluationContext evaContext = context.getODMapperContext(this.getPrefix() + this.getUIID());
+    	EvaluationContext evaContext = context.getODMapperContext(this.getUIID());
     	if (evaContext == null) {
     		evaContext = new DefaultEvaluationContext();
     	}

@@ -345,7 +345,7 @@ public class SimpleComponentMapping extends ComponentMapping {
 			}
 			ODProcessor processor = new ODProcessor(htmlContext, odmapperName, odContext.getDeepLevel());
 			ODEntityContext evaContext = processor.process();
-			// save context for the ui form variables evaluation.
+			// save the context for either the ui form variables evaluation or ajax loading.
 			htmlContext.setODMapperContext(evaContext.getUiEntity().getUIID(), evaContext);
 			
 			long end = System.currentTimeMillis();

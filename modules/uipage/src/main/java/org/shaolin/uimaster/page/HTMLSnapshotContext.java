@@ -38,6 +38,7 @@ import org.shaolin.uimaster.page.ajax.Widget;
 import org.shaolin.uimaster.page.ajax.json.JSONObject;
 import org.shaolin.uimaster.page.exception.UIComponentNotFoundException;
 import org.shaolin.uimaster.page.flow.WebflowConstants;
+import org.shaolin.uimaster.page.od.ODContext;
 import org.shaolin.uimaster.page.security.ComponentPermission;
 import org.shaolin.uimaster.page.widgets.HTMLReferenceEntityType;
 import org.shaolin.uimaster.page.widgets.HTMLWidgetType;
@@ -112,7 +113,7 @@ public class HTMLSnapshotContext implements Serializable
 
     private Map pageData;
 
-    private Map ajaxWidgetMap;
+    private Map<String, Widget> ajaxWidgetMap;
     
     private Map componentPermissions;
 
@@ -193,6 +194,11 @@ public class HTMLSnapshotContext implements Serializable
     public void addAjaxWidget(String compID, Widget component)
     {
         ajaxWidgetMap.put(compID, component);
+    }
+    
+    public Widget getAjaxWidget(String compID)
+    {
+        return ajaxWidgetMap.get(compID);
     }
     
     public void resetRepository()
@@ -334,7 +340,11 @@ public class HTMLSnapshotContext implements Serializable
     	if (!repository.containsKey("ODMAPPER_EVA_CONTEXT")) {
     		repository.put("ODMAPPER_EVA_CONTEXT", new HashMap<String, EvaluationContext>());
     	}
-    	((HashMap)repository.get("ODMAPPER_EVA_CONTEXT")).put(formId, context);
+    	HashMap contexts = (HashMap)repository.get("ODMAPPER_EVA_CONTEXT");
+    	if (contexts.containsKey(formId)) {
+    		throw new IllegalArgumentException("the form context is duplicated, please rename it! " + formId);
+    	}
+    	contexts.put(formId, context);
     }
     
     /**
@@ -343,10 +353,10 @@ public class HTMLSnapshotContext implements Serializable
      * @param formId
      * @return
      */
-    public EvaluationContext getODMapperContext(String formId)
+    public ODContext getODMapperContext(String formId)
     {
     	if (repository.containsKey("ODMAPPER_EVA_CONTEXT")) {
-    		return (EvaluationContext)((HashMap)repository.get("ODMAPPER_EVA_CONTEXT")).remove(formId);
+    		return (ODContext)((HashMap)repository.get("ODMAPPER_EVA_CONTEXT")).remove(formId);
     	}
         return null;
     }

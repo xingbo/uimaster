@@ -7,7 +7,7 @@ import javax.servlet.jsp.JspException;
 
 import org.apache.log4j.Logger;
 import org.shaolin.bmdp.datamodel.page.UIPanelType;
-import org.shaolin.javacc.context.OOEEContext;
+import org.shaolin.javacc.context.ParsingContext;
 import org.shaolin.javacc.exception.EvaluationException;
 import org.shaolin.uimaster.page.HTMLSnapshotContext;
 import org.shaolin.uimaster.page.HTMLUtil;
@@ -30,7 +30,7 @@ public class HTMLPanelLayout extends HTMLComponentLayout
         super(UIID, entity);
     }
 
-    public void setBody(UIPanelType panel, OOEEContext parsingContext)
+    public void setBody(UIPanelType panel, ParsingContext parsingContext)
     {
         layout = new HTMLCellLayout(panel, ownerEntity, parsingContext);
         layout.setContainer(UIID + "-");
@@ -43,6 +43,7 @@ public class HTMLPanelLayout extends HTMLComponentLayout
         try {
 			tempMap = HTMLUtil.evaluateExpression(propMap, expMap, tempMap, ee);
 		} catch (EvaluationException e1) {
+			logger.warn("Failed to evaluate expressions in UI widget: " + context.getHTMLPrefix() + UIID);
 			throw new JspException(e1);
 		}
         tempMap = HTMLUtil.internationalization(propMap, i18nMap, tempMap, context);

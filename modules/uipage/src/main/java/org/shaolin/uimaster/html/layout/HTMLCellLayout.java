@@ -6,14 +6,13 @@ import java.util.Map;
 import javax.servlet.jsp.JspException;
 
 import org.shaolin.bmdp.datamodel.page.UIContainerType;
-import org.shaolin.javacc.context.OOEEContext;
+import org.shaolin.javacc.context.ParsingContext;
 import org.shaolin.javacc.exception.EvaluationException;
 import org.shaolin.uimaster.page.HTMLSnapshotContext;
 import org.shaolin.uimaster.page.HTMLUtil;
 import org.shaolin.uimaster.page.cache.UIFormObject;
 import org.shaolin.uimaster.page.javacc.VariableEvaluator;
 import org.shaolin.uimaster.page.widgets.HTMLLayoutType;
-import org.shaolin.uimaster.page.widgets.HTMLPanelType;
 import org.shaolin.uimaster.page.widgets.HTMLWidgetType;
 
 public class HTMLCellLayout extends HTMLLayout implements Serializable
@@ -30,7 +29,7 @@ public class HTMLCellLayout extends HTMLLayout implements Serializable
 		super(null, null);
 	}
 
-    public HTMLCellLayout(UIContainerType container, UIFormObject entity, OOEEContext parsingContext)
+    public HTMLCellLayout(UIContainerType container, UIFormObject entity, ParsingContext parsingContext)
     {
         super(entity, parsingContext);
         

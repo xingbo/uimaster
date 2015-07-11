@@ -233,9 +233,8 @@ public class RefForm extends Container implements Serializable
         }
         catch(Exception ex)
         {
-			logger.error("Call UI[" + this.getUIEntityName()
+			throw new IllegalStateException("Call UI[" + this.getUIEntityName()
 					+ "] to Data error: " + ex.getMessage(), ex);
-            return Collections.EMPTY_MAP;
         }
     }
 

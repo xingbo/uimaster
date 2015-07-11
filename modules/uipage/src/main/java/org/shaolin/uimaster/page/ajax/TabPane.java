@@ -21,29 +21,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 
-import org.shaolin.bmdp.datamodel.page.ComponentMappingType;
-import org.shaolin.bmdp.datamodel.page.ComponentParamType;
-import org.shaolin.bmdp.datamodel.page.DataParamType;
-import org.shaolin.bmdp.datamodel.page.ExpressionParamType;
-import org.shaolin.bmdp.datamodel.page.SimpleComponentMappingType;
 import org.shaolin.bmdp.datamodel.page.TableLayoutConstraintType;
-import org.shaolin.bmdp.datamodel.page.UIEntity;
-import org.shaolin.bmdp.datamodel.page.UIPage;
 import org.shaolin.bmdp.datamodel.page.UIReferenceEntityType;
 import org.shaolin.bmdp.datamodel.page.UITabPaneItemType;
-import org.shaolin.bmdp.runtime.AppContext;
 import org.shaolin.bmdp.runtime.spi.IServerServiceManager;
-import org.shaolin.javacc.context.DefaultEvaluationContext;
-import org.shaolin.javacc.context.OOEEContext;
-import org.shaolin.javacc.context.OOEEContextFactory;
+import org.shaolin.javacc.context.ParsingContext;
 import org.shaolin.javacc.exception.EvaluationException;
-import org.shaolin.javacc.exception.ParsingException;
 import org.shaolin.uimaster.html.layout.HTMLPanelLayout;
 import org.shaolin.uimaster.page.AjaxActionHelper;
 import org.shaolin.uimaster.page.AjaxContext;
@@ -52,7 +40,6 @@ import org.shaolin.uimaster.page.PageWidgetsContext;
 import org.shaolin.uimaster.page.ajax.json.IDataItem;
 import org.shaolin.uimaster.page.ajax.json.JSONArray;
 import org.shaolin.uimaster.page.ajax.json.JSONObject;
-import org.shaolin.uimaster.page.cache.ODFormObject;
 import org.shaolin.uimaster.page.cache.PageCacheManager;
 import org.shaolin.uimaster.page.cache.UIFormObject;
 import org.shaolin.uimaster.page.javacc.VariableEvaluator;
@@ -103,7 +90,7 @@ public class TabPane extends Container implements Serializable
      */
     private List<UITabPaneItemType> tabs;
     private UIFormObject ownerEntity;
-    private Map<String, Object> vars;
+    private Map<String, ODContext> evalContexts;
     private PageWidgetsContext widgetContext;
     // clean the ajax loading objects if all tabs loaded.
     private AtomicInteger accessedIndex = new AtomicInteger();
@@ -148,12 +135,11 @@ public class TabPane extends Container implements Serializable
      * @param selectedIndex
      * @param layout
      */
-    public TabPane(String id, List<UITabPaneItemType> tabs, Map<String, Object> vars, int selectedIndex, Layout layout)
+    public TabPane(String id, List<UITabPaneItemType> tabs, int selectedIndex, Layout layout)
     {
         super(id, layout);
         this.setListened(true);
         this.tabs = tabs;
-        this.vars = vars;
         this.selectedIndex = selectedIndex;
         this.uiid = this.getId();
     }
@@ -164,6 +150,13 @@ public class TabPane extends Container implements Serializable
     
     public void setPageWidgetContext(PageWidgetsContext widgetContext) {
     	this.widgetContext = widgetContext;
+    }
+    
+    public void addODMapperContext(String tabId, ODContext eval) {
+    	if (this.evalContexts == null) {
+    		this.evalContexts = new HashMap<String, ODContext>();
+    	}
+    	this.evalContexts.put(tabId, eval);
     }
     
     public String generateHTML()
@@ -237,25 +230,17 @@ public class TabPane extends Container implements Serializable
         htmlContext.setPageWidgetContext(widgetContext);
     	
     	UITabPaneItemType tab = tabs.get(index);
+    	ODContext odContext = this.evalContexts.remove(tab.getUiid());
         String entityPrefix = ajaxContext.getEntityPrefix();
 		if (tab.getPanel() != null) {
-			DefaultEvaluationContext default1 = new DefaultEvaluationContext();
-			if (this.vars != null && !this.vars.isEmpty()) {
-				Set<Map.Entry<String, Object>> entries = this.vars.entrySet();
-				for (Map.Entry<String, Object> e : entries) {
-					default1.setVariableValue(e.getKey(), e.getValue());
-				}
-			}
-			OOEEContext ooee = OOEEContextFactory.createOOEEContext();
-			ooee.setDefaultEvaluationContext(default1);
-			ooee.setEvaluationContextObject(ODContext.LOCAL_TAG, default1);
-			VariableEvaluator ee = new VariableEvaluator(ooee);
+			ParsingContext pContext = PageCacheManager.getUIFormObject(odContext.getOdEntityName()).getVariablePContext();
+			VariableEvaluator ee = new VariableEvaluator(odContext);
         	//ui panel support
         	String UIID = entityPrefix + tab.getPanel().getUIID();
         	HTMLPanelLayout panelLayout = new HTMLPanelLayout(UIID, ownerEntity);
         	TableLayoutConstraintType layoutConstraint = new TableLayoutConstraintType();
-            panelLayout.setConstraints(layoutConstraint, ooee);
-            panelLayout.setBody(tab.getPanel(), ooee);
+            panelLayout.setConstraints(layoutConstraint, pContext);
+            panelLayout.setBody(tab.getPanel(), pContext);
         	
             HTMLCellLayoutType layout = new HTMLCellLayoutType(htmlContext, UIID);
             panelLayout.generateComponentHTML(htmlContext, 0, true, Collections.emptyMap(), ee, layout);
@@ -282,33 +267,15 @@ public class TabPane extends Container implements Serializable
         	UIReferenceEntityType itemRef = (UIReferenceEntityType)tab.getRefEntity();
         	String UIID = entityPrefix + itemRef.getUIID();
             String type = itemRef.getReferenceEntity().getEntityName();
-            try {
-            	ODFormObject o = PageCacheManager.getODFormObject(type);
-				DefaultEvaluationContext default1 = o.getLocalEContext();
-				Map<String, Object> inputVars = default1.getVariableObjects();
-				try {
-					UIPage uipage = AppContext.get().getEntityManager().getEntity(this.getUIEntityName(), UIPage.class);
-					List<ComponentMappingType> mappings = uipage.getODMapping().getComponentMappings();
-					setRefEntityInputVars(this.vars, inputVars, type, mappings);
-				} catch (Exception e) {
-					UIEntity uientity = AppContext.get().getEntityManager().getEntity(this.getUIEntityName(), UIEntity.class);
-					List<ComponentMappingType> mappings = uientity.getMapping().getComponentMappings();
-					setRefEntityInputVars(this.vars, inputVars, type, mappings);
-				}
-				RefForm form = new RefForm(UIID, type, inputVars);
-				
-				IDataItem dataItem = AjaxActionHelper.createAppendItemToTab(this.getId(), UIID);
-				dataItem.setData(form.generateHTML());
-				dataItem.setJs(form.generateJSWithoutJsPath());
-				dataItem.setFrameInfo(this.getFrameInfo());
-				JSONArray array = new JSONArray();
-				array.put(new JSONObject(dataItem));
-				return array.toString();
-			} catch (ParsingException e1) {
-				throw new JspException(e1);
-			} catch (ClassNotFoundException e1) {
-				throw new JspException(e1);
-			}
+			RefForm form = new RefForm(UIID, type, odContext.getLocalVariableValues());
+			
+			IDataItem dataItem = AjaxActionHelper.createAppendItemToTab(this.getId(), UIID);
+			dataItem.setData(form.generateHTML());
+			dataItem.setJs(form.generateJSWithoutJsPath());
+			dataItem.setFrameInfo(this.getFrameInfo());
+			JSONArray array = new JSONArray();
+			array.put(new JSONObject(dataItem));
+			return array.toString();
         } else if (tab.getFrame() != null) {
         	//page support
 			HttpServletRequest request = ajaxContext.getRequest();
@@ -333,7 +300,6 @@ public class TabPane extends Container implements Serializable
     	} finally {
     		if (this.accessedIndex.get() >= this.tabs.size()) {
     			this.tabs = null;
-    			this.vars = null;
     			this.widgetContext = null;
     			this.ownerEntity = null;
     			this.accessedIndex = null;
@@ -341,35 +307,6 @@ public class TabPane extends Container implements Serializable
     	}
     }
 
-	private void setRefEntityInputVars(Map<String, Object> vars, Map<String, Object> inputVars,
-			String type, List<ComponentMappingType> mappings)
-			throws EvaluationException {
-		for (ComponentMappingType m : mappings) {
-			if (m instanceof SimpleComponentMappingType) {
-				SimpleComponentMappingType sm = (SimpleComponentMappingType) m;
-				if (type.equals(sm.getMappingRule().getEntityName())) {
-					List<DataParamType> params = sm.getDataComponents();
-					if (params == null || params.size() == 0) {
-						break;
-					}
-					for (DataParamType p : params) {
-						if (p instanceof ComponentParamType) {
-							String pageVarName = ((ComponentParamType)p).getComponentPath();
-							String refEntityVarName = ((ComponentParamType)p).getParamName();
-							
-							inputVars.put(refEntityVarName, vars.get(pageVarName));
-						} else if (p instanceof ExpressionParamType) {
-							//TODO: improve to evaluate the expression.
-							String refEntityVarName = ((ExpressionParamType)p).getParamName();
-							inputVars.put(refEntityVarName, vars.get(refEntityVarName));
-						}
-					}
-					break;
-				}
-			}
-		}
-	}
-    
     /**
      * Adds a component with a title which can be null at the end of the TabPane.
      * @param title

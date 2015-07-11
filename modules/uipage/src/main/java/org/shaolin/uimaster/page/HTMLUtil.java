@@ -497,8 +497,13 @@ public class HTMLUtil
 							if (logger.isTraceEnabled()) {
 								logger.trace("evaluate expression: {}", expression.getExpressionString());
 							}
-							Object value = ee.evaluateExpression(expression);
-							values[i] = value.toString();
+							try {
+								Object value = ee.evaluateExpression(expression);
+								values[i] = value.toString();
+							} catch (Throwable e) {
+								logger.warn("evaluate expression error: {}", expression.getExpressionString());
+								throw e;
+							}
 						} else {
 							if (tempList != null) {
 								values[i] = tempList.get(i);
@@ -515,8 +520,13 @@ public class HTMLUtil
 					if (logger.isTraceEnabled()) {
 						logger.trace("evaluate expression: {}", expression.getExpressionString());
 					}
-					Object expValue = ee.evaluateExpression(expression);
-					tempMap.put(propName, expValue);
+					try {
+						Object expValue = ee.evaluateExpression(expression);
+						tempMap.put(propName, expValue);
+					} catch (Throwable e) {
+						logger.warn("evaluate expression error: {}", expression.getExpressionString());
+						throw e;
+					}
 				}
 			}
 		}

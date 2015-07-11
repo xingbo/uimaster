@@ -160,6 +160,7 @@ public class PageDispatcher {
             htmlComponent.addAttribute(propMap);
             htmlComponent.addAttribute(tempMap);
             htmlComponent.addEventListener(eventMap);
+            htmlComponent.setPrefix(context.getHTMLPrefix());
             realReadOnly = htmlComponent.getReadOnly();
 
             IUISkin uiskinObj = uiEntity.getUISkinObj(uiEntity.getBodyName(), ee, htmlComponent);
@@ -211,7 +212,7 @@ public class PageDispatcher {
         }
         catch (Exception e)
         {
-            throw new JspException("<---HTMLUIEntity.forward--->Be interrupted when access uientity: " + 
+            throw new JspException("<---HTMLUIEntity.forward--->Exception occurred while accessing form: " + 
             			uiEntity.getName(), e);
         }
         finally

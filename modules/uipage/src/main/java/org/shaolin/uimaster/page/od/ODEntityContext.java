@@ -12,6 +12,7 @@ import org.shaolin.javacc.context.DefaultParsingContext;
 import org.shaolin.javacc.context.EvaluationContext;
 import org.shaolin.javacc.exception.EvaluationException;
 import org.shaolin.javacc.exception.ParsingException;
+import org.shaolin.uimaster.page.AjaxActionHelper;
 import org.shaolin.uimaster.page.HTMLSnapshotContext;
 import org.shaolin.uimaster.page.cache.ODFormObject;
 import org.shaolin.uimaster.page.cache.ODObject;
@@ -100,16 +101,17 @@ public class ODEntityContext extends ODContext
 			}
 		}
 		if (uiEntity == null || !HTMLSnapshotContext.isInstance(uiEntityName, uiEntity))
-			throw new ODProcessException(ExceptionConstants.EBOS_ODMAPPER_049,new Object[]{uiEntity.getUIEntityName(), uiEntityName});
+			throw new ODProcessException(ExceptionConstants.EBOS_ODMAPPER_049,
+					new Object[]{uiEntity.getUIEntityName(), uiEntityName});
     	if(logger.isDebugEnabled())
             logger.debug("UI Reference Entity uiid: "+this.uiEntity.getId());
     	
     	DefaultEvaluationContext defaultEContext = new DefaultEvaluationContext();
     	defaultEContext.setVariableValue("context", htmlContext);
     	defaultEContext.setVariableValue("odContext", this);
-    	this.setDefaultEvaluationContext(defaultEContext);
     	this.setEvaluationContextObject(GLOBAL_TAG, defaultEContext);
     	
+    	this.setDefaultEvaluationContext(localEContext);
     	this.setEvaluationContextObject(LOCAL_TAG, localEContext);
     	this.setExternalEvaluationContext(this);
     	if( !isDataToUI )
@@ -117,10 +119,11 @@ public class ODEntityContext extends ODContext
     		DefaultEvaluationContext globalContext = new DefaultEvaluationContext();
     		globalContext.setVariableValue("context", htmlContext);
     		globalContext.setVariableValue("odContext", this);
-    		globalContext.setVariableValue(AJAX_UICOMP_NAME, this);
-    		this.setEvaluationContextObject(GLOBAL_TAG, defaultEContext);
+    		globalContext.setVariableValue(AJAX_UICOMP_NAME, 
+    				AjaxActionHelper.createAjaxContext(uiEntity.getPrefix() + uiEntity.getUIID(), 
+					uiEntityName, htmlContext.getRequest()));
+    		this.setEvaluationContextObject(GLOBAL_TAG, globalContext);
     	}
-		
     	if(logger.isInfoEnabled())
 		{
 			String[] keys = odEntityObject.getParamKeys();
