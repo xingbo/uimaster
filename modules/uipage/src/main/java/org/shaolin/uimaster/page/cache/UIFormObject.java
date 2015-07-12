@@ -585,6 +585,14 @@ public class UIFormObject implements java.io.Serializable
             	if (table.getInitQuery() != null) {
             		propMap.put("initQueryExpr", table.getInitQuery().getExpression());
             	}
+            	if (table.getRowFilter() == null) {
+            		ExpressionPropertyType p = new ExpressionPropertyType();
+            		ExpressionType expr = new ExpressionType();
+            		expr.setExpressionString("{return $rowBE.isEnabled();}");
+            		p.setExpression(expr);
+            		table.setRowFilter(p);
+            	}
+            	propMap.put("rowFilterExpr", table.getRowFilter().getExpression());
             	propMap.put("totalExpr", table.getTotalCount().getExpression());
             	
 				List<UITableColumnType> columns = table.getColumns();
@@ -729,6 +737,7 @@ public class UIFormObject implements java.io.Serializable
 					if (table.getInitQuery() != null) {
 						table.getInitQuery().getExpression().parse(parsingContext);
 					}
+					table.getRowFilter().getExpression().parse(parsingContext);
 					table.getQuery().getExpression().parse(parsingContext);
 					table.getTotalCount().getExpression().parse(parsingContext);
 					

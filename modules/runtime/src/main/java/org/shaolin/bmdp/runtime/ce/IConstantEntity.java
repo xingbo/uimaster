@@ -153,6 +153,8 @@ public interface IConstantEntity extends Serializable
      * @return the priority
      */
     public int getPriority();
+    
+    public boolean isEnabled();
 
     /**
      * Get all the defined constants.

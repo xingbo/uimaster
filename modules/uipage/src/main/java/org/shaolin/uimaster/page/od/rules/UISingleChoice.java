@@ -110,7 +110,9 @@ public class UISingleChoice implements IODMappingConverter {
 				this.uiid = (String) paramValue.get(UI_WIDGET_ID);
 			}
 			if (paramValue.containsKey("Value")) {
-				this.value = String.valueOf(paramValue.get("Value"));
+				if (paramValue.get("Value") != null) {
+					this.value = paramValue.get("Value").toString();
+				}
 			}
 			if (paramValue.containsKey("OptionValues")) {
 				this.optionValues = ((List) paramValue.get("OptionValues"));

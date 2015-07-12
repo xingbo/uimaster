@@ -56,6 +56,7 @@ public class HTMLButtonType extends HTMLTextWidgetType
     {
         try
         {
+        	this.getAttributeMap().put("UIStyle", "ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only");
             generateWidget(context);
             context.generateHTML("<input type=\"");
             context.generateHTML(getButtonType());

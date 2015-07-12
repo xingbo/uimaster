@@ -21,6 +21,7 @@ public abstract class AbstractConstant implements IConstantEntity {
 	private Date expTime = null;
 	private boolean isPassivated = false;
 	private int priority = 65535;
+	private boolean isEnabled = true;
 	
 	public static final int INEFFICACY_PRIORITY = 65535;
 
@@ -222,6 +223,10 @@ public abstract class AbstractConstant implements IConstantEntity {
 		return value;
 	}
 
+	public boolean isEnabled() {
+		return isEnabled;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 

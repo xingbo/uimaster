@@ -218,6 +218,12 @@ public class HTMLTableType extends HTMLContainerType {
 					ooeeContext.setDefaultEvaluationContext(evaContext);
 					ooeeContext.setEvaluationContextObject(ODContext.LOCAL_TAG, evaContext);
 					
+					ExpressionType rowFilter = (ExpressionType)this.getAttribute("rowFilterExpr");
+					boolean pass = (boolean)rowFilter.evaluate(ooeeContext);
+					if (!pass) {
+						continue;
+					}
+					
 					HTMLUtil.generateTab(context, depth + 3);
 					context.generateHTML("<tr>");
 					//TODO:

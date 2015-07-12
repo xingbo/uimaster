@@ -639,7 +639,10 @@ in simple component mapping, the paramName is required</xs:documentation>
                 	<xs:element name="totalCount" type="Page:ExpressionPropertyType"/>
                     <xs:element name="defaultRowSize" type="xs:int" />
                     <xs:element name="showActionBar" type="xs:boolean" default="true"/>
+                    <!-- show the search criteria filters -->
                     <xs:element name="showFilter" type="xs:boolean" default="true"/>
+                    <!-- whether displays the row or not -->
+                    <xs:element name="rowFilter" type="Page:ExpressionPropertyType"/>
                     <xs:element name="editableCell" type="xs:boolean" default="true"/>
                     <xs:element name="column" type="Page:UITableColumnType" maxOccurs="unbounded" minOccurs="0" />
                     <xs:element name="defaultActions" type="Page:UITableDefaultActionType" />
