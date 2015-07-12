@@ -77,6 +77,7 @@ public class HTMLFileType extends HTMLTextWidgetType
             context.generateHTML("<div name=\"progressbox\" style=\"display:none;\"><div name=\"progressbar\"></div><div name=\"percent\">0%</div></div>");
             context.generateHTML("<div name=\"message\"></div>");
             HTMLUtil.generateTab(context, depth);
+            generateEndWidget(context);
         }
         catch (Exception e)
         {

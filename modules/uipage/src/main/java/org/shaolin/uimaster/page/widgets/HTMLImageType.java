@@ -94,6 +94,7 @@ public class HTMLImageType extends HTMLTextWidgetType
 	            generateEventListeners(context);
 	            context.generateHTML(" style=\"cursor:pointer;\"/>");
         	}
+            generateEndWidget(context);
         }
         catch (Exception e)
         {

@@ -70,6 +70,7 @@ public class HTMLTextFieldType extends HTMLTextWidgetType
             generateContent(context);
             generateCurrencySymbol(context, currencySymbol);
         }
+        generateEndWidget(context);
     }
 
     public void generateCurrencySymbol(HTMLSnapshotContext context, String currencySymbol)

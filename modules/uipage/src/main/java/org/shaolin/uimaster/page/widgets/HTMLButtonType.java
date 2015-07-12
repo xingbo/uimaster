@@ -80,6 +80,7 @@ public class HTMLButtonType extends HTMLTextWidgetType
                 context.generateHTML(" disabled=\"true\"");
             }
             context.generateHTML(" />");
+            generateEndWidget(context);
         }
         catch (Exception e)
         {

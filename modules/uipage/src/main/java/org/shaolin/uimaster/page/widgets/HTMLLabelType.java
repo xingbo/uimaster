@@ -76,6 +76,7 @@ public class HTMLLabelType extends HTMLTextWidgetType
             generateCurrencySymbol(context, currencySymbol);
             context.generateHTML("</div>");
         }
+        generateEndWidget(context);
     }
 
     public void generateCurrencySymbol(HTMLSnapshotContext context, String currencySymbol)

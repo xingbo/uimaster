@@ -116,6 +116,7 @@ public class HTMLListType extends HTMLMultiChoiceType
                 }
             }
             context.generateHTML("</select>");
+            generateEndWidget(context);
         }
         catch (Exception e)
         {

@@ -1,5 +1,8 @@
 package org.shaolin.uimaster.designtime.mojo;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.junit.Test;
 
 public class SecurityManagementTest {
@@ -16,6 +19,8 @@ public class SecurityManagementTest {
 //		manager.searchFileWithOrderbyCount(file);
 //		manager.searchFileJoin(file, 0, 100);
 //		manager.searchFileJoinCount(file);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss");
+		System.out.println(sdf.format(new Date()));
 	}
 	
 }

@@ -116,4 +116,9 @@ public class CacheInfoImpl implements ICacheInfo, Serializable
                 ",writeCount:" + writeCount + ",hitCount:" + hitCount + ",writeHitCount:" +writeHitCount +
                 ",refreshIntervalMinutes" + refreshIntervalMinutes + ",description" + description;
     }
+
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
 }

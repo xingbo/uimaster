@@ -76,6 +76,7 @@ public class HTMLLinkType extends HTMLLabelType
                 context.generateHTML(HTMLUtil.formatHtmlValue(getDisplayValue()));
             }
             context.generateHTML("</a>");
+            generateEndWidget(context);
         }
         catch (Exception e)
         {

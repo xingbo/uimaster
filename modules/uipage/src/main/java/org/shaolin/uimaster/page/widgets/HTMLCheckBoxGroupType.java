@@ -147,6 +147,7 @@ public class HTMLCheckBoxGroupType extends HTMLMultiChoiceType
                 }
             }
             context.generateHTML("</p>");
+            generateEndWidget(context);
         }
         catch (Exception e)
         {

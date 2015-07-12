@@ -88,6 +88,7 @@ public class HTMLCheckBoxType extends HTMLSelectComponentType
             {
                 context.generateHTML("</span>");
             }
+            generateEndWidget(context);
         }
         catch (Exception e)
         {

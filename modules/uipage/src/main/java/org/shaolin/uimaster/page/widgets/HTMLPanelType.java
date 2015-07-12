@@ -92,7 +92,7 @@ public class HTMLPanelType extends HTMLContainerType
                 context.generateHTML("\" class=\"err-hidden\">");
                 context.generateHTML("</div>");
             }
-
+            generateEndWidget(context);
         }
         catch (Exception e)
         {

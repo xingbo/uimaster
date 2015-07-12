@@ -188,6 +188,7 @@ public class HTMLComboBoxType extends HTMLSingleChoiceType
                     context.generateHTML("</select>");
                 }
             }
+            generateEndWidget(context);
         }
         catch (Exception e)
         {

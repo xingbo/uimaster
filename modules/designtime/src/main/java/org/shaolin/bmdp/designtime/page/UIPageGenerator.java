@@ -3,6 +3,8 @@ package org.shaolin.bmdp.designtime.page;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -164,7 +166,8 @@ public final class UIPageGenerator implements IEntityEventListener<BusinessEntit
 			FunctionType saveFunc = new FunctionType();
 			saveFunc.setFunctionName("Save");
 			OpCallAjaxType ajaxCall = new OpCallAjaxType();
-			ajaxCall.setName("saveDetail" + (new Random()).nextInt());
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss");
+			ajaxCall.setName("saveDetail-" + sdf.format(new Date()));
 			ExpressionType expr = new ExpressionType();
 			expr.setExpressionString(   "\n        import java.util.HashMap;" + 
 										"\n        import org.shaolin.uimaster.page.AjaxContext;" +
@@ -215,7 +218,9 @@ public final class UIPageGenerator implements IEntityEventListener<BusinessEntit
 			FunctionType cancelFunc = new FunctionType();
 			cancelFunc.setFunctionName("Cancel");
 			OpCallAjaxType ajaxCall1 = new OpCallAjaxType();
-			ajaxCall1.setName("cancelDetail" + (new Random()).nextInt());
+			
+			SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMdd-HHmmss");
+			ajaxCall1.setName("cancelDetail-" + sdf1.format(new Date()));
 			ExpressionType expr1 = new ExpressionType();
 			expr1.setExpressionString(  "\n        import org.shaolin.uimaster.page.AjaxContext;" + 
 								        "\n        import org.shaolin.uimaster.page.ajax.*;" +
@@ -371,7 +376,8 @@ public final class UIPageGenerator implements IEntityEventListener<BusinessEntit
 		saveFunc.getOps().add(scriptCall);
 		
 		OpCallAjaxType ajaxCall2 = new OpCallAjaxType();
-		ajaxCall2.setName("saveItem_" + (new Random()).nextInt());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss");
+		ajaxCall2.setName("saveItem-" + sdf.format(new Date()));
 		ExpressionType expr2 = new ExpressionType();
 		expr2.setExpressionString(   "\n        import org.shaolin.uimaster.page.AjaxContext;" +
 							        "\n        import org.shaolin.uimaster.page.ajax.*;" +

@@ -24,4 +24,5 @@ public interface ICacheInfo {
 
 	String getDescription();
 
+	boolean isEnabled();
 }

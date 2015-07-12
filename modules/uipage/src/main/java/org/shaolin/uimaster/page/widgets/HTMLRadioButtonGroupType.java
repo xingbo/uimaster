@@ -187,6 +187,7 @@ public class HTMLRadioButtonGroupType extends HTMLSingleChoiceType
                 }
             }
             context.generateHTML("</p>");
+            generateEndWidget(context);
         }
         catch (Exception e)
         {

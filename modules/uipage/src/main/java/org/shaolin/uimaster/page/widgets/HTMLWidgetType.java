@@ -639,7 +639,10 @@ public abstract class HTMLWidgetType implements Serializable
         {
             return;
         }
-        if(!(attributeValue instanceof String))return;
+        if(!(attributeValue instanceof String))
+        {
+        	attributeValue = attributeValue == null ? "": attributeValue.toString();
+        }
         String attrValue = (String)attributeValue;
         if ("visible".equals(attributeName))
         {
@@ -770,6 +773,24 @@ public abstract class HTMLWidgetType implements Serializable
         }
     }
 
+    public void generateEndWidget(HTMLSnapshotContext context)
+    {
+    	String dlinkInfo = (String)getAllAttribute("dlinkInfo");
+        if (dlinkInfo != null)
+        {
+        	int index = dlinkInfo.lastIndexOf(";");
+        	String link = dlinkInfo.substring(0, index);
+        	String comment = dlinkInfo.substring(index + 1);
+        	context.generateHTML("<span><a href=\"javascript:dPageLink('");
+        	context.generateHTML(link);
+        	context.generateHTML("');\" title=\"");
+        	context.generateHTML(comment);
+        	context.generateHTML("\");\">");
+        	context.generateHTML(comment);
+        	context.generateHTML("</a></span>");
+        }
+    }
+    
     public void preIncludePage(HTMLSnapshotContext context)
     {
         String preIncludePage = (String)removeAttribute("preIncludePage");

@@ -68,6 +68,7 @@ public class HTMLDateType extends HTMLWidgetType
     {
         generateWidget(context);
         generateContent(context);
+        generateEndWidget(context);
     }
 
     public String getValue()

@@ -92,6 +92,7 @@ public class HTMLRadioButtonType extends HTMLSelectComponentType
             {
                 context.generateHTML("</span>");
             }
+            generateEndWidget(context);
         }
         catch (Exception e)
         {

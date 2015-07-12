@@ -194,6 +194,8 @@ public class HTMLTabPaneType extends HTMLContainerType
                 context.generateHTML("</div>");
             }
             context.generateHTML("</div>");
+            
+            generateEndWidget(context);
         }
         catch (Exception e)
         {

@@ -86,6 +86,7 @@ public class HTMLTextAreaType extends HTMLTextWidgetType
                 context.generateHTML(HTMLUtil.formatHtmlValue(getValue()));
             }
             context.generateHTML("</textarea>");
+            generateEndWidget(context);
         }
         catch (Exception e)
         {

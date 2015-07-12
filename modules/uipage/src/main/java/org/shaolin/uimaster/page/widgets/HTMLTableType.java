@@ -352,6 +352,7 @@ public class HTMLTableType extends HTMLContainerType {
 			
 			HTMLUtil.generateTab(context, depth + 1);
 			context.generateHTML("</table>");
+			generateEndWidget(context);
 
 		} catch (Exception e) {
 			logger.error("error. in entity: " + getUIEntityName(), e);

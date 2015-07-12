@@ -68,6 +68,7 @@ public class HTMLPasswordFieldType extends HTMLTextFieldType
                 context.generateHTML(HTMLUtil.formatHtmlValue(getValue()));
             }
             context.generateHTML("\" />");
+            generateEndWidget(context);
         }
         catch (Exception e)
         {

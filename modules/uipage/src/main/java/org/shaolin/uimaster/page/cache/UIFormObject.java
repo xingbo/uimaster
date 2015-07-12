@@ -1465,6 +1465,15 @@ public class UIFormObject implements java.io.Serializable
         return (Map)expressionMap.get(componentID);
     }
     
+    public void addDynamicLink(String uipanel, String uiwidget, String linkInfo) {
+    	Map prop = getComponentProperty(uiwidget);
+    	if (prop == null) {
+    		logger.warn("UI widget does not exist! {}", uiwidget);
+    	}
+    	
+    	prop.put("dlinkInfo", linkInfo);
+    }
+    
     public void addDynamicItem(HTMLDynamicUIItem item) throws EntityNotFoundException, 
 		ParsingException, ClassNotFoundException {
 		if (!this.dynamicItems.containsKey(AppContext.get().getAppName())) {
