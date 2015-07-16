@@ -437,6 +437,10 @@ public class RefForm extends Container implements Serializable
 		
 		this.remove();
 	}
+	
+	public boolean isInWindows() {
+		return window != null;
+	}
     
     public void remove()
     {

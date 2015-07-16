@@ -24,7 +24,6 @@ function setListener(component, funcname){
         else
             setSingleListener(component, funcname);
 }
-
 function setSingleListener(component, funcname){
     if (component == undefined)
         return;
@@ -52,7 +51,6 @@ function setSingleListener(component, funcname){
             component.onclick = funcname;
     }
 }
-
 function Expression(components, expression){
     var newExp = expression;
     for (var i = 0; i < components.length; i++) {
@@ -70,6 +68,12 @@ function Expression(components, expression){
     }
     return eval(newExp);
 }
+/**
+ *  hard code for dynamic page links.
+ */
+function dPageLink(link){
+	var t = parent.defaultname.functionTree._treeObj; t.deselect_node(t.get_selected()); t.select_node(link);
+};
 /**
  * @description Set the required indicator for a widget.
  * @param {String} id Widget's id.
@@ -3402,7 +3406,7 @@ UIMaster.ui.webtree = UIMaster.extend(UIMaster.ui, {
 		this._refreshnodeevent = config.attr("refreshnodeevent");
 		this._refreshnodeevent0 = config.attr("refreshnodeevent0");
 		
-		this._treeObj = $(this).jstree({ 
+		var _treeObj = $(this).jstree({ 
 			"core":{"data": d, "check_callback" : true}, 
 			"plugins":["contextmenu", "dnd"], 
 			"contextmenu":{"items": this.createMenu},
@@ -3425,7 +3429,6 @@ UIMaster.ui.webtree = UIMaster.extend(UIMaster.ui, {
 	                '_sync': UIMaster.ui.sync()};
 			}};
 			$(this).bind("select_node.jstree", function(node,tree_obj,e){
-				if (t._selectedNodeId == tree_obj.node.id) {return;}
 				t._selectedNodeId=tree_obj.node.id;
 				t._selectedParentNodeId=tree_obj.node.parent;
 				var tree = t;
@@ -3454,6 +3457,7 @@ UIMaster.ui.webtree = UIMaster.extend(UIMaster.ui, {
 				alert("move_node");
 			});
 		});
+		this._treeObj = $(_treeObj).jstree(true);
 	},
 	createMenu:function(node){
 		var items = {};

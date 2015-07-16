@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.Set;
 
 import org.shaolin.bmdp.datamodel.bediagram.BECollectionType;
@@ -211,7 +210,7 @@ public final class UIPageGenerator implements IEntityEventListener<BusinessEntit
 			NameExpressionType ne = new NameExpressionType();
 			ne.setName("input1");
 			invokeWorkflow.getOutDataMappings().add(ne);
-			saveFunc.getOps().add(invokeWorkflow);
+			//saveFunc.getOps().add(invokeWorkflow);
 			
 			uiform.getEventHandlers().add(saveFunc);
 			
@@ -334,7 +333,9 @@ public final class UIPageGenerator implements IEntityEventListener<BusinessEntit
 		FunctionType createItemFunc = new FunctionType();
 		createItemFunc.setFunctionName("createItem");
 		OpCallAjaxType ajaxCall = new OpCallAjaxType();
-		ajaxCall.setName("createItem_" + (new Random()).nextInt());
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss");
+		ajaxCall.setName("createItem_" + sdf.format(new Date()));
 		ExpressionType expr = new ExpressionType();
 		expr.setExpressionString(   "\n        import org.shaolin.uimaster.page.AjaxContext;" +
 							        "\n        import org.shaolin.uimaster.page.ajax.*;" +
@@ -351,7 +352,7 @@ public final class UIPageGenerator implements IEntityEventListener<BusinessEntit
 		FunctionType deleteItemFunc = new FunctionType();
 		deleteItemFunc.setFunctionName("deleteItem");
 		OpCallAjaxType ajaxCall1 = new OpCallAjaxType();
-		ajaxCall1.setName("deleteItem_" + (new Random()).nextInt());
+		ajaxCall1.setName("deleteItem_" + sdf.format(new Date()));
 		ExpressionType expr1 = new ExpressionType();
 		expr1.setExpressionString(   "\n        import org.shaolin.uimaster.page.AjaxContext;" +
 							        "\n        import org.shaolin.uimaster.page.ajax.*;" +
@@ -376,7 +377,6 @@ public final class UIPageGenerator implements IEntityEventListener<BusinessEntit
 		saveFunc.getOps().add(scriptCall);
 		
 		OpCallAjaxType ajaxCall2 = new OpCallAjaxType();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss");
 		ajaxCall2.setName("saveItem-" + sdf.format(new Date()));
 		ExpressionType expr2 = new ExpressionType();
 		expr2.setExpressionString(   "\n        import org.shaolin.uimaster.page.AjaxContext;" +
@@ -437,7 +437,7 @@ public final class UIPageGenerator implements IEntityEventListener<BusinessEntit
 		FunctionType cancelFunc = new FunctionType();
 		cancelFunc.setFunctionName("Cancel");
 		OpCallAjaxType ajaxCall5 = new OpCallAjaxType();
-		ajaxCall5.setName("cancelDetail" + (new Random()).nextInt());
+		ajaxCall5.setName("cancelDetail-" + sdf.format(new Date()));
 		ExpressionType expr5 = new ExpressionType();
 		expr5.setExpressionString(  "\n        import org.shaolin.uimaster.page.AjaxContext;" + 
 							        "\n        import org.shaolin.uimaster.page.ajax.*;" +

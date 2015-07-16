@@ -393,7 +393,9 @@ public class UIFormObject implements java.io.Serializable
             	OpInvokeWorkflowType wfOp = (OpInvokeWorkflowType)op;
             	wfOp.getCondition().parse(context);
             	for (NameExpressionType nameExpr : wfOp.getOutDataMappings()) {
-            		nameExpr.getExpression().parse(context);
+            		if (nameExpr.getExpression() != null) {
+            			nameExpr.getExpression().parse(context);
+            		}
             	}
             	opsList.add(wfOp);
             }
