@@ -344,7 +344,7 @@ public class RefForm extends Container implements Serializable
             ooeeContext.setEvaluationContextObject(ODContext.LOCAL_TAG, evaContext);
             
             PageDispatcher dispatcher = new PageDispatcher(entity, ooeeContext);
-            dispatcher.forward(htmlContext, 0,
+            dispatcher.forwardForm(htmlContext, 0,
                     isReadOnly(), new HTMLReferenceEntityType(htmlContext, id));
             htmlContext.getRequest().setAttribute("_framePagePrefix",oldFrameInfo);
             html = writer.getBuffer().toString();

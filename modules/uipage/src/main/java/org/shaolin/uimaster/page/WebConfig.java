@@ -71,6 +71,8 @@ public class WebConfig {
 		final String hasAjaxErrorHandler;
 		final String[] commoncss;
 		final String[] commonjs;
+		final String[] commonMobcss;
+		final String[] commonMobjs;
 		final Map<String, String[]> singleCommonCss;
 		final Map<String, String[]> singleCommonJs;
 		
@@ -127,6 +129,22 @@ public class WebConfig {
 				}
 			}
 			
+			values = (Collection<String>)
+					instance.getNodeItems("/System/webConstant/commoncss-mob").values();
+			commonMobcss = values.toArray(new String[values.size()]);
+			for (int i=0; i<commonMobcss.length; i++) {
+				if (!commonMobcss[i].startsWith("http")) {
+					commonMobcss[i] = ResourceContextRoot + commonMobcss[i];
+				}
+			}
+			values = instance.getNodeItems("/System/webConstant/commonjs-mob").values();
+			commonMobjs = values.toArray(new String[values.size()]);
+			for (int i=0; i<commonMobjs.length; i++) {
+				if (!commonMobjs[i].startsWith("http")) {
+					commonMobjs[i] = ResourceContextRoot + commonMobjs[i];
+				}
+			}
+			
 			singleCommonCss = new HashMap<String, String[]>();
 			String commonssPath = "/System/webConstant/commoncss";
 			List<String> children = instance.getNodeChildren(commonssPath);
@@ -143,7 +161,7 @@ public class WebConfig {
 			
 			singleCommonJs = new HashMap<String, String[]>();
 			String commonjsPath = "/System/webConstant/commonjs";
-			children = instance.getNodeChildren(commonjsPath);
+			instance.getNodeChildren(commonjsPath);
 			if (children != null && children.size() > 0) {
 				for (String child: children) {
 					values = (Collection<String>)instance.getNodeItems(commonjsPath + "/" + child).values();
@@ -350,6 +368,14 @@ public class WebConfig {
 
 	public static String[] getCommonJs() {
 		return getCacheObject().commonjs;
+	}
+	
+	public static String[] getCommonMobCss() {
+		return getCacheObject().commonMobcss;
+	}
+
+	public static String[] getCommonMobJs() {
+		return getCacheObject().commonMobjs;
 	}
 	
 	public static String[] getSingleCommonJS(String entityName) {

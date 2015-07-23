@@ -142,6 +142,7 @@ public class MasterInstanceListener implements ServletContextListener {
 			@Override
 			public void notify(
 					EntityUpdatedEvent<UIPage, DiagramType> event) {
+				uipages.add(event.getNewEntity().getEntityName());
 			}
 
 			@Override
@@ -183,6 +184,7 @@ public class MasterInstanceListener implements ServletContextListener {
 			@Override
 			public void notify(
 					EntityUpdatedEvent<UIEntity, DiagramType> event) {
+				uiforms.add(event.getNewEntity().getEntityName());
 			}
 
 			@Override

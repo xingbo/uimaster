@@ -185,7 +185,7 @@ public class HTMLUtil
     {
     	UIPageObject pageObject = parseUIPage(pageName);
 		PageDispatcher dispatcher = new PageDispatcher(pageObject);
-		dispatcher.forward(context);
+		dispatcher.forwardPage(context);
     }
 
     public static UIPageObject parseUIPage(String pageName)
@@ -405,7 +405,7 @@ public class HTMLUtil
         return uiskinObj;
     }
 
-    public static void getJSInclude(String entityName, Map<String, String> jsIncludeMap, List<String> jsIncludeList, boolean includeCommon)
+    public static void includeJsFiles(String entityName, Map<String, String> jsIncludeMap, List<String> jsIncludeList, boolean includeCommon)
     {
     	if (includeCommon) {
 	        String[] commons = WebConfig.getCommonJs();
@@ -432,22 +432,34 @@ public class HTMLUtil
         jsIncludeMap.put(jsFileName, importJSCode);
         jsIncludeList.add(jsFileName);
     }
-
-    public static void importJS(HTMLSnapshotContext context, String entityName, int depth)
-            throws JspException
+    
+    public static void includeMobJsFiles(String entityName, Map<String, String> jsIncludeMap, List<String> jsIncludeList, boolean includeCommon)
     {
-        String jsRootPath = getWebRoot();
-        String jsFileName = WebConfig.getImportJS(entityName);
-        generateJSHTML(context, jsRootPath, jsFileName, depth);
-
-        String[] commons = WebConfig.getCommonJs();
-        for (String common: commons) {
-        	generateJSHTML(context, jsRootPath, common, depth);
-        }
+    	if (includeCommon) {
+	        String[] commons = WebConfig.getCommonMobJs();
+	        for (String common: commons)
+	        {
+	            String importJSCode = "<script type=\"text/javascript\" src=\"" + common
+	                    + "?_timestamp=";
+	            jsIncludeMap.put(common, importJSCode);
+	            jsIncludeList.add(common);
+	        }
+    	}
         String[] singleCommons = WebConfig.getSingleCommonJS(entityName);
-        for (String single: singleCommons) {
-			generateJSHTML(context, jsRootPath, single, depth);
-		}
+        for (String single: singleCommons)
+        {
+            String importJSCode = "<script type=\"text/javascript\" src=\"" + single
+                    + "?_timestamp=";
+            jsIncludeMap.put(single, importJSCode);
+            jsIncludeList.add(single);
+        }
+        
+        //TODO: add -mob suffix for the customized js.
+        String jsFileName = WebConfig.getImportJS(entityName);
+        String importJSCode = "<script type=\"text/javascript\" src=\"" + jsFileName
+                + "?_timestamp=";
+        jsIncludeMap.put(jsFileName, importJSCode);
+        jsIncludeList.add(jsFileName);
     }
 
     public static void generateJSHTML(HTMLSnapshotContext context, String jsRootPath,

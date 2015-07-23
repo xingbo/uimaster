@@ -184,7 +184,7 @@ public final class EntityManager implements IEntityManager {
 			this.filters = filters;
 			
 			scan();
-			load();
+			load(false);
 			
 			if (logger.isDebugEnabled()) {
 				logger.debug("Execute post tasks...");
@@ -229,7 +229,7 @@ public final class EntityManager implements IEntityManager {
 			} catch (java.io.IOException e) {
 				logger.error("Failed to load path: " + entityPath, e);
 			}
-			load();
+			load(false);
 			
 			if (logger.isDebugEnabled()) {
 				logger.debug("Execute post tasks...");
@@ -293,7 +293,7 @@ public final class EntityManager implements IEntityManager {
 		}
 	}
 	
-	private void load() {
+	private void load(boolean reload) {
 		try {
 			// load the first level entities.
 			for (String type : loadSequence) {
@@ -301,13 +301,13 @@ public final class EntityManager implements IEntityManager {
 					logger.info("Load entity type: {}", type);
 				}
 				if (scanningJarEntries.containsKey(type)) {
-					loadEntityFromJar(scanningJarEntries.get(type));
+					loadEntityFromJar(scanningJarEntries.get(type), reload);
 					scanningJarEntries.remove(type);
 				}
 				if (scanningFiles.containsKey(type)) {
 					LinkedList<File> files = scanningFiles.get(type);
 					for (File f : files) {
-						loadEntityFromDir(f, false);
+						loadEntityFromDir(f, reload);
 					}
 					scanningFiles.remove(type);
 				}
@@ -319,13 +319,13 @@ public final class EntityManager implements IEntityManager {
 					logger.info("Load entity type: {}", type);
 				}
 				if (scanningJarEntries.containsKey(type)) {
-					loadEntityFromJar(scanningJarEntries.get(type));
+					loadEntityFromJar(scanningJarEntries.get(type), reload);
 					scanningJarEntries.remove(type);
 				}
 				if (scanningFiles.containsKey(type)) {
 					LinkedList<File> files = scanningFiles.get(type);
 					for (File f : files) {
-						loadEntityFromDir(f, false);
+						loadEntityFromDir(f, reload);
 					}
 					scanningFiles.remove(type);
 				}
@@ -341,7 +341,7 @@ public final class EntityManager implements IEntityManager {
 						logger.info("Load entity type: {}", entry.getKey());
 					}
 					
-					loadEntityFromJar(entry.getValue());
+					loadEntityFromJar(entry.getValue(), reload);
 				}
 				notifyAllLoadFinish();
 				scanningJarEntries.clear();
@@ -357,7 +357,7 @@ public final class EntityManager implements IEntityManager {
 							logger.info("Load entity type: {}", entry.getKey());
 						}
 						
-						loadEntityFromDir(f, false);
+						loadEntityFromDir(f, reload);
 					}
 					notifyAllLoadFinish();
 				}
@@ -410,7 +410,7 @@ public final class EntityManager implements IEntityManager {
 		}
 	}
 	
-	private void loadEntityFromJar(LinkedList<JarEntryEntity> entries) throws IOException {
+	private void loadEntityFromJar(LinkedList<JarEntryEntity> entries, boolean reload) throws IOException {
 		for (JarEntryEntity item : entries) {
 			if (!item.entry.isDirectory() && item.entry.getName().startsWith("entities/")) {
 				InputStream in = null;
@@ -420,7 +420,7 @@ public final class EntityManager implements IEntityManager {
 					String entityType = item.entry.getName();
 					entityType = entityType.substring(entityType.lastIndexOf('.') + 1);
 					
-					addEntity(item.entry.getName(), in, entityType, false);
+					addEntity(item.entry.getName(), in, entityType, reload);
 				} catch (JAXBException e1) {
 					logger.error("Failed to load entity " + item.entry.getName() 
 							+ ". Cause: " + e1.getMessage(), e1);
@@ -562,13 +562,13 @@ public final class EntityManager implements IEntityManager {
 		}
 		EntityType oldEntity = cache.putIfAbsent(entity.getEntityName(), entity);
 		if (oldEntity != null) {
-			logger.warn("Entity already existed: " + entity.getEntityName());
 			if (reload) {
-				if (logger.isDebugEnabled()) {
-					logger.debug("But it enables to reload this entity: "
-							+ entity.getEntityName());
+				if (logger.isInfoEnabled()) {
+					logger.info("Reload this entity: " + entity.getEntityName());
 				}
 				cache.put(entity.getEntityName(), entity);
+			} else {
+				logger.warn("Entity already existed: " + entity.getEntityName());
 			}
 			for (IEntityEventListener<? extends EntityType, ?> listener: listeners) {
 				if (listener.getEventType().isAssignableFrom(entity.getClass())) {
@@ -693,12 +693,12 @@ public final class EntityManager implements IEntityManager {
 		scanningJarEntries.clear();
 		scanningFiles.clear();
 		try {
-			if (logger.isDebugEnabled()) {
-				logger.debug("Loading entity directory: " + path);
+			if (logger.isInfoEnabled()) {
+				logger.info("Reloading entity directory: " + path);
 			}
 			// no need filters for file.
 			scanEntityFromDir(path);
-			load();
+			load(true);
 		} finally {
 			scanningJarEntries.clear();
 			scanningFiles.clear();
@@ -716,8 +716,8 @@ public final class EntityManager implements IEntityManager {
 		scanningJarEntries.clear();
 		scanningFiles.clear();
 		try {
-			if (logger.isDebugEnabled()) {
-				logger.debug("Loading entity directory: " + path);
+			if (logger.isInfoEnabled()) {
+				logger.info("Reloading entity directory: " + path);
 			}
 			// no need filters for file.
 			scanEntityFromDir(path);
@@ -731,8 +731,7 @@ public final class EntityManager implements IEntityManager {
 			scanningFiles.clear();
 			scanningFiles.putAll(scanningFiles0);
 			
-			load();
-			
+			load(true);
 		} finally {
 			scanningJarEntries.clear();
 			scanningFiles.clear();

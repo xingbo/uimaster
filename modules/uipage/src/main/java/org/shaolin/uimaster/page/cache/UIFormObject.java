@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.JspException;
 
 import org.shaolin.bmdp.datamodel.common.ExpressionType;
 import org.shaolin.bmdp.datamodel.common.NameExpressionType;
@@ -114,6 +115,7 @@ import org.shaolin.uimaster.page.javacc.VariableEvaluator;
 import org.shaolin.uimaster.page.od.ODContext;
 import org.shaolin.uimaster.page.od.ODContextHelper;
 import org.shaolin.uimaster.page.od.mappings.ComponentMappingHelper;
+import org.shaolin.uimaster.page.security.UserContext;
 import org.shaolin.uimaster.page.widgets.HTMLDynamicUIItem;
 import org.shaolin.uimaster.page.widgets.HTMLReferenceEntityType;
 import org.shaolin.uimaster.page.widgets.HTMLWidgetType;
@@ -166,6 +168,10 @@ public class UIFormObject implements java.io.Serializable
 
     private List jsIncludeList = new ArrayList();
 
+    private Map jsMobIncludeMap = new HashMap();
+
+    private List jsMobIncludeList = new ArrayList();
+    
 	public UIFormObject(String name)
     {
         if (logger.isInfoEnabled())
@@ -187,7 +193,8 @@ public class UIFormObject implements java.io.Serializable
         UIEntity uientity = (UIEntity)entity.getUIEntity();
         OOEEContext parsingContext = parseVariable(entity);
         parseUI(parsingContext, uientity, null);
-        HTMLUtil.getJSInclude(name, jsIncludeMap, jsIncludeList, true);
+        HTMLUtil.includeJsFiles(name, jsIncludeMap, jsIncludeList, true);
+        HTMLUtil.includeMobJsFiles(name, jsMobIncludeMap, jsMobIncludeList, true);
     }
     
     private void load()
@@ -196,7 +203,8 @@ public class UIFormObject implements java.io.Serializable
     			.getEntity(name, UIEntity.class);
         OOEEContext parsingContext = parseVariable(entity);
         parseUI(parsingContext, entity, null);
-        HTMLUtil.getJSInclude(name, jsIncludeMap, jsIncludeList, false);
+        HTMLUtil.includeJsFiles(name, jsIncludeMap, jsIncludeList, false);
+        HTMLUtil.includeMobJsFiles(name, jsMobIncludeMap, jsMobIncludeList, true);
     }
 
 
@@ -1343,14 +1351,16 @@ public class UIFormObject implements java.io.Serializable
         funcMap = new HashMap();
         callServerSideOpMap = new HashMap();
         variables = null;
-        reconfigurableVarSet = new HashSet();
-        reconfigurablePropMap = new HashMap();
-        reconfigurationMap = new HashMap();
-        uiskinMap = new HashMap();
-        includeMap = new HashMap();
-        refereneEntityList = new ArrayList();
-        jsIncludeMap = new HashMap();
-        jsIncludeList = new ArrayList();
+        reconfigurableVarSet.clear();
+        reconfigurablePropMap.clear();
+        reconfigurationMap.clear();
+        uiskinMap.clear();
+        includeMap.clear();
+        refereneEntityList.clear();
+        jsIncludeMap.clear();
+        jsIncludeList.clear();
+        jsMobIncludeMap.clear();
+        jsMobIncludeList.clear();
     }
 
     public IUISkin getUISkinObj(String UIID, VariableEvaluator ee, HTMLWidgetType htmlComponent)
@@ -1544,22 +1554,78 @@ public class UIFormObject implements java.io.Serializable
     public HTMLCellLayout getBodyLayout() {
 		return bodyLayout;
 	}
-    
-    public Map getIncludeMap() {
-		return includeMap;
-	}
 
-	public Map getJsIncludeMap() {
-		return jsIncludeMap;
-	}
+	public void importSelfJS(HTMLSnapshotContext context, int depth) throws JspException
+    {
+    	Iterator jsFileNameIterator = null;
+    	if (UserContext.isMobileRequest()) {
+    		jsFileNameIterator = this.jsMobIncludeList.iterator();
+    	} else {
+    		jsFileNameIterator = this.jsIncludeList.iterator();
+    	}
+        while (jsFileNameIterator.hasNext())
+        {
+            String jsFileName = (String)jsFileNameIterator.next();
+            if (context.containsJsName(jsFileName))
+            {
+                continue;
+            }
+            else
+            {
+                context.addJsName(jsFileName);
+            }
 
-	public List getJsIncludeList() {
-		return jsIncludeList;
-	}
+            if (jsFileName.endsWith(".js"))
+            {
+                long timestamp = 1;
+                if (timestamp >= 0)
+                {
+                	String importJSCode = null;
+                	if (UserContext.isMobileRequest()) {
+                	    importJSCode = (String)this.jsMobIncludeMap.get(jsFileName);
+                	} else {
+                        importJSCode = (String)this.jsIncludeMap.get(jsFileName);
+                	}
+                    importJSCode = WebConfig.replaceJsWebContext(importJSCode);
+                    context.generateJS(importJSCode + timestamp + "\"></script>");
+                    HTMLUtil.generateTab(context, depth);
+                }
+            }
+        }
+    }
+
+    public String importSelfJs(HTMLSnapshotContext context, UIFormObject tEntityObj)
+    {
+        StringBuffer sb = new StringBuffer();
+        Iterator jsFileNameIterator = null;
+        if (UserContext.isMobileRequest()) {
+    		jsFileNameIterator = this.jsMobIncludeList.iterator();
+    	} else {
+    		jsFileNameIterator = this.jsIncludeList.iterator();
+    	}
+        while (jsFileNameIterator.hasNext())
+        {
+            String jsFileName = (String)jsFileNameIterator.next();
+            if (!context.containsJsName(jsFileName))
+            {
+                context.addJsName(jsFileName);
+            }
+            if (jsFileName.endsWith(".js"))
+            {
+                sb.append("UIMaster.require(\"").append(HTMLUtil.getWebRoot());
+                sb.append(jsFileName).append("?_timestamp=").append(WebConfig.getTimeStamp())
+                        .append("\",true);");
+            }
+        }
+        return sb.toString();
+    }
 
 	public String importSelfJs(HTMLSnapshotContext context) {
 		StringBuffer sb = new StringBuffer();
 		Iterator jsFileNameIterator = this.jsIncludeList.iterator();
+		if (UserContext.isMobileRequest()) {
+			jsFileNameIterator = this.jsMobIncludeList.iterator();
+		}
 		while (jsFileNameIterator.hasNext()) {
 			String jsFileName = (String) jsFileNameIterator.next();
 			if (!context.containsJsName(jsFileName)) {

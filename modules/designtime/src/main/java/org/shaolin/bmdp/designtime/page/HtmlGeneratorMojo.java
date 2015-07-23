@@ -105,7 +105,7 @@ public class HtmlGeneratorMojo extends AbstractMojo {
         	
 			UIPageObject pageObject = HTMLUtil.parseUIPage(entityName);
 			PageDispatcher dispatcher = new PageDispatcher(pageObject);
-			dispatcher.forward(htmlContext);
+			dispatcher.forwardPage(htmlContext);
 			
 			File result = new File(htmlDirectory, entityName + ".html");
 			if (!result.exists()) {

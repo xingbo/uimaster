@@ -164,7 +164,7 @@ public class HTMLTabPaneType extends HTMLContainerType
 	                    panelLayout.setConstraints(layoutConstraint, ooee);
 	                    panelLayout.setBody(tab.getPanel(), ooee);
 	                	
-	                    panelLayout.generateComponentHTML(context, depth, true, Collections.emptyMap(), ee, this.getHTMLLayout());
+	                    panelLayout.generateComponentHTML(context, depth, false, Collections.emptyMap(), ee, this.getHTMLLayout());
 	                } else if (tab.getRefEntity() != null) {
 	                	//form support
 	                	String prefix = context.getHTMLPrefix();

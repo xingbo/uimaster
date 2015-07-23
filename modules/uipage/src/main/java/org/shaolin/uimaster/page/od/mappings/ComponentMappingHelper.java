@@ -14,10 +14,6 @@ import org.shaolin.javacc.context.OOEEContextFactory;
 import org.shaolin.javacc.exception.EvaluationException;
 import org.shaolin.javacc.exception.ParsingException;
 import org.shaolin.javacc.statement.CompilationUnit;
-import org.shaolin.uimaster.page.HTMLSnapshotContext;
-import org.shaolin.uimaster.page.HTMLUtil;
-import org.shaolin.uimaster.page.cache.UIFormObject;
-import org.shaolin.uimaster.page.cache.UIPageObject;
 import org.shaolin.uimaster.page.exception.ODException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -201,44 +197,6 @@ public class ComponentMappingHelper
 		}
 	}
 	
-	/**
-	 * the ui component attributes gotten by component path.
-	 * 
-	 * 
-	 * For exm:
-	 * UIEntity.uientity1.uientityA.element.
-	 * 
-	 * UIEntity is uipage (isPageOd = true).
-	 * uientity1 is uientity (isPageOd = false).
-	 * uientityA is uientity (isPageOd = false).
-	 * element is base uicontrol (isPageOd = false).
-	 * 
-	 * finally element is base uicontrol attribute set.
-	 * 
-	 * @param isPageOd
-	 * @param entityName
-	 * @param componentPath
-	 * @param context
-	 * @return
-	 */
-	public static Map getUICAttrByCPath(boolean isPageOd, String entityName,
-			String componentPath, HTMLSnapshotContext context) {
-		String uiid = "";
-		Map uiComponentAttr = new HashMap();
-		int startPosition = componentPath.indexOf(".");
-		if (startPosition == -1) {
-			uiid = componentPath;
-			return getUIComponentAttribute(isPageOd, entityName, context, uiid);
-		}
-		uiid = componentPath.substring(0, startPosition);
-		String nextUiid = componentPath.substring(startPosition + 1);
-		uiComponentAttr = getUIComponentAttribute(isPageOd, entityName,
-				context, uiid);
-		isPageOd = false;
-		String newEntityName = (String) uiComponentAttr.get("referenceEntity");
-		return getUICAttrByCPath(isPageOd, newEntityName, nextUiid, context);
-	}
-
 	public static Class convertNumbertoPrimitiveType(Class clazz) {
 		if (clazz == Long.class)
 			return long.class;
@@ -276,14 +234,4 @@ public class ComponentMappingHelper
 		return clazz;
 	}
 	
-	private static Map getUIComponentAttribute(boolean isPageOd,
-			String entityName, HTMLSnapshotContext context, String currentUiid) {
-		if (isPageOd) {
-			UIPageObject uiPage = HTMLUtil.parseUIPage(entityName);
-			return uiPage.getComponentProperty(currentUiid);
-		} else {
-			UIFormObject uiEntity = HTMLUtil.parseUIEntity(entityName);
-			return uiEntity.getComponentProperty(currentUiid);
-		}
-	}
 }

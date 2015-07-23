@@ -330,7 +330,7 @@ public class HTMLReferenceEntityType extends HTMLWidgetType implements Serializa
     		evaContext = new DefaultEvaluationContext();
     	}
         PageDispatcher dispatcher = new PageDispatcher(entity, evaContext);
-        dispatcher.forward(context, depth, getReadOnly(), this);
+        dispatcher.forwardForm(context, depth, getReadOnly(), this);
     }
     
     public String getDIVPrefix()

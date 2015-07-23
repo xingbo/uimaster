@@ -83,8 +83,10 @@ public class UploadFileServlet extends HttpServlet {
 		Object currentUserContext = session.getAttribute(WebflowConstants.USER_SESSION_KEY);
 		String userLocale = WebConfig.getUserLocale(request);
 		List userRoles = (List)session.getAttribute(WebflowConstants.USER_ROLE_KEY);
+		String userAgent = request.getHeader("user-agent");
+		boolean isMobile = MobilitySupport.isMobileRequest(userAgent);
 		//add user-context thread bind
-        UserContext.registerCurrentUserContext(currentUserContext, userLocale, userRoles);
+        UserContext.registerCurrentUserContext(currentUserContext, userLocale, userRoles, isMobile);
 		LocaleContext.createLocaleContext(userLocale);
 		
 		AppContext.register((IAppServiceManager)this.getServletContext().getAttribute(IAppServiceManager.class.getCanonicalName()));

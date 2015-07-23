@@ -177,7 +177,7 @@ public class PageTest {
 		try {
 			UIPageObject pageObject = HTMLUtil.parseUIPage(page);
 			PageDispatcher dispatcher = new PageDispatcher(pageObject);
-			dispatcher.forward(htmlContext);
+			dispatcher.forwardPage(htmlContext);
 			
 			System.out.println("HTML Code: \n" + response.getHtmlCode());
 		} catch (JspException e) {
@@ -232,7 +232,7 @@ public class PageTest {
 		try {
 			UIPageObject pageObject = HTMLUtil.parseUIPage(page);
 			PageDispatcher dispatcher = new PageDispatcher(pageObject);
-			dispatcher.forward(htmlContext);
+			dispatcher.forwardPage(htmlContext);
 			
 			System.out.println("HTML Code: \n" + response.getHtmlCode());
 		} catch (JspException e) {

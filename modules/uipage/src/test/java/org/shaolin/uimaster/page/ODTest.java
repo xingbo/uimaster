@@ -65,6 +65,7 @@ import org.shaolin.uimaster.page.od.rules.UITextWithCurrency;
 import org.shaolin.uimaster.page.od.rules.UITextWithDate;
 import org.shaolin.uimaster.page.od.rules.UITextWithFloatNumber;
 import org.shaolin.uimaster.page.od.rules.UITextWithNumber;
+import org.shaolin.uimaster.page.security.UserContext;
 import org.shaolin.uimaster.page.widgets.HTMLCheckBoxType;
 import org.shaolin.uimaster.page.widgets.HTMLComboBoxType;
 import org.shaolin.uimaster.page.widgets.HTMLDateType;
@@ -100,6 +101,11 @@ public class ODTest {
 	@AfterClass
 	public static void teardown() {
 		
+	}
+	
+	@Test
+	public void testUserContext() {
+		System.out.println(UserContext.isMobileRequest());
 	}
 	
 	@Test

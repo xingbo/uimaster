@@ -528,7 +528,7 @@ public class AjaxContext extends OpExecuteContext implements Serializable
             logger.debug("No frame name specified, use this context's default frame.");
             return uiMap;
         }
-        Map ajaxComponentMap = AjaxActionHelper.getAjaxWidgetMap(request.getSession());
+        Map ajaxComponentMap = AjaxActionHelper.getAjaxWidgetMap(request.getSession(true));
         if (frameName.equals(""))
         {
             frameName = "#GLOBAL#";

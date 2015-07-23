@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,11 +18,14 @@ import org.shaolin.bmdp.datamodel.pagediagram.DisplayOutType;
 import org.shaolin.bmdp.datamodel.pagediagram.NextType;
 import org.shaolin.bmdp.datamodel.pagediagram.OutType;
 import org.shaolin.bmdp.datamodel.pagediagram.PageNodeType;
+import org.shaolin.bmdp.runtime.entity.EntityNotFoundException;
+import org.shaolin.bmdp.runtime.spi.IEntityManager;
 import org.shaolin.bmdp.runtime.spi.IServerServiceManager;
 import org.shaolin.javacc.exception.EvaluationException;
 import org.shaolin.javacc.exception.ParsingException;
 import org.shaolin.uimaster.page.HTMLSnapshotContext;
 import org.shaolin.uimaster.page.HTMLUtil;
+import org.shaolin.uimaster.page.MobilitySupport;
 import org.shaolin.uimaster.page.exception.ODProcessException;
 import org.shaolin.uimaster.page.exception.WebFlowException;
 import org.shaolin.uimaster.page.flow.ProcessHelper;
@@ -33,16 +35,21 @@ import org.shaolin.uimaster.page.flow.error.WebflowErrorUtil;
 import org.shaolin.uimaster.page.javacc.WebFlowContext;
 import org.shaolin.uimaster.page.javacc.WebFlowContextHelper;
 import org.shaolin.uimaster.page.od.PageODProcessor;
+import org.shaolin.uimaster.page.security.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class UIPageNode extends WebNode {
+
+	private static final long serialVersionUID = 1L;
 
 	public static final String WEBFLOW_CACHED_INPUT = "___webflow___cached___input";
 
 	private static Logger logger = LoggerFactory.getLogger(UIPageNode.class);
 
 	private PageNodeType type;
+	
+	private boolean hasMobilePage = false;
 	
 	private List<ParamType> inputVars;//from ui page.
 	
@@ -84,7 +91,8 @@ public class UIPageNode extends WebNode {
 		this.inContext = WebFlowContextHelper.getWebFlowContext(this, type.getVariables());
 		// parse input datas
         ProcessHelper.parseVariables(type.getVariables(), inContext);
-        UIPage page = IServerServiceManager.INSTANCE.getEntityManager().getEntity(type.getSourceEntity().getEntityName(), UIPage.class);
+        IEntityManager entityManager = IServerServiceManager.INSTANCE.getEntityManager();
+        UIPage page = entityManager.getEntity(type.getSourceEntity().getEntityName(), UIPage.class);
         this.inputVars = page.getODMapping().getDataEntities();
         if (this.inputVars != null) {
         	ProcessHelper.parseVariables(this.inputVars, inContext);
@@ -107,6 +115,14 @@ public class UIPageNode extends WebNode {
 			}
         	 
         }
+        
+        try {
+        	entityManager.getEntity(type.getSourceEntity().getEntityName() + MobilitySupport.MOB_PAGE_SUFFIX, UIPage.class);
+        	hasMobilePage = true;
+        } catch (EntityNotFoundException e) {
+        	hasMobilePage = false;
+        }
+        
 		isParsed = true;
     }
     
@@ -352,9 +368,12 @@ public class UIPageNode extends WebNode {
         
         HTMLSnapshotContext genContext = new HTMLSnapshotContext(request);
         genContext.resetRepository();
-        // type.getSourceEntity().getEntityName(), 
+        
         String uipageName = type.getSourceEntity().getEntityName();
-		genContext.setFormName(uipageName);
+        if (UserContext.isMobileRequest() && this.hasMobilePage) {
+        	uipageName += MobilitySupport.MOB_PAGE_SUFFIX;
+        } 
+        genContext.setFormName(uipageName);
         genContext.setODMapperData(datas);
         genContext.setIsDataToUI(false);
         try
@@ -435,21 +454,25 @@ public class UIPageNode extends WebNode {
     public boolean processDirectForward(HttpServletRequest request, HttpServletResponse response)//throws IOException, ServletException
     {
         ProcessHelper.processPreForward(this, request);
+        String uipageName = type.getSourceEntity().getEntityName();
         try
         {
+        	if (UserContext.isMobileRequest() && this.hasMobilePage) {
+            	uipageName += MobilitySupport.MOB_PAGE_SUFFIX;
+            } 
         	HTMLSnapshotContext context = new HTMLSnapshotContext(request, response);
-        	context.setFormName(type.getSourceEntity().getEntityName());
+        	context.setFormName(uipageName);
         	context.setIsDataToUI(true);
         	Map inputParams = (Map)request.getSession(true).getAttribute(WEBFLOW_CACHED_INPUT);
         	if (inputParams != null) {
         		context.setODMapperData(inputParams);
         	}
-        	HTMLUtil.forward(context, type.getSourceEntity().getEntityName());
+        	HTMLUtil.forward(context, uipageName);
         	return true;
         }
         catch ( Exception e )
         {
-            String msg = "Exception occurs when forward to the uipage: " + type.getSourceEntity().getEntityName();
+            String msg = "Exception occurs when forward to the uipage: " + uipageName;
             if ( e instanceof ServletException )
             {
                 e = ProcessHelper.transformServletException((ServletException)e);

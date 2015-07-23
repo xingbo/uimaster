@@ -23,8 +23,11 @@ import java.util.Map;
 
 import org.shaolin.bmdp.datamodel.page.UIPage;
 import org.shaolin.bmdp.i18n.LocaleContext;
+import org.shaolin.bmdp.runtime.entity.EntityNotFoundException;
 import org.shaolin.bmdp.runtime.spi.IServerServiceManager;
+import org.shaolin.uimaster.page.MobilitySupport;
 import org.shaolin.uimaster.page.WebConfig;
+import org.shaolin.uimaster.page.security.UserContext;
 
 public class UIPageObject implements java.io.Serializable {
 	private static final long serialVersionUID = -3835708230178517577L;
@@ -40,6 +43,12 @@ public class UIPageObject implements java.io.Serializable {
 	private Map<String, List<String>> importCSSCodeMap = new HashMap<String, List<String>>();
 
 	private final StringBuffer pageCSS = new StringBuffer();
+	
+	private Map<String, List<String>> importMobCSSCodeMap = new HashMap<String, List<String>>();
+
+	private final StringBuffer mobPageCSS = new StringBuffer();
+	
+	private boolean hasMobilePage = false;
 
 	public UIPageObject(String entityName) {
 		this.entityName = entityName;
@@ -49,19 +58,30 @@ public class UIPageObject implements java.io.Serializable {
 	private void load() {
 		UIPage entity = IServerServiceManager.INSTANCE.getEntityManager()
 				.getEntity(entityName, UIPage.class);
+		
+		try {
+			IServerServiceManager.INSTANCE.getEntityManager()
+				.getEntity(entityName + MobilitySupport.MOB_PAGE_SUFFIX, UIPage.class);
+			hasMobilePage = true;
+        } catch (EntityNotFoundException e) {
+        	hasMobilePage = false;
+        }
+		
 		ui = new UIFormObject(entityName, entity);
 
-		addCSS(DEFAULT_LOCALE);
-
+		addCSS(DEFAULT_LOCALE, false);
+		addCSS(DEFAULT_LOCALE, true);
+		
 		String importCSS = WebConfig.getImportCSS(entityName);
 		String cssCode = "<link rel=\"stylesheet\" href=\"" + importCSS
 				+ "\" type=\"text/css\">\n";
 		cssCodeMap.put(DEFAULT_LOCALE, cssCode);
 
 		importCSS();
+		importMobCSS();
 	}
 
-	private void addCSS(String locale) {
+	private void addCSS(String locale, boolean isMobile) {
 		List<String> importCSSCode = new ArrayList<String>();
 		String[] css = WebConfig.getSingleCommonCSS(entityName);
 		if (css != null) {
@@ -71,11 +91,18 @@ public class UIPageObject implements java.io.Serializable {
 			}
 		}
 		String[] common = WebConfig.getCommonCss();
+		if (isMobile) {
+			common = WebConfig.getCommonMobCss();
+		}
 		for (int i = 0; common != null && i < common.length; i++) {
 			importCSSCode.add("<link rel=\"stylesheet\" href=\"" + common[i]
 					+ "\" type=\"text/css\">\n");
 		}
-		importCSSCodeMap.put(locale, importCSSCode);
+		if (isMobile) {
+			importMobCSSCodeMap.put(locale, importCSSCode);
+		} else {
+			importCSSCodeMap.put(locale, importCSSCode);
+		}
 	}
 
 	private void addCSSFile(String locale) {
@@ -86,42 +113,77 @@ public class UIPageObject implements java.io.Serializable {
 	}
 
 	private void importCSS() {
-		String userLocale = LocaleContext.getUserLocale();
-		if (userLocale != null && !userLocale.trim().equals("EBOS_DEFAULT")) {
-			if (!importCSSCodeMap.containsKey(userLocale)) {
-				addCSS(userLocale);
-				addCSSFile(userLocale);
-			}
-		} else {
-			userLocale = DEFAULT_LOCALE;
-		}
+//		String userLocale = LocaleContext.getUserLocale();
+//		if (userLocale != null && !userLocale.trim().equals(DEFAULT_LOCALE)) {
+//			if (!importCSSCodeMap.containsKey(userLocale)) {
+//				addCSS(userLocale, false);
+//				addCSSFile(userLocale);
+//			}
+//		} else {
+//			userLocale = DEFAULT_LOCALE;
+//		}
 
-		List<String> importCSSCode = (List<String>) importCSSCodeMap.get(userLocale);
+		List<String> importCSSCode = (List<String>) importCSSCodeMap.get(DEFAULT_LOCALE);
 		Iterator<String> iterator = importCSSCode.iterator();
 		while (iterator.hasNext()) {
 			String code = iterator.next();
 			pageCSS.append(code);
 		}
-		pageCSS.append((String) cssCodeMap.get(userLocale));
+		pageCSS.append((String) cssCodeMap.get(DEFAULT_LOCALE));
 	}
+	
+	private void importMobCSS() {
+//		String userLocale = LocaleContext.getUserLocale();
+//		if (userLocale != null && !userLocale.trim().equals(DEFAULT_LOCALE)) {
+//			if (!importCSSCodeMap.containsKey(userLocale)) {
+//				addCSS(userLocale, true);
+//				addCSSFile(userLocale);
+//			}
+//		} else {
+//			userLocale = DEFAULT_LOCALE;
+//		}
 
-	public Map getComponentProperty(String componentID) {
-		return ui.getComponentProperty(componentID);
+		List<String> importCSSCode = (List<String>) importMobCSSCodeMap.get(DEFAULT_LOCALE);
+		Iterator<String> iterator = importCSSCode.iterator();
+		while (iterator.hasNext()) {
+			String code = iterator.next();
+			mobPageCSS.append(code);
+		}
+		mobPageCSS.append((String) cssCodeMap.get(DEFAULT_LOCALE));
 	}
 
 	public UIFormObject getUIForm() {
+		if (UserContext.isMobileRequest() && hasMobilePage()) {
+			return PageCacheManager.getUIPageObject(getRuntimeEntityName()).ui;
+		}
+		
 		return ui;
 	}
 
-	public String getEntityName() {
+	public String getRuntimeEntityName() {
+		if (UserContext.isMobileRequest() && hasMobilePage()) {
+			return entityName + MobilitySupport.MOB_PAGE_SUFFIX;
+		}
 		return entityName;
 	}
 
-	public UIFormObject getUi() {
+	public UIFormObject getUIFormObject() {
+		if (UserContext.isMobileRequest() && hasMobilePage()) {
+			return PageCacheManager.getUIPageObject(getRuntimeEntityName()).ui;
+		}
+		
 		return ui;
 	}
 
 	public StringBuffer getPageCSS() {
 		return pageCSS;
+	}
+	
+	public StringBuffer getMobPageCSS() {
+		return mobPageCSS;
+	}
+	
+	public boolean hasMobilePage() {
+		return hasMobilePage;
 	}
 }

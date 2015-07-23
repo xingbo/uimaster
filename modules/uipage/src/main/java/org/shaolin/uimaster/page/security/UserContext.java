@@ -10,12 +10,14 @@ public class UserContext {
 
 	private static ThreadLocal<List> userRolesCache = new ThreadLocal<List>();
 
+	private static ThreadLocal<Boolean> userAccessMode = new ThreadLocal<Boolean>();
+	
 	public static void registerCurrentUserContext(Object userContext,
-			String userLocale, List userRoles) {
+			String userLocale, List userRoles, Boolean isMobileAccess) {
 		userSessionCache.set(userContext);
 		userLocaleCache.set(userLocale);
 		userRolesCache.set(userRoles);
-
+		userAccessMode.set(isMobileAccess);
 	}
 
 	public static Object getCurrentUserContext() {
@@ -34,6 +36,13 @@ public class UserContext {
 
 	public static List getUserRoles() {
 		return userRolesCache.get();
+	}
+	
+	public static boolean isMobileRequest() {
+		if (userAccessMode.get() == null) {
+			return false;
+		}
+		return userAccessMode.get();
 	}
 
 }

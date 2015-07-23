@@ -25,6 +25,7 @@ import org.shaolin.bmdp.runtime.security.IPermissionService;
 import org.shaolin.bmdp.runtime.spi.IAppServiceManager;
 import org.shaolin.javacc.exception.EvaluationException;
 import org.shaolin.javacc.exception.ParsingException;
+import org.shaolin.uimaster.page.MobilitySupport;
 import org.shaolin.uimaster.page.WebConfig;
 import org.shaolin.uimaster.page.cache.UIFlowCacheManager;
 import org.shaolin.uimaster.page.exception.AjaxException;
@@ -347,8 +348,10 @@ public class WebFlowServlet extends HttpServlet
 				Object currentUserContext = session.getAttribute(WebflowConstants.USER_SESSION_KEY);
 				String userLocale = WebConfig.getUserLocale(request);
 				List userRoles = (List)session.getAttribute(WebflowConstants.USER_ROLE_KEY);
+				String userAgent = request.getHeader("user-agent");
+				boolean isMobile = MobilitySupport.isMobileRequest(userAgent);
 				//add user-context thread bind
-	            UserContext.registerCurrentUserContext(currentUserContext, userLocale, userRoles);
+	            UserContext.registerCurrentUserContext(currentUserContext, userLocale, userRoles, isMobile);
 	            //add request thread bind
 	            HttpRequestEvaluationContext.registerCurrentRequest(request);
 	            //add app context thread bind

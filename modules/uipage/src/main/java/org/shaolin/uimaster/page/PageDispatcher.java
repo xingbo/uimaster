@@ -45,6 +45,7 @@ import org.shaolin.uimaster.page.flow.WebflowConstants;
 import org.shaolin.uimaster.page.javacc.VariableEvaluator;
 import org.shaolin.uimaster.page.od.PageODProcessor;
 import org.shaolin.uimaster.page.od.formats.FormatUtil;
+import org.shaolin.uimaster.page.security.UserContext;
 import org.shaolin.uimaster.page.widgets.HTMLReferenceEntityType;
 import org.shaolin.uimaster.page.widgets.HTMLWidgetType;
 import org.slf4j.Logger;
@@ -79,9 +80,9 @@ public class PageDispatcher {
 	 * @param depth
 	 * @throws JspException
 	 */
-	public void forward(HTMLSnapshotContext context, int depth) throws JspException
+	public void forwardForm(HTMLSnapshotContext context, int depth) throws JspException
     {
-        forward(context, depth, null, null);
+        forwardForm(context, depth, null, null);
     }
 
 	/**
@@ -93,7 +94,7 @@ public class PageDispatcher {
 	 * @param parent
 	 * @throws JspException
 	 */
-    public void forward(HTMLSnapshotContext context, int depth, Boolean readOnly,
+    public void forwardForm(HTMLSnapshotContext context, int depth, Boolean readOnly,
             HTMLReferenceEntityType parent) throws JspException
     {
         try
@@ -226,7 +227,7 @@ public class PageDispatcher {
      * @param context
      * @throws JspException
      */
-    public void forward(HTMLSnapshotContext context) throws JspException
+    public void forwardPage(HTMLSnapshotContext context) throws JspException
     {//portlet not processed here
         try
         {
@@ -234,7 +235,7 @@ public class PageDispatcher {
         		logger.warn("Please invoke UIPageObject.forward");
         		return;
         	}
-            String entityName = pageObject.getEntityName();
+            String entityName = pageObject.getRuntimeEntityName();
 			if (logger.isDebugEnabled()) {
 				logger.debug(
 						"<---HTMLUIPage.forward--->start to access the uipage: {}",
@@ -270,8 +271,8 @@ public class PageDispatcher {
             EvaluationContext evaContext = pageODProcessor.process();
 
             Map referenceEntityMap = new HashMap();
-            referenceEntityMap.put(entityName, pageObject.getUi());
-            pageObject.getUi().parseReferenceEntity(referenceEntityMap);
+            referenceEntityMap.put(entityName, pageObject.getUIFormObject());
+            pageObject.getUIFormObject().parseReferenceEntity(referenceEntityMap);
             context.setRefEntityMap(referenceEntityMap);
 
             String charset = Registry.getInstance().getEncoding();
@@ -329,11 +330,22 @@ public class PageDispatcher {
             context.generateHTML(charset);
             context.generateHTML("\">\n");
             context.generateHTML("<meta http-equiv=\"x-ua-compatible\" content=\"ie=7\" />\n");
+            
             if (logger.isDebugEnabled())
             {
                 logger.debug("import css to the uipage: " + entityName);
             }
-            context.generateHTML(WebConfig.replaceCssWebContext(pageObject.getPageCSS().toString()));
+            if (UserContext.isMobileRequest()) {
+            	context.generateHTML("<meta name=\"viewport\" id=\"WebViewport\" content=\"width=device-width,initial-scale=1.0,target-densitydpi=device-dpi,minimum-scale=0.5,maximum-scale=1.0,user-scalable=1\" />\n");
+            	context.generateHTML("<meta name=\"apple-mobile-web-app-title\" content=\"VogERP\">\n");
+            	context.generateHTML("<meta name=\"apple-mobile-web-app-capable\" content=\"yes\">\n");
+            	context.generateHTML("<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black-translucent\">\n");
+            	context.generateHTML("<meta name=\"format-detection\" content=\"telephone=no\">\n");
+            	context.generateHTML(WebConfig.replaceCssWebContext(pageObject.getMobPageCSS().toString()));
+            } else {
+            	context.generateHTML(WebConfig.replaceCssWebContext(pageObject.getPageCSS().toString()));
+            }
+            
             if (logger.isDebugEnabled())
             {
                 logger.debug("import js to the uipage: " + entityName);
@@ -445,8 +457,8 @@ public class PageDispatcher {
             }
 
             //
-            PageDispatcher dispatcher = new PageDispatcher(pageObject.getUi(), evaContext);
-            dispatcher.forward(context, 0);
+            PageDispatcher dispatcher = new PageDispatcher(pageObject.getUIFormObject(), evaContext);
+            dispatcher.forwardForm(context, 0);
             
             //initAjaxCalling(context, isServletMode, superPrefix);
             
@@ -491,7 +503,7 @@ public class PageDispatcher {
         }
         catch ( Exception e )
         {
-            logger.warn("<---HTMLUIPage.forward--->Be interrupted when access uipage: " + pageObject.getEntityName());
+            logger.warn("<---HTMLUIPage.forward--->Be interrupted when access uipage: " + pageObject.getRuntimeEntityName());
             throw new JspException(e);
         }
     }
@@ -503,7 +515,7 @@ public class PageDispatcher {
 
         if ( logger.isDebugEnabled() )
         {
-            logger.debug("Get actionPath from servletContext for the uipage: {}", pageObject.getEntityName());
+            logger.debug("Get actionPath from servletContext for the uipage: {}", pageObject.getRuntimeEntityName());
         }
         String actionPath = WebConfig.replaceWebContext(WebConfig.getActionPath());
         if ( actionPath == null )
@@ -667,65 +679,15 @@ public class PageDispatcher {
     private void importAllJS(HTMLSnapshotContext context, int depth) throws JspException
     {
         Map refEntityMap = context.getRefEntityMap();
-        UIFormObject tEntityObj = (UIFormObject)refEntityMap.remove(pageObject.getEntityName());
-        importSelfJS(tEntityObj, context, depth);
+        UIFormObject tEntityObj = (UIFormObject)refEntityMap.remove(pageObject.getRuntimeEntityName());
+        tEntityObj.importSelfJS(context, depth);
         Iterator entityIterator = refEntityMap.values().iterator();
         while ( entityIterator.hasNext() )
         {
             UIFormObject entityObj = (UIFormObject)entityIterator.next();
-            importSelfJS(entityObj, context, depth);
+            entityObj.importSelfJS(context, depth);
         }
-        refEntityMap.put(pageObject.getEntityName(), tEntityObj);
+        refEntityMap.put(pageObject.getRuntimeEntityName(), tEntityObj);
     }
     
-    public void importSelfJS(UIFormObject tEntityObj, HTMLSnapshotContext context, int depth) throws JspException
-    {
-        Iterator jsFileNameIterator = tEntityObj.getJsIncludeList().iterator();
-        while (jsFileNameIterator.hasNext())
-        {
-            String jsFileName = (String)jsFileNameIterator.next();
-            if (context.containsJsName(jsFileName))
-            {
-                continue;
-            }
-            else
-            {
-                context.addJsName(jsFileName);
-            }
-
-            if (jsFileName.endsWith(".js"))
-            {
-                long timestamp = 1;
-                if (timestamp >= 0)
-                {
-                    String importJSCode = (String)tEntityObj.getJsIncludeMap().get(jsFileName);
-                    importJSCode = WebConfig.replaceJsWebContext(importJSCode);
-                    context.generateJS(importJSCode + timestamp + "\"></script>");
-                    HTMLUtil.generateTab(context, depth);
-                }
-            }
-        }
-    }
-
-    public String importSelfJs(HTMLSnapshotContext context, UIFormObject tEntityObj)
-    {
-        StringBuffer sb = new StringBuffer();
-        Iterator jsFileNameIterator = tEntityObj.getJsIncludeList().iterator();
-        while (jsFileNameIterator.hasNext())
-        {
-            String jsFileName = (String)jsFileNameIterator.next();
-            if (!context.containsJsName(jsFileName))
-            {
-                context.addJsName(jsFileName);
-            }
-            if (jsFileName.endsWith(".js"))
-            {
-                sb.append("UIMaster.require(\"").append(HTMLUtil.getWebRoot());
-                sb.append(jsFileName).append("?_timestamp=").append(WebConfig.getTimeStamp())
-                        .append("\",true);");
-            }
-        }
-        return sb.toString();
-    }
-
 }

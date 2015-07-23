@@ -27,27 +27,27 @@
 
 /*colSpan and rowSpan.*/
 .w1 {
-    min-width: 200px;
+    min-width: 0px;
 }
 
 .w2 {
-    min-width: 350px;
+    min-width: 0px;
 }
 
 .w3 {
-    min-width: 500px;
+    min-width: 0px;
 }
 
 .w4 {
-    min-width: 650px;
+    min-width: 0px;
 }
 
 .w5 {
-    min-width: 800px;
+    min-width: 0px;
 }
 
 .w6 {
-    min-width: 1000px;
+    min-width: 0px;
 }
 
 .h1 {
@@ -88,8 +88,8 @@ label {
 }
 
 .uimaster_leftform_cell {
-    width:130px;
-    min-width:130px;
+    width:80px;
+    min-width:80px;
 }
 
 .uimaster_leftform_widget {
@@ -99,7 +99,7 @@ label {
 .uimaster_rightform_cell {}
 
 .uimaster_rightform_widget {
-    width:270px;
+    width:200px;
 }
 
 .no_margin {

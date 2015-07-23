@@ -80,6 +80,7 @@ public class AjaxServlet extends HttpServlet {
 	
 	protected void process(HttpServletRequest request, HttpServletResponse response) throws IOException
     {
+		
 		if (request.getProtocol().compareTo("HTTP/1.0") == 0) 
 		{
 			response.setHeader("Pragma", "no-cache");
@@ -108,8 +109,10 @@ public class AjaxServlet extends HttpServlet {
 		Object currentUserContext = session.getAttribute(WebflowConstants.USER_SESSION_KEY);
 		String userLocale = WebConfig.getUserLocale(request);
 		List userRoles = (List)session.getAttribute(WebflowConstants.USER_ROLE_KEY);
+		String userAgent = request.getHeader("user-agent");
+		boolean isMobile = MobilitySupport.isMobileRequest(userAgent);
 		//add user-context thread bind
-        UserContext.registerCurrentUserContext(currentUserContext, userLocale, userRoles);
+        UserContext.registerCurrentUserContext(currentUserContext, userLocale, userRoles, isMobile);
 		LocaleContext.createLocaleContext(userLocale);
 		
 		AppContext.register((IAppServiceManager)this.getServletContext().getAttribute(IAppServiceManager.class.getCanonicalName()));

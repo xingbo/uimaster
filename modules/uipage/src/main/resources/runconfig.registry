@@ -67,6 +67,21 @@
             	</node>
             	-->
             </node>
+            <node name="commoncss-mob">
+            	<item name="jquery-dataTable" value="/css/jquery-dataTable.css" />
+            	<item name="jquery-jstree" value="/css/jquery-jstree.css" />
+            	<item name="jquery-ui" value="/css/jquery-ui.css" />
+            	<!-- 
+            	<item name="jquery-ui.structure" value="/css/jquery-ui.structure.css" />
+            	<item name="jquery-ui.theme" value="/css/jquery-ui.theme.css" />
+            	 -->
+            	<item name="iumaster" value="/css/iumaster-mob.css" />
+            	<!-- example
+            	<node name="org.shaolin.uimaster.*">
+            		<item name="iumaster1" value="/css/iumaster1.css" />
+            	</node>
+            	-->
+            </node>
             <node name="commonjs">
                 <!-- support async mode
                 <item name="google-analytics" value="https://www.google-analytics.com/ga.js" />
@@ -76,6 +91,16 @@
             	<item name="jquery-dataTable" value="/js/jquery-dataTable.js" />
             	<item name="jquery-jstree" value="/js/jquery-jstree.js" />
             	<item name="uimaster" value="/js/uimaster.js" />
+            </node>
+            <node name="commonjs-mob">
+                <!-- support async mode
+                <item name="google-analytics" value="https://www.google-analytics.com/ga.js" />
+                 -->
+            	<item name="jquery" value="/js/jquery.js" />
+            	<item name="jquery-ui" value="/js/jquery-ui.js" />
+            	<item name="jquery-dataTable" value="/js/jquery-dataTable.js" />
+            	<item name="jquery-jstree" value="/js/jquery-jstree.js" />
+            	<item name="uimaster" value="/js/uimaster-mob.js" />
             </node>
         </node>
     </node>
