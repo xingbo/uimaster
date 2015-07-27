@@ -32,6 +32,8 @@ public class NodeInfo implements Serializable {
         START, INTERMEDIATE, CONDITION, CHILD, JOIN, SPLIT, TIMER, CANCELTIMER, END, LOGICAL, UNKNOWN
     }
 	
+	private String toString;
+	
     private final String name;
 
     /**
@@ -235,7 +237,10 @@ public class NodeInfo implements Serializable {
     
     @Override
     public String toString() {
-        return getFlow().getApp().getName() + "." + getFlow().getName() + "." + getName();
+        if (toString == null) {
+        	toString = getFlow().getApp().getName() + "." + getFlow().getName() + "." + getName();
+        }
+        return toString;
     }
 
     public Type getNodeType() {

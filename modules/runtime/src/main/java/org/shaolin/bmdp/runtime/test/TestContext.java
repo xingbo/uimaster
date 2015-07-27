@@ -1,7 +1,10 @@
 package org.shaolin.bmdp.runtime.test;
 
 import org.shaolin.bmdp.runtime.AppContext;
+import org.shaolin.bmdp.runtime.entity.EntityManager;
 import org.shaolin.bmdp.runtime.internal.AppServiceManagerImpl;
+import org.shaolin.bmdp.runtime.spi.IEntityManager;
+import org.shaolin.bmdp.runtime.spi.IServerServiceManager;
 
 public class TestContext {
 
@@ -9,6 +12,8 @@ public class TestContext {
 	
 	static {
 		AppContext.register(appContext);
+		IEntityManager entityManager = IServerServiceManager.INSTANCE.getEntityManager();
+		((EntityManager)entityManager).initRuntime();
 	}
 	
 }

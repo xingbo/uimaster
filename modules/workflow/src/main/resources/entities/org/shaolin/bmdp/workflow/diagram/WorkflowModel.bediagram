@@ -7,6 +7,7 @@
 	<cePackage>org.shaolin.bmdp.workflow.ce</cePackage>
 	<diagramPackage>org.shaolin.bmdp.workflow.diagram</diagramPackage>
 	
+	<!-- flow templates -->
 	<bediagram:beEntity needPersist="true" needHistory="true">
 		<common:entityName>FlowEntity</common:entityName>
 		<bediagram:member pk="true">
@@ -22,6 +23,28 @@
 			<bediagram:type xsi:type="bediagram:StringType" />
 		</bediagram:member>
 	</bediagram:beEntity>
+	
+	<!-- flow instances, the FlowRuntimeContext will be stored in this table. -->
+	<bediagram:beEntity needPersist="true" needHistory="true">
+		<common:entityName>FlowInstance</common:entityName>
+		<bediagram:member pk="true">
+			<bediagram:name>id</bediagram:name>
+			<bediagram:type xsi:type="bediagram:LongType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>object</bediagram:name>
+			<bediagram:type xsi:type="bediagram:JavaObjRefType">
+				<bediagram:targetJava name="org.shaolin.bmdp.workflow.internal.FlowRuntimeContext"></bediagram:targetJava>
+			</bediagram:type>
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>bytes</bediagram:name>
+			<bediagram:type xsi:type="bediagram:JavaObjRefType">
+				<bediagram:targetJava name="java.lang.byte[]"></bediagram:targetJava>
+			</bediagram:type>
+		</bediagram:member>
+	</bediagram:beEntity>
+	
 	
 	<bediagram:beEntity needPersist="true">
 		<common:entityName>UIFlows</common:entityName>
@@ -42,11 +65,11 @@
 			<bediagram:type xsi:type="bediagram:LongType" />
 		</bediagram:member>
 		<bediagram:member>
-            <bediagram:name>moduleType</bediagram:name>
-            <bediagram:type xsi:type="bediagram:CEObjRefType">
-                <bediagram:targetEntity entityName="ModuleType" />
-            </bediagram:type>
-        </bediagram:member>
+    <bediagram:name>moduleType</bediagram:name>
+    <bediagram:type xsi:type="bediagram:CEObjRefType">
+        <bediagram:targetEntity entityName="ModuleType" />
+    </bediagram:type>
+  </bediagram:member>
 	</bediagram:beEntity>
 	
 	<bediagram:ceEntity>

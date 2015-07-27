@@ -4,14 +4,15 @@
 	xmlns:ns4="http://bmdp.shaolin.org/datamodel/RDBDiagram" xmlns:ns3="http://bmdp.shaolin.org/datamodel/BEDiagram"
 	xmlns:ns2="http://bmdp.shaolin.org/datamodel/Workflow" xmlns="http://bmdp.shaolin.org/datamodel/Common"
 	xsi:schemaLocation="">
-	<entityName>testFlow</entityName>
+	<entityName>general-flow</entityName>
 	<systemVersion>0</systemVersion>
 	<ns2:conf>
 		<ns2:bootable>true</ns2:bootable>
-		<ns2:session-service name="defaultSession" type="org.shaolin.bmdp.workflow.internal.TestSessionService" 
-        	sessionClass="org.shaolin.bmdp.workflow.internal.MockSession" ></ns2:session-service>
+		<ns2:session-service name="defaultSession"
+			type="org.shaolin.bmdp.workflow.internal.TestSessionService"
+			sessionClass="org.shaolin.bmdp.workflow.internal.MockSession"></ns2:session-service>
 	</ns2:conf>
-	<ns2:flow name="flow1">
+	<ns2:flow name="flow1" eventConsumer="producer">
 		<ns2:conf>
 			<ns2:param name="var1" category="JavaPrimitive">
 				<type entityName="java.lang.String"></type>
@@ -24,7 +25,7 @@
 			eventClass="org.shaolin.bmdp.workflow.spi.DefaultEvent">
 			<ns2:filter name="filter1">
 				<ns2:expression>
-					<expressionString>"NodeTest".equals(@event.getAttribute("NodeName"))</expressionString>
+					<expressionString><![CDATA["NodeTest".equals(@event.getAttribute("NodeName"))]]></expressionString>
 				</ns2:expression>
 			</ns2:filter>
 			<ns2:process>
@@ -57,6 +58,7 @@
 						$var2 = new Long(5);
 						System.out.println("@var1: " + @var1 + ", @var2: " + @var2);
 						System.out.println("$var1: " + $var1 + ", $var2: " + $var2);
+						@event.setAttribute("Response", "NodeTest");
 						}
 					]]></expressionString>
 				</ns2:expression>
@@ -66,7 +68,7 @@
 		<ns2:condition name="conditionNode1">
 			<ns2:process>
 				<ns2:expression>
-					<expressionString>System.out.println("this is logic node.");</expressionString>
+					<expressionString><![CDATA[System.out.println("this is logic node.");]]></expressionString>
 				</ns2:expression>
 			</ns2:process>
 			<ns2:dest name="endNode">
