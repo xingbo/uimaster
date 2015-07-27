@@ -192,7 +192,6 @@ public class FlowObject implements java.io.Serializable {
     				|| start.getProcess().getExpression() == null) {
     			return;
     		}
-
     		OpExecuteContext opContext = getOpParsingContext(start.getProcess()
     				.getVars(), globalContext);
     		initConditionFilters(opContext, start.getFilter(), classPrefix);
@@ -238,27 +237,22 @@ public class FlowObject implements java.io.Serializable {
 
     	public void initConditionHandlerInfo(DefaultParsingContext globalContext, 
     			ConditionNodeType conditionNode, String classPrefix) throws ParsingException {
-    		if (conditionNode.getExpression() == null) {
-    			return;
+    		OpExecuteContext opContext = getOpParsingContext(
+    				conditionNode.getVars(), globalContext);
+    		if (conditionNode.getExpression() != null) {
+    			conditionNode.getExpression().parse(opContext);
     		}
 
-			OpExecuteContext opContext = getOpParsingContext(
-					conditionNode.getVars(), globalContext);
-			conditionNode.getExpression().parse(opContext);
-			
 			initConditionFilters(opContext, conditionNode.getDests(), classPrefix);
     	}
 
     	public void initSplitHandlerInfo(DefaultParsingContext globalContext, 
     			SplitNodeType split, String className) throws ParsingException {
+    		OpExecuteContext opContext = getOpParsingContext(
+    				split.getVars(), globalContext);
     		if (split.getExpression() != null) {
-    			return;
+    			split.getExpression().parse(opContext);
     		}
-
-			OpExecuteContext opContext = getOpParsingContext(
-					split.getVars(), globalContext);
-			split.getExpression().parse(opContext);
-			
 			initConditionFilters(opContext, split.getDests(), className);
     	}
 
@@ -282,13 +276,18 @@ public class FlowObject implements java.io.Serializable {
      * global vars structures: <workflow/app name, Map<flow name, flow config var>>
      */
     private final Map<String, DefaultParsingContext> globalContext = new HashMap<String, DefaultParsingContext>();
+    private final Map<String, Object> globalDefaultValues = new HashMap<String, Object>();
     private final Map<String, Map<String, List<String>>> globalVarNames = 
             new HashMap<String, Map<String, List<String>>>();
     private final Map<String, Map<String, Set<String>>> globalVarNamesSet = 
             new HashMap<String, Map<String, Set<String>>>();
     private final Map<String, Map<String, Map<String, NodeInfo>>> nodeMap = 
             new HashMap<String, Map<String, Map<String, NodeInfo>>>();
-
+    /**
+     * key. appname.flowname.nodename
+     */
+    private final Map<String, HashMap<String, Object>> localDefaultValues = new HashMap<String, HashMap<String, Object>>();
+    
     private final Map<String, List<NodeInfo>> intermediateNodes = 
             new HashMap<String, List<NodeInfo>>(); // IntermediateNodeType
     private final Map<String, List<NodeInfo>> requestNodes = 
@@ -517,6 +516,7 @@ public class FlowObject implements java.io.Serializable {
                 globalVarsSet.add(param.getName());
             }
             context.setVariableClass(param.getName(), VariableUtil.getVariableClass(param));
+            globalDefaultValues.put(param.getName(), VariableUtil.createVariableObject(param));
         }
         globalVars.addAll(globalVarsSet);
         return context;
@@ -524,6 +524,15 @@ public class FlowObject implements java.io.Serializable {
 
     private void initNode(DefaultParsingContext flowContext, Set<String> intermediateEventNodes, NodeInfo node,
             String classPrefix) throws ConfigException, ClassNotFoundException, ParsingException {
+    	
+    	if (node.getProcessHandler() != null && node.getProcessHandler().getVars().size() > 0) {
+			HashMap<String, Object> values = new HashMap<String, Object>();
+			for (ParamType param : node.getProcessHandler().getVars()) {
+				values.put(param.getName(), VariableUtil.createVariableObject(param));
+			}
+    		localDefaultValues.put(node.toString(), values);
+    	}
+    	
 		switch (node.getNodeType()) {
             case START: {
                 StartNodeType start = (StartNodeType) node.getNode();
@@ -678,6 +687,14 @@ public class FlowObject implements java.io.Serializable {
         return exceptionNodes;
     }
 
+    public HashMap<String, Object> getGlobalDefaultValues() {
+    	return new HashMap<String, Object>(globalDefaultValues);
+    }
+    
+    public HashMap<String, Object> getLocalDefaultValues(NodeInfo currentNode) {
+    	return localDefaultValues.get(currentNode.toString());
+    }
+    
     public List<String> getGlobalVarNames(NodeInfo currentNode) {
         return globalVarNames.get(currentNode.getAppName()).get(currentNode.getFlowName());
     }

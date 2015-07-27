@@ -7,18 +7,6 @@ import org.shaolin.bmdp.workflow.spi.WorkflowSession;
  * Interface for accessing workflow global and local variables.
  */
 public interface FlowVariableContext {
-    /**
-     * Return input variable value.
-     * 
-     * If input variables not exist, it will return a default value (null or primitive
-     * default value) for it.
-     * 
-     * @param name
-     * @param clazz
-     * @return
-     */
-    public <T> T getInput(String name, Class<T> clazz);
-    public <T> T getInput(String name);
     
     /**
      * Get current global variable. 

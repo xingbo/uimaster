@@ -41,38 +41,46 @@ public final class VariableUtil {
 	public static Object createVariableObject(VariableType variable)
 			throws EntityNotFoundException {
 		String entityName = variable.getType().getEntityName();
-		return createObject(entityName, variable.getCategory());
+		return createObject(entityName, variable, variable.getCategory());
 	}
 
-	public static Object createObject(String entityName, VariableCategoryType categoryType)
+	private static Object createObject(String entityName, VariableType variable, VariableCategoryType categoryType)
 			throws EntityNotFoundException {
 		if (VariableCategoryType.BUSINESS_ENTITY == categoryType) {
+			if (variable.getDefault() != null) {
+				return getVariableDefaultValue(variable);
+			}
 			return BEUtil.createBEObject(entityName);
 		} else if (VariableCategoryType.CONSTANT_ENTITY == categoryType) {
+			if (variable.getDefault() != null) {
+				return getVariableDefaultValue(variable);
+			}
 			return CEUtil.getConstantEntity(entityName);
 		} else if (VariableCategoryType.JAVA_CLASS == categoryType
 				|| VariableCategoryType.JAVA_PRIMITIVE == categoryType) {
 			try {
+				if (variable.getDefault() != null) {
+					return getVariableDefaultValue(variable);
+				}
 				Class<?> objectClass = Class.forName(entityName);
 				if (objectClass.isInterface()) {
 					return null;
 				}
-
-				if (objectClass == boolean.class) {
+				if (objectClass == boolean.class || objectClass == Boolean.class) {
 					return Boolean.FALSE;
-				} else if (objectClass == byte.class) {
+				} else if (objectClass == byte.class || objectClass == Byte.class) {
 					return new Byte((byte) 0);
-				} else if (objectClass == short.class) {
+				} else if (objectClass == short.class || objectClass == Short.class) {
 					return new Short((short) 0);
-				} else if (objectClass == int.class) {
+				} else if (objectClass == int.class || objectClass == Integer.class) {
 					return new Integer(0);
-				} else if (objectClass == long.class) {
+				} else if (objectClass == long.class || objectClass == Long.class) {
 					return new Long(0);
-				} else if (objectClass == float.class) {
+				} else if (objectClass == float.class || objectClass == Float.class) {
 					return new Float(0);
-				} else if (objectClass == double.class) {
+				} else if (objectClass == double.class || objectClass == Double.class) {
 					return new Double(0);
-				} else if (objectClass == char.class) {
+				} else if (objectClass == char.class || objectClass == Character.class) {
 					return new Character((char) 0);
 				} else {
 					return objectClass.newInstance();
@@ -159,11 +167,11 @@ public final class VariableUtil {
 	}
 
 	// Variable <--> Value
-	public static Object getVariableInitialValue(VariableType variable) {
+	private static Object getVariableInitialValue(VariableType variable) {
 		return getVariableInitialValue(getVariableClass(variable));
 	}
 
-	public static Object getVariableInitialValue(Class objectClass) {
+	private static Object getVariableInitialValue(Class objectClass) {
 		if (objectClass == boolean.class) {
 			return Boolean.FALSE;
 		} else if (objectClass == byte.class) {
@@ -233,13 +241,13 @@ public final class VariableUtil {
 	public static Map createVariableDefaultValueMap(List<VariableType> vars) {
 		Map varValue = new HashMap();
 		for (VariableType var: vars) {
-			Object defaultValue = getVariableDefaultValue(var);
+			Object defaultValue = createVariableObject(var);
 			varValue.put(var.getName(), defaultValue);
 		}
 		return varValue;
 	}
 
-	public static Object getVariableDefaultValue(VariableType variable) {
+	private static Object getVariableDefaultValue(VariableType variable) {
 		Class c = getVariableClass(variable);
 		Object value;
 

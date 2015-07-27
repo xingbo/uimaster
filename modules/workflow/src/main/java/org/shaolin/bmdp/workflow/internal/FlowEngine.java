@@ -166,6 +166,10 @@ public class FlowEngine {
     public Map<String, IServiceProvider> getServices() {
     	return this.services;
     }
+    
+    public Map<String, Object> getDefaultGlobalVariables() {
+    	return flowInfo.getGlobalDefaultValues();
+    }
 
     public void signal(NodeInfo node, FlowRuntimeContext flowContext) throws Throwable {
         NodeInfo nextNode = node;
@@ -179,7 +183,7 @@ public class FlowEngine {
                 if (logger.isTraceEnabled()) {
                     logger.trace("Exception when execute {} on {}",
                             new Object[] { flowContext.getEvent(), nextNode });
-                    logger.trace("Detail trace: {}", e);
+                    logger.trace("Detail trace: " + e.getMessage(), e);
                 }
                 flowContext.setException(e);
                 try {
@@ -232,6 +236,7 @@ public class FlowEngine {
                         currentNode.getFlowName(), currentNode.getName() });
             }
             
+            flowContext.setLocallVariables(flowInfo.getLocalDefaultValues(currentNode));
             flowContext.setGlobalVarNames(flowInfo.getGlobalVarNames(currentNode), 
                     flowInfo.getGlobalVarNamesSet(currentNode));
             flowContext.getEvent().setAttribute(Node.class.getName(), currentNode.getNode());
@@ -309,7 +314,7 @@ public class FlowEngine {
                 flowContext.mapVariables(childNode.getOuputMappings());
                 if (childNode.getPostProcess() != null) {
                     Event newEvt = (Event)childNode.getPostProcess().getExpression().evaluate(flowContext);
-                    if (newEvt != flowContext.getEvent()) {
+                    if (newEvt != null && newEvt != flowContext.getEvent()) {
                         flowContext.changeEvent(newEvt);
                     }
                     flowContext.resetLocalVariables();
@@ -435,7 +440,7 @@ public class FlowEngine {
         }
 
         Event newEvt = (Event)n.getProcessHandler().getExpression().evaluate(flowContext);
-        if (newEvt != evt) {
+        if (newEvt != null && newEvt != evt) {
             flowContext.changeEvent(newEvt);
         }
         if (logger.isTraceEnabled()) {

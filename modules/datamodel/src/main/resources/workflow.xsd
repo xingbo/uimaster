@@ -194,14 +194,10 @@
 		<xs:annotation>
 			<xs:documentation>
 				Basic node type is an abstract type which extended
-				by
-				all the real types. It contains some basic attributes
-				like timeout
-				etc.When IEvent passed to one node, ac will
-				call the node's process()
-				method. process and timeout
-				are handler beans which handle normal or
-				abnormal event.
+				by all the real types. It contains some basic attributes
+				like timeout etc.When IEvent passed to one node, ac will
+				call the node's process() method. process and timeout
+				are handler beans which handle normal or abnormal event.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
@@ -212,8 +208,7 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="process" type="wf:handlerType"
-				minOccurs="0">
+			<xs:element name="process" type="wf:handlerType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>
 						process() is a method usually called by system,
@@ -221,15 +216,14 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="exception-handler" type="wf:exceptionHandlerType"
-				minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="exception-handler" type="wf:exceptionHandlerType" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string">
 		</xs:attribute>
 		<xs:attribute name="timeout" type="xs:long">
 			<xs:annotation>
 				<xs:documentation>
-					time out in the node, unit ms
+					time out in the node, it could be yearly/monthly/weekly/daily/hours/minites.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -241,14 +235,23 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="partyType" type="xs:string" default="false">
+			<xs:annotation>
+				<xs:documentation>
+					the party type that allows to acces this node. when we define a node,
+					we could assgin a specific party type for this node or keep empty. 
+					then only the party(login user) which has this type is capable to
+					process this node.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 
 	<xs:complexType name="generalNodeType">
 		<xs:annotation>
 			<xs:documentation>
 				A simple node that has just one dest node. Or no
-				dest
-				node because it's an end node.
+				dest node because it's an end node.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
@@ -256,8 +259,7 @@
 				<xs:sequence>
 					<xs:choice minOccurs="0">
 						<xs:element name="dest" type="wf:destType" minOccurs="0" />
-						<xs:element name="eventDest" type="wf:eventDestType"
-							minOccurs="0" />
+						<xs:element name="eventDest" type="wf:eventDestType"	minOccurs="0" />
 					</xs:choice>
 				</xs:sequence>
 			</xs:extension>

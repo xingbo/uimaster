@@ -12,7 +12,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.shaolin.bmdp.datamodel.common.NameExpressionType;
 import org.shaolin.bmdp.datamodel.workflow.EventDestType;
-import org.shaolin.bmdp.runtime.AppContext;
 import org.shaolin.bmdp.runtime.spi.Event;
 import org.shaolin.bmdp.runtime.spi.IServiceProvider;
 import org.shaolin.bmdp.workflow.internal.FlowContainer.TimerTask;
@@ -59,7 +58,7 @@ public final class FlowRuntimeContext extends OpExecuteContext implements FlowVa
     private List<String> globalVarNames;
     private Set<String> globalVarNamesSet;
     private final DefaultEvaluationContext globalVariables = new DefaultEvaluationContext();
-    private DefaultEvaluationContext localVariables = new DefaultEvaluationContext();
+    private final DefaultEvaluationContext localVariables = new DefaultEvaluationContext();
 
     // event process lock
     private final ReentrantLock mainLock = new ReentrantLock();
@@ -125,6 +124,11 @@ public final class FlowRuntimeContext extends OpExecuteContext implements FlowVa
 		        }
 			}
 			globalVariables.setVariableValue(FlowEngine.EVENT_VAR_NAME, event);
+			
+			Set<Map.Entry<String, Object>> set = this.engine.getDefaultGlobalVariables().entrySet();
+			for (Map.Entry<String, Object> spi: set) {
+	        	globalVariables.setVariableValue(spi.getKey(), spi.getValue());
+	        }
 		} catch (EvaluationException e) {
 		}
         this.setEvaluationContextObject("@", globalVariables);
@@ -456,31 +460,24 @@ public final class FlowRuntimeContext extends OpExecuteContext implements FlowVa
     	this.event.removeAttribute(BuiltInAttributeConstant.KEY_FLOWCONTEXT);
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
     public <T> T getInput(String name, Class<T> clazz) {
 		try {
 			Object v = localVariables.getVariableValue(name);
 	        if (v != null) {
 	            return (T) v;
 	        }
+	        v = globalVariables.getVariableValue(name);
+	        if (v != null) {
+	            return (T) v;
+	        }
+	        if (clazz.isPrimitive()) {
+	            return (T) primitiveDefaultValues.get(clazz);
+	        }
 		} catch (EvaluationException e) {
 		}
         if (clazz.isPrimitive()) {
             return (T) primitiveDefaultValues.get(clazz);
         }
-        return null;
-    }
-    
-    @SuppressWarnings("unchecked")
-    public <T> T getInput(String name) {
-		try {
-			Object v = localVariables.getVariableValue(name);
-	        if (v != null) {
-	            return (T) v;
-	        }
-		} catch (EvaluationException e) {
-		}
         return null;
     }
 
@@ -548,9 +545,11 @@ public final class FlowRuntimeContext extends OpExecuteContext implements FlowVa
     }
 
     @SuppressWarnings("unchecked")
-	public void setInitGlobalVariables(Map<String, Object> initVariables) {
-    	globalVariables.getVariableObjects().clear();
-        globalVariables.getVariableObjects().putAll(initVariables);
+	public void setLocallVariables(Map<String, Object> initVariables) {
+        localVariables.getVariableObjects().clear();
+        if (initVariables != null) {
+        	localVariables.getVariableObjects().putAll(initVariables);
+        }
     }
 
     public void mapVariables(List<NameExpressionType> mappings) {

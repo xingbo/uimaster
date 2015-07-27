@@ -17,7 +17,7 @@ import java.io.StreamCorruptedException;
 public class SerializeUtil {
 	public static Object serializeClone(Object o) {
 		try {
-			return readData(serializeData((Serializable) o));
+			return readData(serializeData((Serializable) o), o.getClass());
 		} catch (IOException e) {
 			// should never happen
 			throw new RuntimeException(e);
@@ -48,17 +48,18 @@ public class SerializeUtil {
 
 	/**
 	 * Constructs a serializable object from serialized byte data
+	 * @param <T>
 	 * 
 	 * @param data
 	 *            serialized byte data
 	 * @return the serializable object read from the serialized byte data
 	 */
-	public static Serializable readData(byte[] data)
+	public static <T> T readData(byte[] data, Class<T> c)
 			throws ClassNotFoundException, IOException {
 		BMIObjectInputStream in = null;
 		try {
 			in = new BMIObjectInputStream(new ByteArrayInputStream(data));
-			return (Serializable) in.readObject();
+			return (T) in.readObject();
 		} finally {
 			CloseUtil.close(in);
 		}

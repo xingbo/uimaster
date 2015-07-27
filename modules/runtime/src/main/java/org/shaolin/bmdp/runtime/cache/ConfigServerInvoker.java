@@ -178,7 +178,7 @@ public class ConfigServerInvoker {
 			socketChannel.read(buffer);
 		}
 		buffer.flip();
-		return SerializeUtil.readData(buffer.array());
+		return SerializeUtil.readData(buffer.array(), Serializable.class);
 	}
     
 	public void stop() {

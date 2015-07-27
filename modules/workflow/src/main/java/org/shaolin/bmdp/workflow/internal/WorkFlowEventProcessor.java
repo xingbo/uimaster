@@ -122,7 +122,7 @@ public final class WorkFlowEventProcessor implements EventProcessor, IServicePro
 
 	@Override
 	public Class getServiceInterface() {
-		return EventProcessor.class;
+		return WorkFlowEventProcessor.class;
 	}
 
 }
