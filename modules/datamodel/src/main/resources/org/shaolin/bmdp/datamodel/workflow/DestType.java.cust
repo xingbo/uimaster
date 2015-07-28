@@ -75,12 +75,12 @@ public class DestType
     @XmlTransient
     private Object node; // NodeInfo
 
-	public void setNode(Object node) {
-		this.node = node;
-	}
-
-	public Object getNode() {
-		return this.node;
-	}
+				public void setNode(Object node) {
+							this.node = node;
+				}
+			
+				public Object getNode() {
+							return this.node;
+				}
 
 }

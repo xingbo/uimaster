@@ -49,19 +49,19 @@
         <plugins>
         	<!-- **If the schema files update, we should manually enable this plugin, 
         	and then copy the generated result to the source folder. -->
-        	<!-- 
+        	<!--
             <plugin>
-				<groupId>org.jvnet.jaxb2.maven2</groupId>
-				<artifactId>maven-jaxb2-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			 -->
+													<groupId>org.jvnet.jaxb2.maven2</groupId>
+													<artifactId>maven-jaxb2-plugin</artifactId>
+													<executions>
+														<execution>
+															<goals>
+																<goal>generate</goal>
+															</goals>
+														</execution>
+													</executions>
+												</plugin>
+												-->
         </plugins>
     </build>
 </project>

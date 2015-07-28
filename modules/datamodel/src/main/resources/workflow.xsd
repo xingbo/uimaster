@@ -56,7 +56,7 @@
 				<xs:element name="join" type="wf:joinNodeType" />
 				<xs:element name="child-flow" type="wf:childFlowNodeType" />
 				<xs:element name="start-node" type="wf:startNodeType" />
-				<xs:element name="intermediate-node" type="wf:intermediateNodeType" />
+				<xs:element name="mission-node" type="wf:missionNodeType" />
 				<xs:element name="end-node" type="wf:endNodeType" />
 				<xs:element name="timeout-node" type="wf:timeoutNodeType" />
 				<xs:element name="cancel-timeout-node" type="wf:cancelTimeoutNodeType" />
@@ -232,16 +232,6 @@
 				<xs:documentation>
 					True:engine calls the process(), then stops here.
 					False:engine will invoke next node's process().
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="partyType" type="xs:string" default="false">
-			<xs:annotation>
-				<xs:documentation>
-					the party type that allows to acces this node. when we define a node,
-					we could assgin a specific party type for this node or keep empty. 
-					then only the party(login user) which has this type is capable to
-					process this node.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -445,23 +435,33 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="intermediateNodeType">
+	<xs:complexType name="missionNodeType">
 		<xs:annotation>
 			<xs:documentation>
-				An intermediate-node is an asynchronous node which
-				uses the session created by the start-node.The start-node or
-				intermediate-node will append event to a queue if there is an active
-				session in the workflow. The pending events will be executed when
-				the flow goes to the end.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="wf:generalNodeType">
 				<xs:sequence>
 					<xs:element name="filter" type="wf:destWithFilterType" minOccurs="0"></xs:element>
+					<xs:element name="actionPage" type="xs:string" minOccurs="0"></xs:element>
+					<xs:element name="actionPosition" type="xs:string" minOccurs="0"></xs:element>
+					<xs:element name="actionProperty" type="xs:string" minOccurs="0"></xs:element>
 				</xs:sequence>
-				<xs:attribute name="eventConsumer" type="xs:string" use="required" />
+				<xs:attribute name="eventConsumer" type="xs:string" default="0" />
 				<xs:attribute name="ranking" type="xs:int" default="0" />
+				<xs:attribute name="expiredDate" type="xs:date" />
+				<xs:attribute name="expiredAction" type="xs:string" />
+				<xs:attribute name="partyType" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>
+									the party type that allows to acces this node. when we define a node,
+									we could assgin a specific party type for this node or keep empty. 
+									then only the party(login user) which has this type is capable to
+									process this node.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

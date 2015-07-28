@@ -16,7 +16,7 @@ import org.shaolin.bmdp.datamodel.workflow.ExceptionHandlerType;
 import org.shaolin.bmdp.datamodel.workflow.FlowConfType;
 import org.shaolin.bmdp.datamodel.workflow.FlowType;
 import org.shaolin.bmdp.datamodel.workflow.GeneralNodeType;
-import org.shaolin.bmdp.datamodel.workflow.IntermediateNodeType;
+import org.shaolin.bmdp.datamodel.workflow.MissionNodeType;
 import org.shaolin.bmdp.datamodel.workflow.NodeType;
 import org.shaolin.bmdp.datamodel.workflow.SplitNodeType;
 import org.shaolin.bmdp.datamodel.workflow.StartNodeType;
@@ -26,7 +26,9 @@ import org.shaolin.bmdp.workflow.internal.FlowValidationResult;
 
 public class FlowInfo implements Serializable {
 	
-    private final String name;
+	private static final long serialVersionUID = -5902988192420674316L;
+
+	private final String name;
 
     private final Set<NodeInfo> nodes = new HashSet<NodeInfo>();;
 
@@ -216,8 +218,8 @@ public class FlowInfo implements Serializable {
             } else if (node.getNodeType() == NodeInfo.Type.END) {
             	
             	
-            } else if (node.getNodeType() == NodeInfo.Type.INTERMEDIATE) {
-            	IntermediateNodeType gNode = (IntermediateNodeType) node.getNode();
+            } else if (node.getNodeType() == NodeInfo.Type.MISSION) {
+            	MissionNodeType gNode = (MissionNodeType) node.getNode();
                 // 1. set dest
                 DestType dest = gNode.getDest();
                 if (dest != null) {

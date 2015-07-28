@@ -22,8 +22,8 @@ import org.shaolin.bmdp.datamodel.workflow.ExceptionHandlerType;
 import org.shaolin.bmdp.datamodel.workflow.FlowImportType;
 import org.shaolin.bmdp.datamodel.workflow.GeneralNodeType;
 import org.shaolin.bmdp.datamodel.workflow.HandlerType;
-import org.shaolin.bmdp.datamodel.workflow.IntermediateNodeType;
 import org.shaolin.bmdp.datamodel.workflow.JoinNodeType;
+import org.shaolin.bmdp.datamodel.workflow.MissionNodeType;
 import org.shaolin.bmdp.datamodel.workflow.SessionServiceType;
 import org.shaolin.bmdp.datamodel.workflow.SplitNodeType;
 import org.shaolin.bmdp.datamodel.workflow.StartNodeType;
@@ -33,6 +33,7 @@ import org.shaolin.bmdp.runtime.VariableUtil;
 import org.shaolin.bmdp.runtime.spi.Event;
 import org.shaolin.bmdp.runtime.spi.IServiceProvider;
 import org.shaolin.bmdp.workflow.exception.ConfigException;
+import org.shaolin.bmdp.workflow.internal.BuiltInEventProducer;
 import org.shaolin.bmdp.workflow.internal.FlowEngine;
 import org.shaolin.bmdp.workflow.internal.type.AppInfo;
 import org.shaolin.bmdp.workflow.internal.type.FlowInfo;
@@ -93,7 +94,7 @@ public class FlowObject implements java.io.Serializable {
 
         @Override
         public int compare(NodeInfo arg0, NodeInfo arg1) {
-            return ((IntermediateNodeType)arg1.getNode()).getRanking() - ((IntermediateNodeType)arg0.getNode()).getRanking();
+            return ((MissionNodeType)arg1.getNode()).getRanking() - ((MissionNodeType)arg0.getNode()).getRanking();
         }
     }
 
@@ -197,8 +198,8 @@ public class FlowObject implements java.io.Serializable {
     		initConditionFilters(opContext, start.getFilter(), classPrefix);
     	}
 
-    	public void initIntermediateNodeInfo(DefaultParsingContext globalContext, 
-    			IntermediateNodeType interNode, String classPrefix) throws ParsingException {
+    	public void initMissionNodeInfo(DefaultParsingContext globalContext, 
+    			MissionNodeType interNode, String classPrefix) throws ParsingException {
     		if (interNode.getProcess() == null
     				|| interNode.getProcess().getExpression() == null) {
     			return;
@@ -288,7 +289,7 @@ public class FlowObject implements java.io.Serializable {
      */
     private final Map<String, HashMap<String, Object>> localDefaultValues = new HashMap<String, HashMap<String, Object>>();
     
-    private final Map<String, List<NodeInfo>> intermediateNodes = 
+    private final Map<String, List<NodeInfo>> missionNodes = 
             new HashMap<String, List<NodeInfo>>(); // IntermediateNodeType
     private final Map<String, List<NodeInfo>> requestNodes = 
             new HashMap<String, List<NodeInfo>>(); // IntermediateNodeType
@@ -385,17 +386,16 @@ public class FlowObject implements java.io.Serializable {
         handleImportedFlows(appInfo, initialEventNodes);
         parseFlows(appInfo, initialEventNodes, false);
 
-        /** TODO:
-        for (List<NodeInfo> nList : intermediateNodes.values()) {
+        for (List<NodeInfo> nList : missionNodes.values()) {
             for (NodeInfo n : nList) {
-                if (BuiltInEventProducer.EXCEPTION_PRODUCER_NAME.equals(((IntermediateNodeType)n.getNode()).getProducer())) {
+                if (BuiltInEventProducer.EXCEPTION_PRODUCER_NAME.equals(((MissionNodeType)n.getNode()).getEventConsumer())) {
                     exceptionNodes.add(n);
                 }
             }
         }
         Collections.sort(exceptionNodes, new IntermediateNodeRankingComparator());
-        */
-        for (List<NodeInfo> nList : intermediateNodes.values()) {
+        
+        for (List<NodeInfo> nList : missionNodes.values()) {
             Collections.sort(nList, new IntermediateNodeRankingComparator());
         }
 
@@ -403,7 +403,7 @@ public class FlowObject implements java.io.Serializable {
             Collections.sort(nList, new StartNodeRankingComparator());
         }
 
-        for (Map.Entry<String, List<NodeInfo>> e : intermediateNodes.entrySet()) {
+        for (Map.Entry<String, List<NodeInfo>> e : missionNodes.entrySet()) {
             List<NodeInfo> l = new ArrayList<NodeInfo>();
             for (NodeInfo n : e.getValue()) {
                 Set<String> set = initialEventNodes.get(n.getAppName() + "-" + n.getFlowName());
@@ -488,7 +488,7 @@ public class FlowObject implements java.io.Serializable {
 		if (logger.isTraceEnabled()) {
 			logger.trace("Global vars map: {}", globalVarNames);
 			logger.trace("Initial event nodes: {}", initialEventNodes);
-			logger.trace("Intermediate event nodes: {}", intermediateNodes);
+			logger.trace("Mission event nodes: {}", missionNodes);
 			logger.trace("Start event nodes: {}", startNodes);
 		}
     }
@@ -544,21 +544,18 @@ public class FlowObject implements java.io.Serializable {
                 appendEventNode(node.getFlow().getEventConsumer(), node, startNodes);
                 break;
             }
-            case INTERMEDIATE: {
-            	IntermediateNodeType inode = (IntermediateNodeType) node.getNode();
+            case MISSION: {
+            	MissionNodeType inode = (MissionNodeType) node.getNode();
             	if (logger.isTraceEnabled()) {
-            		logger.trace("parse intermediate node: {}", inode.getName());
-            	}
-            	if (inode.getEventConsumer() == null || inode.getEventConsumer().isEmpty()) {
-            		throw new IllegalArgumentException("the EventConsumer must be specified in " + this.toString() + "." + inode.getName());
+            		logger.trace("parse mission node: {}", inode.getName());
             	}
             	String entry = node.getEventProducer();
                 if (entry != null) {
                 	entrances.put(node.getEventProducer(), node.getFlowName() + "." + node.getName());
                 }
-            	flowCompiler.initIntermediateNodeInfo(flowContext, inode, classPrefix);
+            	flowCompiler.initMissionNodeInfo(flowContext, inode, classPrefix);
                 flowCompiler.initHandlerInfo(flowContext, node.getProcessHandler(), classPrefix);
-                appendEventNode(node.getFlow().getEventConsumer(), node, intermediateNodes);
+                appendEventNode(node.getFlow().getEventConsumer(), node, missionNodes);
                 break;
             }
             case CONDITION:
@@ -679,7 +676,7 @@ public class FlowObject implements java.io.Serializable {
         return this.startNodes.get(producerName);
     }
 
-    public List<NodeInfo> getIntermediateRequestNodes(String producerName) {
+    public List<NodeInfo> getMissionRequestNodes(String producerName) {
         return this.requestNodes.get(producerName);
     }
 

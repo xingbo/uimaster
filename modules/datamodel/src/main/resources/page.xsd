@@ -903,8 +903,7 @@ in simple component mapping, the paramName is required</xs:documentation>
     <xs:complexType abstract="true" name="PropertyValueType">
         <xs:attribute name="pre-init-code" type="xs:string" use="optional">
             <xs:annotation>
-                <xs:documentation>Use could add some java code let here
-				</xs:documentation>
+                <xs:documentation>Use could add some java code let here</xs:documentation>
             </xs:annotation>
         </xs:attribute>
         <xs:attribute name="post-init-code" type="xs:string" use="optional"/>

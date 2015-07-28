@@ -244,7 +244,7 @@ public class FlowEngine {
             switch (currentNode.getNodeType()) {
                 case LOGICAL:
                 case START:
-                case INTERMEDIATE:
+                case MISSION:
                     currentNode = processGeneralNode(flowContext, currentNode);
                     break;
                 case CONDITION:
@@ -809,7 +809,7 @@ public class FlowEngine {
                 && !BuiltInEventProducer.EXCEPTION_PRODUCER_NAME.equals(producerName)) {
             return null;
         }
-        List<NodeInfo> list = flowInfo.getIntermediateRequestNodes(producerName);
+        List<NodeInfo> list = flowInfo.getMissionRequestNodes(producerName);
         if (list == null) {
             return null;
         }

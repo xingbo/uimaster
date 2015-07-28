@@ -23,15 +23,16 @@ public class ProcessFlowTest extends TestContext {
 		service.startService();
 		producer.setEventProcessor(AppContext.get().getService(WorkFlowEventProcessor.class));
 		
-		loopBackTest("NodeTest", 1000);
+		loopBackTest("NodeTest", "producer", 1000);
+		loopBackTest("mission-flow", "producer1", 1000);
 		
 		Thread.sleep(1000);
 		service.stopService();
 	}
 	
-	private void loopBackTest(String nodeName, int waitSeconds) throws InterruptedException {
+	private void loopBackTest(String nodeName, String eventConsumer, int waitSeconds) throws InterruptedException {
         FlowEvent evt;
-        evt = new FlowEvent("producer");
+        evt = new FlowEvent(eventConsumer);
         evt.setAttribute("Request", nodeName);
         evt.setAttribute("NodeName", nodeName);
         producer.sendEvent(evt);

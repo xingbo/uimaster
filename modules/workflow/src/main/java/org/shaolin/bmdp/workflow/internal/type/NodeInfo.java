@@ -15,7 +15,7 @@ import org.shaolin.bmdp.datamodel.workflow.EndNodeType;
 import org.shaolin.bmdp.datamodel.workflow.ExceptionHandlerType;
 import org.shaolin.bmdp.datamodel.workflow.GeneralNodeType;
 import org.shaolin.bmdp.datamodel.workflow.HandlerType;
-import org.shaolin.bmdp.datamodel.workflow.IntermediateNodeType;
+import org.shaolin.bmdp.datamodel.workflow.MissionNodeType;
 import org.shaolin.bmdp.datamodel.workflow.JoinNodeType;
 import org.shaolin.bmdp.datamodel.workflow.NodeType;
 import org.shaolin.bmdp.datamodel.workflow.SplitNodeType;
@@ -29,7 +29,7 @@ import org.shaolin.bmdp.workflow.internal.FlowValidationResult;
 public class NodeInfo implements Serializable {
 
 	public static enum Type {
-        START, INTERMEDIATE, CONDITION, CHILD, JOIN, SPLIT, TIMER, CANCELTIMER, END, LOGICAL, UNKNOWN
+        START, MISSION, CONDITION, CHILD, JOIN, SPLIT, TIMER, CANCELTIMER, END, LOGICAL, UNKNOWN
     }
 	
 	private String toString;
@@ -113,8 +113,8 @@ public class NodeInfo implements Serializable {
     }
     
     public String getEventProducer() {
-    	if (node instanceof IntermediateNodeType) {
-    		IntermediateNodeType inode = (IntermediateNodeType)node;
+    	if (node instanceof MissionNodeType) {
+    		MissionNodeType inode = (MissionNodeType)node;
     		return inode.getEventConsumer();
     	} else {
     		return null;
@@ -155,15 +155,17 @@ public class NodeInfo implements Serializable {
 	        for (DestWithFilterType dest : filters) {
 	        	destMap.put(dest.getName(), dest);
 	            if (dest.getBean() != null) {
-	                beans.add(dest.getBean()); // add start filter bean
+	                beans.add(dest.getBean());
 	            }
 	        }
-        } else if (node instanceof IntermediateNodeType) {
-        	DestWithFilterType filter = ((IntermediateNodeType)node).getFilter();
-            filterMap.put(filter.getName(), filter);
-            if (filter.getBean() != null) {
-                beans.add(filter.getBean()); // add start filter bean
-            }
+        } else if (node instanceof MissionNodeType) {
+        	DestWithFilterType filter = ((MissionNodeType)node).getFilter();
+        	if (filter != null) {
+	            filterMap.put(filter.getName(), filter);
+	            if (filter.getBean() != null) {
+	                beans.add(filter.getBean());
+	            }
+        	}
         } else if (node instanceof JoinNodeType) {
         	if (((JoinNodeType)node).getBean() != null) {
                 beans.add(((JoinNodeType)node).getBean());
@@ -256,8 +258,8 @@ public class NodeInfo implements Serializable {
     	if (this.node instanceof ConditionNodeType) {
     		return Type.CONDITION;
     	}
-    	if (this.node instanceof IntermediateNodeType) {
-    		return Type.INTERMEDIATE;
+    	if (this.node instanceof MissionNodeType) {
+    		return Type.MISSION;
     	}
     	if (this.node instanceof JoinNodeType) {
     		return Type.JOIN;
