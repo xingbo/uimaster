@@ -42,7 +42,7 @@ public class EventConsumer {
      * 
      * If the evt is a response event, check it with the payload from the event. Otherwise only when
      * the event node matched, it will return true. If there is an invalid start event or
-     * intermediate event, it will ignore and not pass to next consumer.
+     * mission event, it will ignore and not pass to next consumer.
      * 
      * @param evt
      * @return
@@ -54,38 +54,20 @@ public class EventConsumer {
         		return false;
         	}
         	
-            Event nextEvent = null;
             FlowContextImpl payload = (FlowContextImpl) evt.getFlowContext();
             if (payload != null) {
                 // The pay-load is a pair of request and response events.
-                // When we send a request in a flow node. Connector will 
-                // put this request in a pending queue and wait response
-                // coming back.
-                // When the response comes back, Connector will find out
-                // the correspondent request and get the flow context info
-                // from this request and put into response event.
-                // Or the request is timeout with an timeout event in play
-                // load here that triggered by Connector.
-                // Then pay-load is able to handle the response for spec
-                // ific intermediate-node that defines the handling resp
-                // onse logic.
-                // In such case that the session lock already assigned for
-                // the response in the flow context.
                 FlowRuntimeContext flowContext = payload.getFlowRuntime();
                 if (!flowContext.match(engine)) { // not for this flow.
                     return false;
                 } else if (evt instanceof TimeoutEvent && ((TimeoutEvent) evt).fromTimerNode()) {
-                    nextEvent = handleTimeoutEvent(evt);
+                    handleTimeoutEvent(evt);
                 } else {
                     evt.setAttribute(BuiltInAttributeConstant.KEY_PRODUCER_NAME,
                             eventConsumerName);
-                    // If cannot lock, it means the original flow is still being processed.
-                    // Add the response event to pending list.
-                    if (flowContext.lock(evt)) {
-                        // the response event carries the flow info from the request event.
-                        // which is why we can match it by this payload mechanism.
-                        nextEvent = handleResponseEvent(evt, payload);
-                    }
+                    // the response event carries the flow info from the request event.
+                    // which is why we can match it by this payload mechanism.
+                    handleResponseEvent(evt, payload);
                 }
             } else {
                 // even though the incoming event might be rejected, 
@@ -108,13 +90,10 @@ public class EventConsumer {
                 flowContext.setSessionId(sessionId);
                 if (engine.lockSession(sessionId, evt, flowContext, NODE_PLACEHOLDER)) {
                     lockedSessionId.set(sessionId);
-                    nextEvent = matchEvent(evt, flowContext, sessionId, startNode, eventNode);
+                    matchEvent(evt, flowContext, sessionId, startNode, eventNode);
                 }
             }
 
-            while (nextEvent != null) {
-                nextEvent = handlePendingEvent(nextEvent);
-            }
             lockedSessionId.remove();
             return true;
         } finally {
@@ -150,17 +129,15 @@ public class EventConsumer {
                 logger.warn("Error occurred: {}.{}", evt, ErrorType.CANNOT_INIT_SESSION);
                 nextEvent = engine.unlockSession(sessionId, false);
             } else {
-                flowContext.lock(evt);
                 if(flowContext.getEvent() == null) {
                     flowContext.setEvent(evt);
                 }
                 nextEvent = handle(startNode, flowContext, session);
             }
         } else if (session != null && eventNode != null) {
-            // intermediate node matched
-            flowContext.lock(evt);
+            // mission node matched
             if(flowContext.getEvent() == null) {
-                // intermediate node can be pending and handled by
+                // mission node can be pending and handled by
                 // another thread, the event requires to reset again.
                 flowContext.setEvent(evt);
             }
@@ -197,20 +174,9 @@ public class EventConsumer {
         Event event = flowContext.getEvent();
         String sessionId = session.getID();
 
-        // trigger the event listener configured in the corresponding workflow app
-        engine.triggerEventListener(event, eventNode, sessionId);
-
         if (event instanceof TimeoutEvent) {
             TimeoutEvent tEvent = (TimeoutEvent) event;
             if (tEvent.fromTimerNode()) {
-                // timer event
-                boolean removed = engine.removeTimer(sessionId,
-                        (FlowRuntimeContext) tEvent.getContext());
-                if (!removed) {
-                    // The timer was not active.
-                    flowContext.unlock(true, tEvent);
-                    return engine.unlockSession(sessionId, false);
-                }
                 flowContext.initInputVariables((FlowRuntimeContext) tEvent.getContext());
             }
         }
@@ -234,19 +200,14 @@ public class EventConsumer {
             return nextEvent;
         }
 
-        if (flowContext.getEventDestInfo() != null) {
+        if (flowContext.isWaitResponse()) {
             // Should wait response and keep the lock
             // Check Pending event on flowContext
             // If nextEvent is not null, it means the response event has arrived
         	flowContext.recordState();
-            Event nextEvent = flowContext.unlock(false);
-            if (event != flowContext.getRequestEvent()) {
-                processEventResult(event, true, null, null);
-            }
-            return nextEvent;
+            return null;
         } else {
         	flowContext.recordState();
-            flowContext.unlock(true);
             if (event != flowContext.getRequestEvent()) {
                 processEventResult(event, true, null, null);
             }
@@ -264,28 +225,9 @@ public class EventConsumer {
         }
     }
 
-    private Event handlePendingEvent(Event nextEvent) {
-        if (nextEvent.getAttribute(BuiltInAttributeConstant.KEY_NODE) != null) {
-            NodeInfo eventNode = (NodeInfo) nextEvent
-                    .removeAttribute(BuiltInAttributeConstant.KEY_NODE);
-            FlowRuntimeContext flowContext = (FlowRuntimeContext) nextEvent
-                    .removeAttribute(BuiltInAttributeConstant.KEY_RUNTIME);
-            if (NODE_PLACEHOLDER == eventNode) {
-                return matchEvent(nextEvent, flowContext, flowContext.getSessionId(),
-                        flowContext.getStartNode(), flowContext.getEventNode());
-            } else {
-                return processTimeoutEvent((TimeoutEvent) nextEvent, eventNode, flowContext);
-            }
-        } else if (nextEvent.getFlowContext() != null) {
-            return handleResponseEvent(nextEvent, (FlowContextImpl) nextEvent.getFlowContext());
-        }
-        return null;
-    }
-
     private Event handleResponseEvent(Event evt, FlowContextImpl flowContext) {
         FlowRuntimeContext flowRuntime = flowContext.getFlowRuntime();
         evt.setFlowContext(null); // Clear flow context.
-
         if (logger.isTraceEnabled()) {
             logger.trace("The event {} is a response event, sesson id is {}", evt.getId(),
                     flowRuntime.getSession().getID());
@@ -293,43 +235,25 @@ public class EventConsumer {
 
         if (!flowRuntime.flowContextMatched(flowContext)) {
             engine.discardResponse(evt, true);
-            return flowRuntime.unlock(false, evt);
+            return null;
         }
         WorkflowSession session = flowRuntime.getSession();
         flowRuntime.setEvent(evt);
-        NodeInfo matchResponseNode;
         if (evt instanceof TimeoutEvent) {
-            matchResponseNode = engine.matchTimeoutNode(flowRuntime.getEventDestInfo(), evt);
-            if (matchResponseNode == null) {
-                matchResponseNode = checkTimeoutExceptionNode(flowRuntime, evt);
-
-                if (matchResponseNode == null) {
-                    engine.discardResponse(evt, false);
-                    if (flowRuntime.isRecoverable()) {
-                        engine.recoverSession(session, flowRuntime);
-                    }
-                    // We must release session here if timeout was not handled, otherwise session will leak.
-                    return releaseSession(flowRuntime, session);
+            if (checkTimeoutExceptionNode(flowRuntime, evt) == null) {
+                engine.discardResponse(evt, false);
+                if (flowRuntime.isRecoverable()) {
+                    engine.recoverSession(session, flowRuntime);
                 }
+                // We must release session here if timeout was not handled, otherwise session will leak.
+                return releaseSession(flowRuntime, session);
             }
             flowRuntime.startNewFlow(true);
         } else {
-            String eventProducerName = (String) evt
-                    .removeAttribute(BuiltInAttributeConstant.KEY_PRODUCER_NAME);
-            if (eventProducerName == null) {
-                eventProducerName = eventProducerName;
-            }
-            // response node are all intermediate nodes.
-            matchResponseNode = engine.matchResponseNode(eventProducerName,
-                    flowRuntime.getEventDestInfo(), evt);
-            if (matchResponseNode == null) {
-                engine.discardResponse(evt, false);
-                return flowRuntime.unlock(false, evt);
-            }
+        	// response comes back.
             flowRuntime.startNewFlow(false);
         }
-
-        return handle(matchResponseNode, flowRuntime, session);
+        return handle(flowRuntime.getCurrentNode(), flowRuntime, session);
     }
 
     private Event handleTimeoutEvent(Event evt) {
@@ -363,7 +287,6 @@ public class EventConsumer {
                     tEvent.getId(), engine.getEngineName(), destNode.getName() });
         }
 
-        newFlowContext.lock(tEvent);
         return handle(destNode, newFlowContext, session);
     }
 
@@ -373,7 +296,6 @@ public class EventConsumer {
     }
 
     private Event releaseSession(FlowRuntimeContext flowContext, WorkflowSession session) {
-        flowContext.unlock(true);
         engine.rollbackSession(flowContext, session);
         return engine.unlockSession(session.getID(), false);
     }

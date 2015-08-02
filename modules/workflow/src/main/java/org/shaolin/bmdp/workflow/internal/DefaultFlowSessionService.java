@@ -18,8 +18,7 @@ public class DefaultFlowSessionService implements SessionService {
 		}
 	};
 
-	private static final class DefaultWorkflowSession implements
-			WorkflowSession {
+	private static final class DefaultWorkflowSession implements WorkflowSession {
 		private final String sessionId;
 
 		public DefaultWorkflowSession(String id) {

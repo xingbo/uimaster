@@ -9,7 +9,7 @@ import org.shaolin.bmdp.runtime.spi.IServiceProvider;
 import org.shaolin.bmdp.workflow.spi.SessionService;
 import org.shaolin.bmdp.workflow.spi.WorkflowSession;
 
-public class TestSessionService implements SessionService, IServiceProvider {
+public class MockSessionService implements SessionService, IServiceProvider {
 	
     public static final String SESSION_ID = "SessionId";
     private final AtomicLong seq = new AtomicLong(0);
@@ -66,6 +66,6 @@ public class TestSessionService implements SessionService, IServiceProvider {
 
 	@Override
 	public Class getServiceInterface() {
-		return TestSessionService.class;
+		return MockSessionService.class;
 	}
 }

@@ -3,8 +3,6 @@ package org.shaolin.bmdp.workflow.internal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Assert;
@@ -15,12 +13,10 @@ import org.shaolin.bmdp.workflow.spi.EventProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TestEventProducer implements EventProducer {
-    private static final Logger logger = LoggerFactory.getLogger(TestEventProducer.class);
+public class MockEventProducer implements EventProducer {
+    private static final Logger logger = LoggerFactory.getLogger(MockEventProducer.class);
     
     private AtomicLong counter = new AtomicLong(0);
-    
-    private final ExecutorService threadPool = Executors.newCachedThreadPool();
     
     private EventProcessor processor;
     
@@ -59,22 +55,8 @@ public class TestEventProducer implements EventProducer {
     public void sendEvent(final Event evt, final int delay) {
         events.add(evt);
         counter.incrementAndGet();
-        threadPool.submit(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    if (delay > 10) {
-                        Thread.sleep(delay);
-                    }
                     
-                    processor.process(evt);
-                } catch (Throwable ex) {
-                    ex.printStackTrace();
-                }
-            }
-        });
-        
+        processor.process(evt);
     }
 
     @Override

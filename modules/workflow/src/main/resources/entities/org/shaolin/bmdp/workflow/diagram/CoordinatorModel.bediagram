@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bediagram:BEDiagram xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:bediagram="http://bmdp.shaolin.org/datamodel/BEDiagram"
+	xmlns:common="http://bmdp.shaolin.org/datamodel/Common">
+	<name>CoordinatorModel</name>
+	<bePackage>org.shaolin.bmdp.workflow.be</bePackage>
+	<cePackage>org.shaolin.bmdp.workflow.ce</cePackage>
+	<diagramPackage>org.shaolin.bmdp.workflow.diagram</diagramPackage>
+
+	<bediagram:beEntity needPersist="true" needUIEntity="true">
+		<common:entityName>Task</common:entityName>
+		<bediagram:member pk="true">
+			<bediagram:name>id</bediagram:name>
+			<bediagram:type xsi:type="bediagram:LongType" />
+		</bediagram:member>
+		<!-- the task owner -->
+		<bediagram:member>
+			<!-- the login user id -->
+			<bediagram:name>partyId</bediagram:name>
+			<bediagram:type xsi:type="bediagram:LongType" />
+		</bediagram:member>
+		<bediagram:member>
+			<!-- the login user id -->
+			<bediagram:name>partyType</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>subject</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>description</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+
+ <bediagram:member>
+			<bediagram:name>expiredTime</bediagram:name>
+			<bediagram:type xsi:type="bediagram:DateTimeType" />
+		</bediagram:member>
+		<!-- search conditions. -->
+		<bediagram:member>
+			<bediagram:name>expiredTimeStart</bediagram:name>
+			<bediagram:type xsi:type="bediagram:DateTimeType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>expiredTimeEnd</bediagram:name>
+			<bediagram:type xsi:type="bediagram:DateTimeType" />
+		</bediagram:member>
+
+		<!-- action -->
+		<bediagram:member>
+			<bediagram:name>sendSMS</bediagram:name>
+			<bediagram:type xsi:type="bediagram:BooleanType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>sendEmail</bediagram:name>
+			<bediagram:type xsi:type="bediagram:BooleanType" />
+		</bediagram:member>
+
+		<bediagram:member>
+			<bediagram:name>status</bediagram:name>
+			<bediagram:type xsi:type="bediagram:CEObjRefType">
+				<bediagram:targetEntity entityName="TaskStatusType" />
+			</bediagram:type>
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>completeRate</bediagram:name>
+			<bediagram:type xsi:type="bediagram:IntType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>priority</bediagram:name>
+			<bediagram:type xsi:type="bediagram:CEObjRefType">
+				<bediagram:targetEntity entityName="TaskPriorityType" />
+			</bediagram:type>
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>listener</bediagram:name>
+			<bediagram:type xsi:type="bediagram:JavaObjRefType">
+			 <!-- org.shaolin.bmdp.workflow.coordinator.ITaskListener, 
+			 we can't specify the really java class here due to the compiling restriction.
+			 come up with only workaround instead by java object.
+			  -->
+				<bediagram:targetJava name="java.lang.Object" />
+			</bediagram:type>
+		</bediagram:member>
+	</bediagram:beEntity>
+
+	<bediagram:beEntity needPersist="true">
+		<common:entityName>Notification</common:entityName>
+		<bediagram:member pk="true">
+			<bediagram:name>id</bediagram:name>
+			<bediagram:type xsi:type="bediagram:LongType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>partyId</bediagram:name>
+			<bediagram:type xsi:type="bediagram:LongType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>subject</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>description</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+	</bediagram:beEntity>
+
+	<bediagram:ceEntity>
+		<common:entityName>TaskStatusType</common:entityName>
+		<bediagram:constantValue>
+			<bediagram:value>NotStarted</bediagram:value>
+			<bediagram:intValue>0</bediagram:intValue>
+			<bediagram:description>Not Started</bediagram:description>
+		</bediagram:constantValue>
+		<bediagram:constantValue>
+			<bediagram:value>InProgress</bediagram:value>
+			<bediagram:intValue>1</bediagram:intValue>
+			<bediagram:description>In Progress</bediagram:description>
+		</bediagram:constantValue>
+		<bediagram:constantValue>
+			<bediagram:value>Completed</bediagram:value>
+			<bediagram:intValue>2</bediagram:intValue>
+			<bediagram:description>Completed</bediagram:description>
+		</bediagram:constantValue>
+		<bediagram:constantValue>
+			<bediagram:value>Expired</bediagram:value>
+			<bediagram:intValue>3</bediagram:intValue>
+			<bediagram:description>Expired</bediagram:description>
+		</bediagram:constantValue>
+		<bediagram:constantValue>
+			<bediagram:value>Cancelled</bediagram:value>
+			<bediagram:intValue>4</bediagram:intValue>
+			<bediagram:description>Cancelled</bediagram:description>
+		</bediagram:constantValue>
+	</bediagram:ceEntity>
+
+	<bediagram:ceEntity>
+		<common:entityName>TaskPriorityType</common:entityName>
+		<bediagram:constantValue>
+			<bediagram:value>Low</bediagram:value>
+			<bediagram:intValue>0</bediagram:intValue>
+			<bediagram:description>Low</bediagram:description>
+		</bediagram:constantValue>
+		<bediagram:constantValue>
+			<bediagram:value>Normal</bediagram:value>
+			<bediagram:intValue>1</bediagram:intValue>
+			<bediagram:description>Normal</bediagram:description>
+		</bediagram:constantValue>
+		<bediagram:constantValue>
+			<bediagram:value>High</bediagram:value>
+			<bediagram:intValue>2</bediagram:intValue>
+			<bediagram:description>High</bediagram:description>
+		</bediagram:constantValue>
+		<bediagram:constantValue>
+			<bediagram:value>Critical</bediagram:value>
+			<bediagram:intValue>3</bediagram:intValue>
+			<bediagram:description>Critical</bediagram:description>
+		</bediagram:constantValue>
+	</bediagram:ceEntity>
+
+</bediagram:BEDiagram>

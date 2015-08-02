@@ -1,6 +1,6 @@
 /*
  * This code is generated automatically, any change will be replaced after rebuild.
- * Generated on Fri Apr 24 00:35:01 CST 2015
+ * Generated on Sun Aug 02 19:11:00 CST 2015
  */
 
 package org.shaolin.bmdp.workflow.ce;
@@ -36,8 +36,13 @@ public final class ModuleType extends AbstractConstant
         constantList.add(NOT_SPECIFIED);
         constantList.add(WORKFLOW);
         constantList.add(BUSINESSFUNCTION);
-        }
+    }
 
+    private ModuleType(long id, String value, int intValue, String i18nKey, String description)
+    {
+        super(id, value, intValue, i18nKey, description);
+    }
+    
     private ModuleType(String value, int intValue, String i18nKey,
         String description, Date effTime, Date expTime)
     {

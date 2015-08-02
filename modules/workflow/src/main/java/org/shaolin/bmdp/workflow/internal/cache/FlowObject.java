@@ -30,10 +30,10 @@ import org.shaolin.bmdp.datamodel.workflow.StartNodeType;
 import org.shaolin.bmdp.datamodel.workflow.TimeoutNodeType;
 import org.shaolin.bmdp.runtime.AppContext;
 import org.shaolin.bmdp.runtime.VariableUtil;
+import org.shaolin.bmdp.runtime.entity.EntityNotFoundException;
 import org.shaolin.bmdp.runtime.spi.Event;
 import org.shaolin.bmdp.runtime.spi.IServiceProvider;
 import org.shaolin.bmdp.workflow.exception.ConfigException;
-import org.shaolin.bmdp.workflow.internal.BuiltInEventProducer;
 import org.shaolin.bmdp.workflow.internal.FlowEngine;
 import org.shaolin.bmdp.workflow.internal.type.AppInfo;
 import org.shaolin.bmdp.workflow.internal.type.FlowInfo;
@@ -46,6 +46,9 @@ import org.shaolin.javacc.context.OOEEContext;
 import org.shaolin.javacc.context.OOEEContextFactory;
 import org.shaolin.javacc.exception.ParsingException;
 import org.shaolin.uimaster.page.OpExecuteContext;
+import org.shaolin.uimaster.page.cache.PageCacheManager;
+import org.shaolin.uimaster.page.cache.UIFormObject;
+import org.shaolin.uimaster.page.cache.UIPageObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,16 +91,6 @@ public class FlowObject implements java.io.Serializable {
 		return opContext;
 	}
 	
-    private static final class IntermediateNodeRankingComparator implements
-            Comparator<NodeInfo>, Serializable {
-        private static final long serialVersionUID = 6359354182039732268L;
-
-        @Override
-        public int compare(NodeInfo arg0, NodeInfo arg1) {
-            return ((MissionNodeType)arg1.getNode()).getRanking() - ((MissionNodeType)arg0.getNode()).getRanking();
-        }
-    }
-
     private static final class StartNodeRankingComparator 
         implements Comparator<NodeInfo>, Serializable {
         private static final long serialVersionUID = 6359354182039732268L;
@@ -386,19 +379,14 @@ public class FlowObject implements java.io.Serializable {
         handleImportedFlows(appInfo, initialEventNodes);
         parseFlows(appInfo, initialEventNodes, false);
 
-        for (List<NodeInfo> nList : missionNodes.values()) {
-            for (NodeInfo n : nList) {
-                if (BuiltInEventProducer.EXCEPTION_PRODUCER_NAME.equals(((MissionNodeType)n.getNode()).getEventConsumer())) {
-                    exceptionNodes.add(n);
-                }
-            }
-        }
-        Collections.sort(exceptionNodes, new IntermediateNodeRankingComparator());
+//        for (List<NodeInfo> nList : missionNodes.values()) {
+//            for (NodeInfo n : nList) {
+//                if (BuiltInEventProducer.EXCEPTION_PRODUCER_NAME.equals(((MissionNodeType)n.getNode()).getEventConsumer())) {
+//                    exceptionNodes.add(n);
+//                }
+//            }
+//        }
         
-        for (List<NodeInfo> nList : missionNodes.values()) {
-            Collections.sort(nList, new IntermediateNodeRankingComparator());
-        }
-
         for (List<NodeInfo> nList : startNodes.values()) {
             Collections.sort(nList, new StartNodeRankingComparator());
         }
@@ -406,6 +394,30 @@ public class FlowObject implements java.io.Serializable {
         for (Map.Entry<String, List<NodeInfo>> e : missionNodes.entrySet()) {
             List<NodeInfo> l = new ArrayList<NodeInfo>();
             for (NodeInfo n : e.getValue()) {
+            	MissionNodeType m = (MissionNodeType)n.getNode();
+            	if (m.getActionPage() == null) {
+            		continue;
+            	}
+            	try {
+            		//TODO: add the dynamic ui.
+        			UIFormObject uiCache = PageCacheManager.getUIFormObject(m.getActionPage());
+        			m.getActionPosition();
+        			m.getActionProperty();
+//        			uiCache.addDynamicItem(object);
+        		} catch (EntityNotFoundException e0) {
+        			try {
+        				UIPageObject uiCache = PageCacheManager.getUIPageObject(m.getActionPage());
+        				m.getActionPosition();
+            			m.getActionProperty();
+        				//uiCache.getUIForm().addDynamicItem(object);
+        			} catch (Exception e1) {
+        				logger.error("Error to load the dynamic UI items: " + e0.getMessage(), e0);
+        			} 
+        		} 
+//            	catch (ParsingException | ClassNotFoundException e1) {
+//        			logger.error("Error to load the dynamic UI items: " + e1.getMessage(), e1);
+//        		}
+//            	
                 Set<String> set = initialEventNodes.get(n.getAppName() + "-" + n.getFlowName());
                 if (set != null && set.contains(n.getName())) {
                     l.add(n);
@@ -549,10 +561,6 @@ public class FlowObject implements java.io.Serializable {
             	if (logger.isTraceEnabled()) {
             		logger.trace("parse mission node: {}", inode.getName());
             	}
-            	String entry = node.getEventProducer();
-                if (entry != null) {
-                	entrances.put(node.getEventProducer(), node.getFlowName() + "." + node.getName());
-                }
             	flowCompiler.initMissionNodeInfo(flowContext, inode, classPrefix);
                 flowCompiler.initHandlerInfo(flowContext, node.getProcessHandler(), classPrefix);
                 appendEventNode(node.getFlow().getEventConsumer(), node, missionNodes);
@@ -587,12 +595,6 @@ public class FlowObject implements java.io.Serializable {
             		logger.trace("parse join node: {}", join.getName());
             	}
             	flowCompiler.initJoinHandlerInfo(flowContext, join, classPrefix);
-                break;
-            case TIMER:
-            	flowCompiler.initHandlerInfo(flowContext, node.getProcessHandler(), classPrefix);
-                break;
-            case CANCELTIMER:
-            	flowCompiler.initHandlerInfo(flowContext, node.getProcessHandler(), classPrefix);
                 break;
             case LOGICAL:
             	if (logger.isTraceEnabled()) {

@@ -3,20 +3,15 @@ package org.shaolin.bmdp.workflow.internal;
 import java.io.Serializable;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.shaolin.bmdp.datamodel.common.NameExpressionType;
-import org.shaolin.bmdp.datamodel.workflow.EventDestType;
 import org.shaolin.bmdp.runtime.spi.Event;
 import org.shaolin.bmdp.runtime.spi.IServiceProvider;
-import org.shaolin.bmdp.workflow.internal.FlowContainer.TimerTask;
 import org.shaolin.bmdp.workflow.internal.type.NodeInfo;
-import org.shaolin.bmdp.workflow.spi.TimeoutEvent;
 import org.shaolin.bmdp.workflow.spi.WorkflowSession;
 import org.shaolin.javacc.context.DefaultEvaluationContext;
 import org.shaolin.javacc.exception.EvaluationException;
@@ -60,12 +55,6 @@ public final class FlowRuntimeContext extends OpExecuteContext implements FlowVa
     private final DefaultEvaluationContext globalVariables = new DefaultEvaluationContext();
     private final DefaultEvaluationContext localVariables = new DefaultEvaluationContext();
 
-    // event process lock
-    private final ReentrantLock mainLock = new ReentrantLock();
-    // event queue lock
-    private final ReentrantLock queueLock = new ReentrantLock();
-    private Deque<Event> pendingResponseEvents;
-    
     private WorkflowSession session;
     private boolean sessionDestroyed;
 
@@ -73,12 +62,12 @@ public final class FlowRuntimeContext extends OpExecuteContext implements FlowVa
     
     private Object transactionState;
     private boolean recoverable;
-    private TimerTask timeoutFuture;
 
     private volatile boolean isClosed = false;
 
     private NodeInfo currentNode;
-    private EventDestType destInfo;
+    private boolean waitResponse;
+    private boolean responseBack;
     private String sessionId;
     private NodeInfo startNode;
     private NodeInfo eventNode; // IntermediateNodeType
@@ -153,88 +142,22 @@ public final class FlowRuntimeContext extends OpExecuteContext implements FlowVa
     	return inputContext.getWaitingNode() == currentNode;
     }
 
-    public void startNewFlow(boolean isTimingOut) {
+    public void startNewFlow(boolean isTimedOut) {
         this.flowContextInfo = new FlowContextImpl(this);
         this.event.setAttribute(BuiltInAttributeConstant.KEY_FLOWCONTEXT, flowContextInfo);
-        this.destInfo = null;
-        if (isTimingOut) {
-            this.timeoutFuture = null;
-        } else if (timeoutFuture != null) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("Cancel timeout task on {}", currentNode.getName());
-            }
-            this.timeoutFuture.cancel();
-            this.timeoutFuture = null;
-        }
+        this.waitResponse = false;
+        this.responseBack = true;
     }
-
+    
     /**
-     * Try to acquire a lock for this event. Several situations below:
-     * <br>1. if mainLock is acquired, this event can be processed immediately.
-     * <br>2. if mainLock is acquired and flow processed to end(isClosed=true),
-     *    discard this event.
-     * <br>3. If mainLock is not acquired, it means this lock occupied by 
-     *    another event or other words that the original flow is still 
-     *    being processed. Add this response event into the pending list.
-     * @param event
+     * the true value only return once.
+     * 
      * @return
      */
-    public boolean lock(Event event) {
-        if (mainLock.isHeldByCurrentThread()) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("Event {} got the lock on same thread.", event.getId());
-            }
-            queueLock.lock();
-
-            if (pendingResponseEvents == null) {
-                pendingResponseEvents = new LinkedList<Event>();
-            }
-            pendingResponseEvents.offer(event);
-            queueLock.unlock();
-            if (logger.isTraceEnabled()) {
-                logger.trace("Add event {} into queue", event.getId());
-            }
-            return false;
-        }
-        if (mainLock.tryLock()) {
-            if (isClosed) {
-                mainLock.unlock();
-                engine.discardResponse(event, true);
-                return false;
-            }
-            if (logger.isTraceEnabled()) {
-                logger.trace("Event {} got the lock", event.getId());
-            }
-            return true;
-        } else {
-            queueLock.lock();
-            if (isClosed) {
-                queueLock.unlock();
-                engine.discardResponse(event, true);
-                return false;
-            }
-            if (mainLock.tryLock()) {
-                queueLock.unlock();
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Event {} got the lock", event.getId());
-                }
-                return true;
-            } else {
-                if (pendingResponseEvents == null) {
-                    pendingResponseEvents = new LinkedList<Event>();
-                }
-                pendingResponseEvents.offer(event);
-                queueLock.unlock();
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Add event {} into queue", event.getId());
-                }
-                return false;
-            }
-        }
-    }
-
-    public Event unlock(boolean isFlowEnded) {
-        return unlock(isFlowEnded, event);
+    public boolean hasResponse() {
+    	boolean tem = responseBack;
+    	this.responseBack = false;
+    	return tem;
     }
 
     /**
@@ -245,88 +168,9 @@ public final class FlowRuntimeContext extends OpExecuteContext implements FlowVa
      * *: This method MUST invoked before unlock method!
      */
     public void recordState() {
-        this.event = null;
         flowContextInfo.setWaitingNode(currentNode);
     }
     
-    /**
-     * Try to release an event from the message queue.
-     * <br>1. If flow processed to end(isFlowEnded=true), discard all events.
-     * <br>2. If message queue has events, poll the first one.
-     * <br>3. If message queue is empty, release mainLock in standby mode.
-     * 
-     * @param isFlowEnded
-     * @param currentEvent
-     * @return
-     */
-    public Event unlock(boolean isFlowEnded, Event currentEvent) {
-        if (logger.isTraceEnabled() && currentEvent != null) {
-            logger.trace("Finish event {}, unlock context, flow ended: {}", currentEvent.getId(),
-                    isFlowEnded);
-        }
-        
-        queueLock.lock();
-        Event pending = null;
-        if (isFlowEnded) {
-            isClosed = true;
-            mainLock.unlock();
-            queueLock.unlock();
-            if (timeoutFuture != null && !(NodeInfo.Type.TIMER.equals(currentNode.getNodeType()))) {
-                timeoutFuture.cancel();
-                timeoutFuture = null;
-            }
-            if (pendingResponseEvents != null && !pendingResponseEvents.isEmpty()) {
-                for (Event pendingEvent : pendingResponseEvents) {
-                    engine.discardResponse(pendingEvent, true);
-                }
-            }
-            return null;
-        }
-
-        if (pendingResponseEvents != null) {
-            pending = pendingResponseEvents.poll();
-        }
-        if (pending != null) {
-            queueLock.unlock();
-            if (logger.isTraceEnabled()) {
-                logger.trace("Poll event {} from queue", pending.getId());
-            }
-            return pending;
-        } else {
-        	mainLock.unlock();
-            queueLock.unlock();
-            return null;
-        }
-    }
-
-    public void removePendingTimeout() {
-        // when the response event is received before timeout event but fails to cancel the timeout event in time,
-        // and the flow has to wait for other response event(s), the pending timeout event needs to be removed and
-        // a new timeout event will be scheduled
-        if (logger.isTraceEnabled()) {
-            logger.trace("Remove expired timeout event");
-        }
-        try {
-            queueLock.lock();
-            if (pendingResponseEvents != null && !pendingResponseEvents.isEmpty()) {
-                for (Iterator<Event> iterator = pendingResponseEvents.iterator(); iterator
-                        .hasNext();) {
-                    Event pendingEvent = iterator.next();
-                    if (pendingEvent instanceof TimeoutEvent) {
-                        iterator.remove();
-                        if (logger.isTraceEnabled()) {
-                            logger.trace("Expired timeout event: {} was removed from the context",
-                                    pendingEvent.getId());
-                        }
-                        break;
-                    }
-                }
-            }
-        } finally {
-            queueLock.unlock();
-        }
-    }
-
     /**
      * Prepare for invoking child flow. the variable context of invoker 
      * will be pushed into a stack. When child flow finished, it will be
@@ -450,7 +294,6 @@ public final class FlowRuntimeContext extends OpExecuteContext implements FlowVa
     }
 
     public void changeEvent(Event event) {
-        // legacy support, return new event info from handler.
         flowContextInfo.registerOutboundEvent(event);
         setEvent(event);
     }
@@ -629,14 +472,6 @@ public final class FlowRuntimeContext extends OpExecuteContext implements FlowVa
         return recoverable;
     }
 
-    public TimerTask getTimeoutFuture() {
-        return timeoutFuture;
-    }
-
-    public void setTimeoutFuture(TimerTask timeoutFuture) {
-        this.timeoutFuture = timeoutFuture;
-    }
-
     public NodeInfo getCurrentNode() {
         return currentNode;
     }
@@ -645,12 +480,12 @@ public final class FlowRuntimeContext extends OpExecuteContext implements FlowVa
         this.currentNode = currentNode;
     }
 
-    public EventDestType getEventDestInfo() {
-        return destInfo;
+    public boolean isWaitResponse() {
+        return this.waitResponse;
     }
 
-    public void setEventDestInfo(EventDestType destInfo) {
-        this.destInfo = destInfo;
+    public void markWaitResponse() {
+        this.waitResponse = true;
     }
 
     public String getSessionId() {

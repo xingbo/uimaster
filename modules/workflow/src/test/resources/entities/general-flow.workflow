@@ -9,7 +9,7 @@
 	<ns2:conf>
 		<ns2:bootable>true</ns2:bootable>
 		<ns2:session-service name="defaultSession"
-			type="org.shaolin.bmdp.workflow.internal.TestSessionService"
+			type="org.shaolin.bmdp.workflow.internal.MockSessionService"
 			sessionClass="org.shaolin.bmdp.workflow.internal.MockSession"></ns2:session-service>
 	</ns2:conf>
 	<ns2:flow name="flow1" eventConsumer="producer">

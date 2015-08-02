@@ -32,15 +32,9 @@
 			<bediagram:type xsi:type="bediagram:LongType" />
 		</bediagram:member>
 		<bediagram:member>
-			<bediagram:name>object</bediagram:name>
-			<bediagram:type xsi:type="bediagram:JavaObjRefType">
-				<bediagram:targetJava name="org.shaolin.bmdp.workflow.internal.FlowRuntimeContext"></bediagram:targetJava>
-			</bediagram:type>
-		</bediagram:member>
-		<bediagram:member>
 			<bediagram:name>bytes</bediagram:name>
 			<bediagram:type xsi:type="bediagram:JavaObjRefType">
-				<bediagram:targetJava name="java.lang.byte[]"></bediagram:targetJava>
+				<bediagram:targetJava name="byte[]"></bediagram:targetJava>
 			</bediagram:type>
 		</bediagram:member>
 	</bediagram:beEntity>

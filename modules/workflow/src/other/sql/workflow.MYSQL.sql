@@ -2,10 +2,26 @@
 -- Create SQL Generated               --
 --                                    --
 -- Please DO NOT modify !!            --
--- Generated on 2015-04-24 12:35:03   --
+-- Generated on 2015-08-02 07:11:02   --
 #---------------------------------------
 
 USE <database name>;
+
+-- WF_TASKS
+CREATE TABLE WF_TASKS
+(ID BIGINT(38) NOT NULL AUTO_INCREMENT,
+ PARTYID BIGINT(38),
+ SUBJECT VARCHAR(255),
+ DESCRIPTION VARCHAR(255),
+ EXPIREDTIME DATETIME,
+ SENDSMS TINYINT(1),
+ SENDEMAIL TINYINT(1),
+ STATUS INT(2),
+ COMPLETERATE INT(3),
+ PRIORITY INT(2),
+ _enable INT(2) DEFAULT 1,
+ PRIMARY KEY(ID)
+);
 
 -- WF_FLOWENTITY
 CREATE TABLE WF_FLOWENTITY

@@ -20,7 +20,6 @@ import org.shaolin.bmdp.datamodel.workflow.MissionNodeType;
 import org.shaolin.bmdp.datamodel.workflow.NodeType;
 import org.shaolin.bmdp.datamodel.workflow.SplitNodeType;
 import org.shaolin.bmdp.datamodel.workflow.StartNodeType;
-import org.shaolin.bmdp.datamodel.workflow.TimeoutNodeType;
 import org.shaolin.bmdp.workflow.exception.WorkflowConfigException;
 import org.shaolin.bmdp.workflow.internal.FlowValidationResult;
 
@@ -229,21 +228,6 @@ public class FlowInfo implements Serializable {
                 }
                 // 2.init sub-flow ?
                 // 3.What to do?
-
-            } else if (node.getNodeType() == NodeInfo.Type.TIMER) {
-            	TimeoutNodeType gNode = (TimeoutNodeType) node.getNode();
-                // 1. set dest
-                DestType dest = gNode.getTimeoutDest();
-                if (dest != null) {
-                    String destName = dest.getName();
-                    NodeInfo destNode = checkDest(node, destName, graph, synGraph, false, errorMessages, appName);
-                    dest.setNode(destNode);
-                }
-                // 2.What to do?
-            } else if (node.getNodeType() == NodeInfo.Type.CANCELTIMER) {
-                // CancelTimeoutNodeInfo gNode = (CancelTimeoutNodeInfo) node;
-                // 1.What to do?
-                // 2.init sub-flow ?
 
             } else if (node.getNode() instanceof GeneralNodeType) {
             	// logic node

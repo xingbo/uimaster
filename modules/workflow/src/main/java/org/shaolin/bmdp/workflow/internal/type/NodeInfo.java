@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.shaolin.bmdp.datamodel.workflow.CancelTimeoutNodeType;
 import org.shaolin.bmdp.datamodel.workflow.ChildFlowNodeType;
 import org.shaolin.bmdp.datamodel.workflow.ConditionNodeType;
 import org.shaolin.bmdp.datamodel.workflow.DestWithFilterType;
@@ -15,12 +14,11 @@ import org.shaolin.bmdp.datamodel.workflow.EndNodeType;
 import org.shaolin.bmdp.datamodel.workflow.ExceptionHandlerType;
 import org.shaolin.bmdp.datamodel.workflow.GeneralNodeType;
 import org.shaolin.bmdp.datamodel.workflow.HandlerType;
-import org.shaolin.bmdp.datamodel.workflow.MissionNodeType;
 import org.shaolin.bmdp.datamodel.workflow.JoinNodeType;
+import org.shaolin.bmdp.datamodel.workflow.MissionNodeType;
 import org.shaolin.bmdp.datamodel.workflow.NodeType;
 import org.shaolin.bmdp.datamodel.workflow.SplitNodeType;
 import org.shaolin.bmdp.datamodel.workflow.StartNodeType;
-import org.shaolin.bmdp.datamodel.workflow.TimeoutNodeType;
 import org.shaolin.bmdp.workflow.internal.FlowValidationResult;
 
 /**
@@ -29,7 +27,7 @@ import org.shaolin.bmdp.workflow.internal.FlowValidationResult;
 public class NodeInfo implements Serializable {
 
 	public static enum Type {
-        START, MISSION, CONDITION, CHILD, JOIN, SPLIT, TIMER, CANCELTIMER, END, LOGICAL, UNKNOWN
+        START, MISSION, CONDITION, CHILD, JOIN, SPLIT, END, LOGICAL, UNKNOWN
     }
 	
 	private String toString;
@@ -110,15 +108,6 @@ public class NodeInfo implements Serializable {
 
     public long getTimeout() {
         return timeout;
-    }
-    
-    public String getEventProducer() {
-    	if (node instanceof MissionNodeType) {
-    		MissionNodeType inode = (MissionNodeType)node;
-    		return inode.getEventConsumer();
-    	} else {
-    		return null;
-    	}
     }
     
     /**
@@ -266,12 +255,6 @@ public class NodeInfo implements Serializable {
     	}
     	if (this.node instanceof SplitNodeType) {
     		return Type.SPLIT;
-    	}
-    	if (this.node instanceof TimeoutNodeType) {
-    		return Type.TIMER;
-    	}
-    	if (this.node instanceof CancelTimeoutNodeType) {
-    		return Type.CANCELTIMER;
     	}
     	if (this.node instanceof GeneralNodeType) {
     		return Type.LOGICAL;
