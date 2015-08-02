@@ -16,6 +16,7 @@ import org.shaolin.bmdp.runtime.entity.EntityNotFoundException;
 import org.shaolin.bmdp.runtime.entity.EntityUpdatedEvent;
 import org.shaolin.bmdp.runtime.entity.IEntityEventListener;
 import org.shaolin.bmdp.runtime.spi.IConstantService;
+import org.shaolin.bmdp.runtime.spi.ILifeCycleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * @author wushaol
  *
  */
-public class ConstantServiceImpl implements Serializable, IConstantService, IEntityEventListener<ConstantEntityType, BEDiagram> {
+public class ConstantServiceImpl implements Serializable, IConstantService, IEntityEventListener<ConstantEntityType, BEDiagram>, ILifeCycleProvider {
 
 	private static final long serialVersionUID = 7967098596510060235L;
 
@@ -135,5 +136,30 @@ public class ConstantServiceImpl implements Serializable, IConstantService, IEnt
 			}
 			return null;
 		}
+	}
+
+	@Override
+	public void startService() {
+		
+	}
+
+	@Override
+	public boolean readyToStop() {
+		return true;
+	}
+
+	@Override
+	public void stopService() {
+		serverConstantMap.clear();
+	}
+
+	@Override
+	public void reload() {
+		
+	}
+
+	@Override
+	public int getRunLevel() {
+		return 0;
 	}
 }

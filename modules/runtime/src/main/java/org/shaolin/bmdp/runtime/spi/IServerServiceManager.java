@@ -54,6 +54,13 @@ public interface IServerServiceManager {
 	IConstantService getConstantService();
 	
 	/**
+	 * Get system scheduler service.
+	 * 
+	 * @return
+	 */
+	ISchedulerService getSchedulerService();
+	
+	/**
 	 * Register a normal service.
 	 * 
 	 * @param service

@@ -89,7 +89,7 @@ public class EntityGeneratorMojoTest {
 		String[] filters = new String[] {"/designtime/"};
 		// initialize entity manager.
 		IEntityManager entityManager = IServerServiceManager.INSTANCE.getEntityManager();
-		((EntityManager)entityManager).init(listeners, filters, entitiesDirectory);
+		((EntityManager)entityManager).init(listeners, filters, new File[]{entitiesDirectory});
 		
 		// check cache.
 		CacheManager cacheManager = CacheManager.getInstance();

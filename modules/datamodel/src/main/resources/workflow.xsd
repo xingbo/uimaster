@@ -58,8 +58,6 @@
 				<xs:element name="start-node" type="wf:startNodeType" />
 				<xs:element name="mission-node" type="wf:missionNodeType" />
 				<xs:element name="end-node" type="wf:endNodeType" />
-				<xs:element name="timeout-node" type="wf:timeoutNodeType" />
-				<xs:element name="cancel-timeout-node" type="wf:cancelTimeoutNodeType" />
 			</xs:choice>
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" use="required" />
@@ -448,9 +446,8 @@
 					<xs:element name="actionPosition" type="xs:string" minOccurs="0"></xs:element>
 					<xs:element name="actionProperty" type="xs:string" minOccurs="0"></xs:element>
 				</xs:sequence>
-				<xs:attribute name="eventConsumer" type="xs:string" default="0" />
-				<xs:attribute name="ranking" type="xs:int" default="0" />
-				<xs:attribute name="expiredDate" type="xs:date" />
+				<xs:attribute name="expiredDays" type="xs:int" />
+				<xs:attribute name="expiredHours" type="xs:int" />
 				<xs:attribute name="expiredAction" type="xs:string" />
 				<xs:attribute name="partyType" type="xs:string">
 							<xs:annotation>

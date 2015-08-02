@@ -26,6 +26,7 @@ import org.shaolin.bmdp.runtime.spi.IAppServiceManager;
 import org.shaolin.bmdp.runtime.spi.IConstantService;
 import org.shaolin.bmdp.runtime.spi.IEntityManager;
 import org.shaolin.bmdp.runtime.spi.IRegistry;
+import org.shaolin.bmdp.runtime.spi.ISchedulerService;
 import org.shaolin.bmdp.runtime.spi.IServerServiceManager;
 import org.shaolin.bmdp.runtime.spi.IServiceProvider;
 import org.slf4j.Logger;
@@ -44,13 +45,15 @@ public class ServerServiceManagerImpl implements IServerServiceManager {
 	
 	private final Registry registry;
 
-	private final IEntityManager entityManager;
+	private final EntityManager entityManager;
 
 	private final Map<Class<?>, IServiceProvider> services = new HashMap<Class<?>, IServiceProvider>();
 
 	private final Map<String, IAppServiceManager> applications = new HashMap<String, IAppServiceManager>();
 	
-	private final IConstantService constantService;
+	private final ConstantServiceImpl constantService;
+	
+	private final ISchedulerService schedulerService;
 	
 	private Object hibernateSessionFactory;
 	
@@ -60,6 +63,7 @@ public class ServerServiceManagerImpl implements IServerServiceManager {
 		this.registry = Registry.getInstance();
 		this.entityManager = new EntityManager();
 		this.constantService = new ConstantServiceImpl();
+		this.schedulerService = new ISchedulerService();
 	}
 	
 	@Override
@@ -84,6 +88,11 @@ public class ServerServiceManagerImpl implements IServerServiceManager {
 	@Override
 	public IConstantService getConstantService() {
 		return constantService;
+	}
+	
+	@Override
+	public ISchedulerService getSchedulerService() {
+		return schedulerService;
 	}
 	
 	@Override
@@ -145,6 +154,11 @@ public class ServerServiceManagerImpl implements IServerServiceManager {
 
 	public void setHibernateSessionFactory(Object sessionFactory) {
 		this.hibernateSessionFactory = sessionFactory;
+	}
+	
+	public void shutdown() {
+		this.schedulerService.stopService();
+		this.constantService.stopService();
 	}
 
 }

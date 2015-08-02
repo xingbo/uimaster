@@ -22,7 +22,6 @@
 		<module>persistence</module>
 		<module>uipage</module>
 		<module>designtime</module>
-		<module>coordinator</module>
 		<module>workflow</module>
 	</modules>
 	

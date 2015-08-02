@@ -10,13 +10,12 @@ public class ConstantServiceTest {
 	public void dynamicConstant() {
 		
 		DynamicConstant ce = new DynamicConstant("testce", 10);
-		ce.addConstant(new DynamicConstant("Item0", 0, "i18nKey"));
-		ce.addConstant(new DynamicConstant("Item1", 1, "i18nKey"));
-		ce.addConstant(new DynamicConstant("Item2", 2, "i18nKey"));
+		ce.addConstant(new DynamicConstant(0, "Item0", 0, "i18nkey", "hello"));
+		ce.addConstant(new DynamicConstant(1, "Item1", 1, "i18nkey", "hello"));
+		ce.addConstant(new DynamicConstant(2, "Item2", 2, "i18nkey", "hello"));
 		
 		Assert.assertNotNull(ce.get("Item0"));
 		Assert.assertEquals(ce.getEntityName(), "testce");
-		Assert.assertEquals(ce.getRecordId(), 10);
 		Assert.assertEquals(ce.getConstantList().size(), 4);
 		
 	}

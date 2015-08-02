@@ -43,8 +43,8 @@ import org.shaolin.bmdp.datamodel.workflow.DestWithFilterType;
 import org.shaolin.bmdp.datamodel.workflow.EndNodeType;
 import org.shaolin.bmdp.datamodel.workflow.FlowType;
 import org.shaolin.bmdp.datamodel.workflow.GeneralNodeType;
-import org.shaolin.bmdp.datamodel.workflow.IntermediateNodeType;
 import org.shaolin.bmdp.datamodel.workflow.JoinNodeType;
+import org.shaolin.bmdp.datamodel.workflow.MissionNodeType;
 import org.shaolin.bmdp.datamodel.workflow.SplitNodeType;
 import org.shaolin.bmdp.datamodel.workflow.StartNodeType;
 import org.shaolin.bmdp.datamodel.workflow.Workflow;
@@ -82,7 +82,7 @@ public class WorkFlowDiagram extends Widget implements Serializable {
 	static {
 		nodeTypes.add(StartNodeType.class.getName());
 		nodeTypes.add(EndNodeType.class.getName());
-		nodeTypes.add(IntermediateNodeType.class.getName());
+		nodeTypes.add(MissionNodeType.class.getName());
 		nodeTypes.add(ConditionNodeType.class.getName());
 		nodeTypes.add(JoinNodeType.class.getName());
 		nodeTypes.add(SplitNodeType.class.getName());
@@ -253,7 +253,7 @@ public class WorkFlowDiagram extends Widget implements Serializable {
 						viewNode = new RectangleNodeType();
 						viewNode.setX(20);
 						viewNode.setY(20);
-				    } else if (dateNode.getClass() == IntermediateNodeType.class) {
+				    } else if (dateNode.getClass() == MissionNodeType.class) {
 						viewNode = new RectangleNodeType();
 						viewNode.setX(20);
 						viewNode.setY(40);
@@ -352,8 +352,8 @@ public class WorkFlowDiagram extends Widget implements Serializable {
 			viewNode = new CircleNodeType();
 			viewNode.setX(0);
 			viewNode.setY(0);
-		} else if (nodeType.equals(IntermediateNodeType.class.getName())) {
-			dateNode = new IntermediateNodeType();
+		} else if (nodeType.equals(MissionNodeType.class.getName())) {
+			dateNode = new MissionNodeType();
 			viewNode = new RectangleNodeType();
 			viewNode.setX(0);
 			viewNode.setY(0);
