@@ -94,13 +94,15 @@ public class HTMLFlowDiagramType extends HTMLWidgetType
 			context.generateHTML(UIVariableUtil.getI18NProperty(action.getTitle()));
 			context.generateHTML("</label></input>");
 		}
+		HTMLUtil.generateTab(context, depth + 1);
+		context.generateHTML("</span>");
 		String htmlPrefix = this.getPrefix().replace('.', '_');
 		String htmlId = this.getPrefix().replace('.', '_') + this.getUIID();
 		List<UITableActionGroupType> actionGroups = (List<UITableActionGroupType>)this.removeAttribute("actionGroups");
 		if (actionGroups !=null && actionGroups.size() > 0) {
+			int count = 0;
 			for (UITableActionGroupType a : actionGroups) {
 				HTMLUtil.generateTab(context, depth + 2);
-				int count = 0;
 				String btnSetName = "btnSet_" + htmlId + (count++);
 				context.generateHTML("<span id=\""+btnSetName+"\">");
 				for (UITableActionType action: a.getActions()){
@@ -135,8 +137,6 @@ public class HTMLFlowDiagramType extends HTMLWidgetType
 				context.generateHTML("</span>");
 			}
 		}
-		HTMLUtil.generateTab(context, depth + 1);
-		context.generateHTML("</span>");
 		HTMLUtil.generateTab(context, depth);
 		context.generateHTML("</div>");
     	

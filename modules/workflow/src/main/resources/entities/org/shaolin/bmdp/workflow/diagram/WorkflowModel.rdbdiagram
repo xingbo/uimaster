@@ -10,6 +10,7 @@
     <systemVersion>0</systemVersion>
     <ns2:column name="ID" type="BIGINT" isNull="false" autoIncrement="true"></ns2:column>
     <ns2:column name="ENTITYNAME" type="VARCHAR" isNull="true"></ns2:column>
+    <ns2:column name="TYPE" type="VARCHAR" isNull="true"></ns2:column>
     <ns2:column name="CONTENT" type="VARCHAR" isNull="true"></ns2:column>
     <ns2:column name="_enable" type="INTEGER" length="2" default="1"></ns2:column>
     <ns2:column name="_version" type="INTEGER" length="2" default="0"></ns2:column>
@@ -24,6 +25,7 @@
       <ns2:businessEntity entityName="org.shaolin.bmdp.workflow.be.FlowEntity"></ns2:businessEntity>
       <ns2:fieldMapping beFieldName="id" columnName="ID"></ns2:fieldMapping>
       <ns2:fieldMapping beFieldName="entityName" columnName="ENTITYNAME"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="type" columnName="TYPE"></ns2:fieldMapping>
       <ns2:fieldMapping beFieldName="content" columnName="CONTENT"></ns2:fieldMapping>
       <ns2:fieldMapping beFieldName="_enable" columnName="_enable"></ns2:fieldMapping>
       <ns2:fieldMapping beFieldName="_version" columnName="_version"></ns2:fieldMapping>

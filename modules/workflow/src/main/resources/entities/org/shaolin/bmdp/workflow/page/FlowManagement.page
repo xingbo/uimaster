@@ -15,17 +15,41 @@
                     import org.shaolin.uimaster.page.ajax.*;
                     import org.shaolin.bmdp.datamodel.workflow.Workflow;
                     import org.shaolin.bmdp.datamodel.workflow.FlowType;
+                    import org.shaolin.bmdp.datamodel.workflow.StartNodeType;
+                    import org.shaolin.bmdp.datamodel.workflow.EndNodeType;
+                    import org.shaolin.bmdp.datamodel.workflow.MissionNodeType;
+                    import org.shaolin.bmdp.datamodel.workflow.DestType;
                     import org.shaolin.bmdp.datamodel.flowdiagram.FlowChunk;
                     import java.lang.Math; 
                     {
                     	Workflow wf = new Workflow();
-						wf.setEntityName("NewWorkflow_" + (int)(Math.random() * 100000));
-						FlowType subFlow = new FlowType();
-						subFlow.setName("Newflow_" + (int)(Math.random() * 100000));
-						wf.getFlows().add(subFlow);
-						
-						FlowChunk chunk = new FlowChunk();
-						chunk.setEntityName(wf.getEntityName());
+																					wf.setEntityName("NewWorkflow_" + (int)(Math.random() * 100000));
+																					wf.setDescription(wf.getEntityName());
+																					FlowType subFlow = new FlowType();
+																					subFlow.setName("Newflow_" + (int)(Math.random() * 100000));
+																					wf.getFlows().add(subFlow);
+																					
+																					FlowChunk chunk = new FlowChunk();
+																					chunk.setEntityName(wf.getEntityName());
+																					
+																					StartNodeType startNode = new StartNodeType();
+																					startNode.setName("start");
+																					DestType dest = new DestType();
+																					dest.setName("mission1");
+																					startNode.setDest(dest);
+																					chunk.getNodes().add(startNode);
+																					
+																					MissionNodeType mission = new MissionNodeType();
+																					mission.setName("mission1");
+																					DestType dest1 = new DestType();
+																					dest1.setName("end");
+																					mission.setDest(dest1);
+																					chunk.getNodes().add(mission);
+																					
+																					EndNodeType endNode = new EndNodeType();
+																					endNode.setName("end");
+																					chunk.getNodes().add(endNode);
+																					
                     	WorkFlowDiagram diagram = (WorkFlowDiagram)@page.getElement("flowDiagram");
                     	diagram.setWorkflow(subFlow.getName(), wf, chunk);
                     	diagram.refreshModel();
@@ -48,7 +72,7 @@
                     import org.shaolin.vogerp.commonmodel.be.ModuleGroupImpl;
                     import org.shaolin.bmdp.runtime.be.IBusinessEntity;
                     import org.shaolin.bmdp.runtime.entity.EntityUtil;
-					import org.shaolin.bmdp.datamodel.workflow.Workflow;
+					               import org.shaolin.bmdp.datamodel.workflow.Workflow;
                     import org.shaolin.bmdp.workflow.dao.WorkflowModel;
                     import org.shaolin.bmdp.workflow.ce.ModuleType;
                     import org.shaolin.bmdp.workflow.be.FlowEntityImpl;
@@ -60,30 +84,30 @@
                     	if(flowTree.getSelectedItemId() == null || flowTree.getSelectedItemId().isEmpty()) {
                     		return;
                     	}
-                    	System.out.println("flowTree.getSelectedItemId(): " + flowTree.getSelectedItemId() 
-                    	+ ",parent: " + flowTree.getSelectedParentItemId());
-                        String workflowName = flowTree.getSelectedParentItemId();
-                        String currentFlowName = flowTree.getSelectedItemId();
-				        Workflow flowModel = (Workflow)AppContext.get().getEntityManager().getEntity(flowTree.getSelectedParentItemId(), Workflow.class);
-				        FlowChunk flowView = null;
-				        UIFlowsImpl searchCriteria = new UIFlowsImpl();
-						searchCriteria.setModuleType(ModuleType.WORKFLOW);
-						searchCriteria.setName(workflowName + "." + currentFlowName);
-						int count = (int)WorkflowModel.INSTANCE.searchFlowsCount(searchCriteria);
-						if (count == 0) {
-							flowView = new FlowChunk();
-							flowView.setEntityName(workflowName + "." + currentFlowName);
-							WorkFlowDiagram.syncFlow(currentFlowName, flowModel, flowView);
-						} else {
-							List groupflow = WorkflowModel.INSTANCE.searchFlows(searchCriteria, null, 0, 1);
-							String xml = ((UIFlowsImpl)groupflow.get(0)).getFlow();
-							StringReader reader = new StringReader(xml);
-							flowView = (FlowChunk)EntityUtil.unmarshaller(FlowChunk.class, reader);
-						}
+                    	System.out.println("SelectedItemId(): " + flowTree.getSelectedItemId() 
+                    	+ ", Parent: " + flowTree.getSelectedParentItemId());
+                     String workflowName = flowTree.getSelectedParentItemId();
+                     String currentFlowName = flowTree.getSelectedItemId();
+													        Workflow flowModel = (Workflow)AppContext.get().getEntityManager().getEntity(flowTree.getSelectedParentItemId(), Workflow.class);
+													        FlowChunk flowView = null;
+													        UIFlowsImpl searchCriteria = new UIFlowsImpl();
+																					searchCriteria.setModuleType(ModuleType.WORKFLOW);
+																					searchCriteria.setName(currentFlowName);
+																					int count = (int)WorkflowModel.INSTANCE.searchFlowsCount(searchCriteria);
+																					if (count == 0) {
+																						flowView = new FlowChunk();
+																						flowView.setEntityName(currentFlowName);
+																						WorkFlowDiagram.syncFlow(currentFlowName, flowModel, flowView);
+																					} else {
+																						List groupflow = WorkflowModel.INSTANCE.searchFlows(searchCriteria, null, 0, 1);
+																						String xml = ((UIFlowsImpl)groupflow.get(0)).getFlow();
+																						StringReader reader = new StringReader(xml);
+																						flowView = (FlowChunk)EntityUtil.unmarshaller(FlowChunk.class, reader);
+																					}
 						
-                        WorkFlowDiagram diagram = (WorkFlowDiagram)@page.getElement("flowDiagram");
-						diagram.setWorkflow(currentFlowName, flowModel, flowView);
-						diagram.refreshModel();
+                     WorkFlowDiagram diagram = (WorkFlowDiagram)@page.getElement("flowDiagram");
+																					diagram.setWorkflow(currentFlowName, flowModel, flowView);
+																					diagram.refreshModel();
                     }
                     ]]></ns2:expressionString>
                 </ns2:exp>
@@ -102,7 +126,7 @@
                     import org.shaolin.vogerp.commonmodel.be.ModuleGroupImpl;
                     import org.shaolin.bmdp.runtime.be.IBusinessEntity;
                     import org.shaolin.bmdp.runtime.entity.EntityUtil;
-					import org.shaolin.bmdp.datamodel.workflow.Workflow;
+					               import org.shaolin.bmdp.datamodel.workflow.Workflow;
                     import org.shaolin.bmdp.workflow.dao.WorkflowModel;
                     import org.shaolin.bmdp.workflow.ce.ModuleType;
                     import org.shaolin.bmdp.workflow.be.FlowEntityImpl;
@@ -112,7 +136,7 @@
                     {
                     	WorkFlowDiagram diagram = (WorkFlowDiagram)@page.getElement("flowDiagram");
                     	diagram.createFlow();
-						diagram.refreshModel();
+						               diagram.refreshModel();
                     }
                     ]]></ns2:expressionString>
                 </ns2:exp>
@@ -131,18 +155,18 @@
                     import org.shaolin.vogerp.commonmodel.be.ModuleGroupImpl;
                     import org.shaolin.bmdp.runtime.be.IBusinessEntity;
                     import org.shaolin.bmdp.runtime.entity.EntityUtil;
-					import org.shaolin.bmdp.datamodel.workflow.Workflow;
+					               import org.shaolin.bmdp.datamodel.workflow.Workflow;
                     import org.shaolin.bmdp.workflow.dao.WorkflowModel;
                     import org.shaolin.bmdp.workflow.ce.ModuleType;
                     import org.shaolin.bmdp.workflow.be.FlowEntityImpl;
                     import org.shaolin.bmdp.datamodel.flowdiagram.FlowChunk;
                     import org.shaolin.bmdp.workflow.be.UIFlowsImpl;
                     import org.shaolin.bmdp.workflow.ui.PageUtil;
-                    import org.shaolin.bmdp.datamodel.workflow.GeneralNodeType;
+                    import org.shaolin.bmdp.datamodel.workflow.MissionNodeType;
                     {
                     	WorkFlowDiagram diagram = (WorkFlowDiagram)@page.getElement("flowDiagram");
-                    	diagram.addNode("newNode", GeneralNodeType.class.getName());
-						diagram.refreshModel();
+                    	diagram.addNode("newNode", MissionNodeType.class.getName());
+						               diagram.refreshModel();
                     }
                     ]]></ns2:expressionString>
                 </ns2:exp>
@@ -199,7 +223,7 @@
             </ns2:ops>
         </ns2:eventHandler>
         <ns2:eventHandler functionName="refreshModuleGroup">
-           <ns2:ops xsi:type="ns2:OpCallAjaxType" name="refreshModuleGroup432423">
+           <ns2:ops xsi:type="ns2:OpCallAjaxType" name="refreshModuleGroup-201506182322">
                 <ns2:exp>
                     <ns2:expressionString><![CDATA[
                     import java.util.ArrayList;
@@ -209,6 +233,35 @@
                     import org.shaolin.uimaster.page.ajax.*;
                     {
                         WorkFlowDiagram flow = (WorkFlowDiagram)@page.getElement("flowDiagram");
+                    }
+                    ]]></ns2:expressionString>
+                </ns2:exp>
+            </ns2:ops>
+        </ns2:eventHandler>
+        <ns2:eventHandler functionName="xmlEditor">
+           <ns2:ops xsi:type="ns2:OpCallAjaxType" name="xmlEditor-201508081054">
+                <ns2:exp>
+                    <ns2:expressionString><![CDATA[
+                    import java.util.HashMap;
+                    import java.io.StringWriter;
+                    import org.shaolin.uimaster.page.AjaxContext;
+                    import org.shaolin.uimaster.page.ajax.*;
+                    import org.shaolin.bmdp.workflow.be.FlowEntityImpl;
+                    import org.shaolin.bmdp.workflow.dao.WorkflowModel;
+                    import org.shaolin.bmdp.workflow.ce.ModuleType;
+                    {
+				                    WorkFlowDiagram flow = (WorkFlowDiagram)@page.getElement("flowDiagram");
+																						  FlowEntityImpl flowModel = new FlowEntityImpl();
+																						  flowModel.setEntityName(flow.getWorflowModel().getEntityName());
+                        flowModel.setContent(flow.getFlowModelXML());
+																						  System.out.println("");
+				                    HashMap input = new HashMap();
+				                    input.put("flowObject", flowModel);
+				                    input.put("editable", new Boolean(true));
+				                    RefForm form = new RefForm("xmlEditor", "org.shaolin.bmdp.workflow.form.WorkflowXMLEditor", input);
+				                    @page.addElement(form);
+				                    
+				                    form.openInWindows("XML Editor", null, 690, 500);
                     }
                     ]]></ns2:expressionString>
                 </ns2:exp>
@@ -227,39 +280,111 @@
 				</ns2:layout>
 				<ns2:component xsi:type="ns2:UIFlowDiagramType" UIID="flowDiagram">
 				    <ns2:loadDateModel xsi:type="ns2:ExpressionPropertyType">
-                        <ns2:expression xsi:type="ns2:ExpressionType">
-                            <ns2:expressionString><![CDATA[
-							import org.shaolin.bmdp.datamodel.workflow.Workflow;
-                            {
-                            	// create a empty flow initially.
-                            	return new Workflow();
-                            }]]></ns2:expressionString>
-                        </ns2:expression>
-                    </ns2:loadDateModel>
+          <ns2:expression xsi:type="ns2:ExpressionType">
+              <ns2:expressionString><![CDATA[
+							         import org.shaolin.bmdp.datamodel.workflow.Workflow;
+                 {
+                 	// create a empty flow initially.
+                 	return new Workflow();
+                 }]]></ns2:expressionString>
+             </ns2:expression>
+         </ns2:loadDateModel>
 				    <ns2:loadFlow xsi:type="ns2:ExpressionPropertyType">
-                        <ns2:expression xsi:type="ns2:ExpressionType">
-                            <ns2:expressionString><![CDATA[
-							import org.shaolin.bmdp.datamodel.flowdiagram.FlowChunk;
-                            {
-                            	return new FlowChunk();
-                            }]]></ns2:expressionString>
-                        </ns2:expression>
-                    </ns2:loadFlow>
-                    <ns2:defaultActions>
-                        <ns2:newNode>newWorkflow</ns2:newNode>
-                        <ns2:saveFlow>saveWorkflow</ns2:saveFlow>                        
-                        <ns2:refreshFlow>refreshModuleGroup</ns2:refreshFlow>
-                        <ns2:discardChange>discardChange</ns2:discardChange>
-                        <!-- addFlowNode -->
-                    </ns2:defaultActions>
-                </ns2:component>
-                <ns2:component xsi:type="ns2:UIPanelType" UIID="propertiesPanel">
+           <ns2:expression xsi:type="ns2:ExpressionType">
+               <ns2:expressionString><![CDATA[
+                 import org.shaolin.bmdp.datamodel.flowdiagram.FlowChunk;
+                     {
+                     	return new FlowChunk();
+                     }]]></ns2:expressionString>
+           </ns2:expression>
+       </ns2:loadFlow>
+       <ns2:defaultActions>
+           <ns2:newNode>newWorkflow</ns2:newNode>
+           <ns2:saveFlow>saveWorkflow</ns2:saveFlow>                        
+           <ns2:refreshFlow>refreshModuleGroup</ns2:refreshFlow>
+           <ns2:discardChange>discardChange</ns2:discardChange>
+       </ns2:defaultActions>
+       <ns2:actionGroup>
+           <ns2:type>radio</ns2:type>
+           <ns2:action>
+               <ns2:uiid>addFlowNode</ns2:uiid>
+               <ns2:title xsi:type="ns2:StringPropertyType">
+                   <ns2:value>Add Flow Node</ns2:value>
+               </ns2:title>
+               <ns2:icon>ui-icon-note</ns2:icon>
+               <ns2:function>addFlowNode</ns2:function>
+           </ns2:action>
+           <ns2:action>
+               <ns2:uiid>addMissionNode</ns2:uiid>
+               <ns2:title xsi:type="ns2:StringPropertyType">
+                   <ns2:value>Add Mission Node</ns2:value>
+               </ns2:title>
+               <ns2:icon>ui-icon-note</ns2:icon>
+               <ns2:function>addMissionNode</ns2:function>
+           </ns2:action>
+           <ns2:action>
+               <ns2:uiid>addStartNode</ns2:uiid>
+               <ns2:title xsi:type="ns2:StringPropertyType">
+                   <ns2:value>Add Start Node</ns2:value>
+               </ns2:title>
+               <ns2:icon>ui-icon-note</ns2:icon>
+               <ns2:function>addStartNode</ns2:function>
+           </ns2:action>
+           <ns2:action>
+               <ns2:uiid>addEndNode</ns2:uiid>
+               <ns2:title xsi:type="ns2:StringPropertyType">
+                   <ns2:value>Add End Node</ns2:value>
+               </ns2:title>
+               <ns2:icon>ui-icon-note</ns2:icon>
+               <ns2:function>addEndNode</ns2:function>
+           </ns2:action>
+       </ns2:actionGroup>
+       <ns2:actionGroup>
+           <ns2:type>radio</ns2:type>
+           <ns2:action>
+               <ns2:uiid>addSplitNode</ns2:uiid>
+               <ns2:title xsi:type="ns2:StringPropertyType">
+                   <ns2:value>Add Split Node</ns2:value>
+               </ns2:title>
+               <ns2:icon>ui-icon-note</ns2:icon>
+               <ns2:function>addSplitNode</ns2:function>
+           </ns2:action>
+           <ns2:action>
+               <ns2:uiid>addJoinNode</ns2:uiid>
+               <ns2:title xsi:type="ns2:StringPropertyType">
+                   <ns2:value>Add Join Node</ns2:value>
+               </ns2:title>
+               <ns2:icon>ui-icon-note</ns2:icon>
+               <ns2:function>addJoinNode</ns2:function>
+           </ns2:action>
+       </ns2:actionGroup>
+       <ns2:actionGroup>
+           <ns2:type>radio</ns2:type>
+           <ns2:action>
+               <ns2:uiid>xmlEditor</ns2:uiid>
+               <ns2:title xsi:type="ns2:StringPropertyType">
+                   <ns2:value>XML Editor</ns2:value>
+               </ns2:title>
+               <ns2:icon>ui-icon-note</ns2:icon>
+               <ns2:function>xmlEditor</ns2:function>
+           </ns2:action>
+           <ns2:action>
+               <ns2:uiid>resyncFlowView</ns2:uiid>
+               <ns2:title xsi:type="ns2:StringPropertyType">
+                   <ns2:value>Re-sync Flow View</ns2:value>
+               </ns2:title>
+               <ns2:icon>ui-icon-note</ns2:icon>
+               <ns2:function>resyncFlowView</ns2:function>
+           </ns2:action>
+       </ns2:actionGroup>
+   </ns2:component>
+   <ns2:component xsi:type="ns2:UIPanelType" UIID="propertiesPanel">
 					<ns2:layout xsi:type="ns2:TableLayoutType">
 						<ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
 						<ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
 						<ns2:columnWidthWeight>0.0</ns2:columnWidthWeight>
 					</ns2:layout>
-	                <ns2:component xsi:type="ns2:UIWebTreeType" UIID="functionTree">
+	     <ns2:component xsi:type="ns2:UIWebTreeType" UIID="functionTree">
 						<ns2:title xsi:type="ns2:StringPropertyType">
 							<ns2:value>Flows</ns2:value>
 						</ns2:title>
@@ -268,33 +393,33 @@
 						<ns2:itemIcon>/images/itemicon.jpg</ns2:itemIcon>
 						<ns2:selectMode>Multiple</ns2:selectMode>
 						<ns2:expandTreeEvent>expandTree</ns2:expandTreeEvent>
-                        <ns2:selectNodeEvent>openWorkflow</ns2:selectNodeEvent>
+      <ns2:selectNodeEvent>openWorkflow</ns2:selectNodeEvent>
 						<ns2:initExpression xsi:type="ns2:ExpressionPropertyType">
 							<ns2:expression xsi:type="ns2:ExpressionType">
 								<ns2:expressionString><![CDATA[
-                            	import org.shaolin.bmdp.workflow.ui.PageUtil;
+        import org.shaolin.bmdp.workflow.ui.PageUtil;
 								{
 									return PageUtil.loadWorkflowTree();
 								}]]></ns2:expressionString>
 							</ns2:expression>
 						</ns2:initExpression>
 					</ns2:component>
-		            <ns2:layoutConstraint>
-		                <ns2:componentId>functionTree</ns2:componentId>
-		                <ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
-		                    x="0" y="0" align="FULL"></ns2:constraint>
-		            </ns2:layoutConstraint>
-	           </ns2:component> 
-	           <ns2:layoutConstraint>
-	                <ns2:componentId>flowDiagram</ns2:componentId>
-	                <ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
-	                    x="0" y="0" align="FULL"></ns2:constraint>
-	            </ns2:layoutConstraint>
-	            <ns2:layoutConstraint>
-	                <ns2:componentId>propertiesPanel</ns2:componentId>
-	                <ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
-	                    x="1" y="0" align="FULL"></ns2:constraint>
-	            </ns2:layoutConstraint>
+     <ns2:layoutConstraint>
+         <ns2:componentId>functionTree</ns2:componentId>
+         <ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+             x="0" y="0" align="FULL"></ns2:constraint>
+     </ns2:layoutConstraint>
+   </ns2:component> 
+   <ns2:layoutConstraint>
+        <ns2:componentId>flowDiagram</ns2:componentId>
+        <ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+            x="0" y="0" align="FULL"></ns2:constraint>
+    </ns2:layoutConstraint>
+    <ns2:layoutConstraint>
+        <ns2:componentId>propertiesPanel</ns2:componentId>
+        <ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+            x="1" y="0" align="FULL"></ns2:constraint>
+    </ns2:layoutConstraint>
 			</ns2:component>
 			<ns2:layoutConstraint>
 				<ns2:componentId>topPanel</ns2:componentId>

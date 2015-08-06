@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.shaolin.bmdp.datamodel.common.DiagramType;
-import org.shaolin.bmdp.datamodel.flowdiagram.FlowChunk;
 import org.shaolin.bmdp.datamodel.workflow.FlowType;
 import org.shaolin.bmdp.datamodel.workflow.Workflow;
 import org.shaolin.bmdp.runtime.AppContext;
@@ -55,17 +54,19 @@ public class PageUtil {
             
             TreeItem gitem = new TreeItem();
             gitem.setId(workflow.getEntityName().replace(' ', '_'));
-            gitem.setText(workflow.getEntityName());
+            gitem.setText(workflow.getDescription());
             gitem.setState(new org.shaolin.uimaster.page.ajax.TreeItem.State());
-            gitem.setA_attr(new org.shaolin.uimaster.page.ajax.TreeItem.LinkAttribute("javascript:click('hi');"));
+            gitem.setA_attr(new org.shaolin.uimaster.page.ajax.TreeItem.LinkAttribute("#"));
             result.add(gitem);
     
+            int count = 0;
             List<FlowType> flows = workflow.getFlows();
 	        for (FlowType flow : flows) {
 	            TreeItem item = new TreeItem();
-	            item.setId(flow.getName().replace(' ', '_'));
+	            //TODO: make unique id here.
+	            item.setId(gitem.getId() + "." + flow.getName());
 	            item.setText(flow.getName());
-	            item.setA_attr(new org.shaolin.uimaster.page.ajax.TreeItem.LinkAttribute("javascript:click('hi');"));
+	            item.setA_attr(new org.shaolin.uimaster.page.ajax.TreeItem.LinkAttribute("#"));
 	            
 	            gitem.getChildren().add(item);
 	        } 

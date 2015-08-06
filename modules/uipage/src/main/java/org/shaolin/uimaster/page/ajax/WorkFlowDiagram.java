@@ -237,7 +237,7 @@ public class WorkFlowDiagram extends Widget implements Serializable {
 	
 	public static void syncFlow(String currentFlowName, Workflow wflowMode, FlowChunk flowView) {
 		for (FlowType flow : wflowMode.getFlows() ) {
-			if (currentFlowName.equals(flow.getName())) {
+			if (currentFlowName.endsWith("." + flow.getName())) {
 				List<org.shaolin.bmdp.datamodel.workflow.NodeType> nodes = flow.getNodesAndConditionsAndSplits();
 				for (org.shaolin.bmdp.datamodel.workflow.NodeType dateNode : nodes) {
 					org.shaolin.bmdp.datamodel.flowdiagram.NodeType viewNode = null;

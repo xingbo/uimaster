@@ -54,7 +54,7 @@ public class WorkflowLifecycleServiceImpl implements ILifeCycleProvider, IServic
 		IEntityManager entityManager = AppContext.get().getEntityManager();
 
 		FlowEntityImpl searchCriteria = new FlowEntityImpl();
-		List<FlowEntityImpl> allFlowEntities = WorkflowModel.INSTANCE.searchFlowEntities(searchCriteria, null, 0, 1);
+		List<FlowEntityImpl> allFlowEntities = WorkflowModel.INSTANCE.searchFlowEntities(searchCriteria, null, 0, -1);
 		for (FlowEntityImpl wf : allFlowEntities) {
 			try {
 				Workflow workflow = EntityUtil.unmarshaller(Workflow.class, new StringReader(wf.getContent()));
