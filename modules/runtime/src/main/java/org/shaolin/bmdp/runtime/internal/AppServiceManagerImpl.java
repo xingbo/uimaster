@@ -99,6 +99,10 @@ public class AppServiceManagerImpl implements IAppServiceManager, Serializable {
 		logger.info("Register life cycle service: " + provider + ", this: "
 				+ this.hashCode());
 		lifeCycleProviders.add(provider);
+		
+		if (provider instanceof IServiceProvider) {
+			register((IServiceProvider)provider);
+		}
 	}
 
 	public void startLifeCycleProviders() {

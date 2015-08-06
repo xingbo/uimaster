@@ -21,8 +21,6 @@ public final class Gender extends AbstractConstant
     protected static final long serialVersionUID = 0x811b9115811b9115L;
     private static String i18nBundle = null;
 
-    private static final List<Gender> constantList = new ArrayList<Gender>(4);
-
     //User-defined constant define
 
     public static final Gender NOT_SPECIFIED = new Gender(CONSTANT_DEFAULT_VALUE, -1, null, null, null, null, false);

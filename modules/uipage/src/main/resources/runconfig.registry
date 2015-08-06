@@ -91,6 +91,7 @@
             	<item name="jquery-dataTable" value="/js/jquery-dataTable.js" />
             	<item name="jquery-jstree" value="/js/jquery-jstree.js" />
             	<item name="uimaster" value="/js/uimaster.js" />
+            	<item name="uimaster-widget" value="/js/uimaster-widget.js" />
             </node>
             <node name="commonjs-mob">
                 <!-- support async mode

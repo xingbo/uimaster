@@ -21,6 +21,7 @@ import org.shaolin.bmdp.datamodel.common.ExpressionType;
 import org.shaolin.bmdp.datamodel.flowdiagram.Connection;
 import org.shaolin.bmdp.datamodel.flowdiagram.FlowChunk;
 import org.shaolin.bmdp.datamodel.flowdiagram.NodeType;
+import org.shaolin.bmdp.datamodel.page.UITableActionGroupType;
 import org.shaolin.bmdp.datamodel.page.UITableActionType;
 import org.shaolin.bmdp.datamodel.workflow.Workflow;
 import org.shaolin.bmdp.runtime.spi.IServerServiceManager;
@@ -92,6 +93,47 @@ public class HTMLFlowDiagramType extends HTMLWidgetType
 			context.generateHTML("' icon=\""+action.getIcon()+"\"><label for=\""+action.getUiid()+"\">");
 			context.generateHTML(UIVariableUtil.getI18NProperty(action.getTitle()));
 			context.generateHTML("</label></input>");
+		}
+		String htmlPrefix = this.getPrefix().replace('.', '_');
+		String htmlId = this.getPrefix().replace('.', '_') + this.getUIID();
+		List<UITableActionGroupType> actionGroups = (List<UITableActionGroupType>)this.removeAttribute("actionGroups");
+		if (actionGroups !=null && actionGroups.size() > 0) {
+			for (UITableActionGroupType a : actionGroups) {
+				HTMLUtil.generateTab(context, depth + 2);
+				int count = 0;
+				String btnSetName = "btnSet_" + htmlId + (count++);
+				context.generateHTML("<span id=\""+btnSetName+"\">");
+				for (UITableActionType action: a.getActions()){
+					HTMLUtil.generateTab(context, depth + 3);
+					if("button".equals(a.getType())) {
+						context.generateHTML("<button");
+					} else if("radio".equals(a.getType())) {
+						context.generateHTML("<input type='radio' name='"+btnSetName+"'");
+					} else if("checkbox".equals(a.getType())) {
+						context.generateHTML("<input type='checkbox'");
+					}
+					context.generateHTML(" id=\""+htmlPrefix+action.getUiid()+"\" onclick=\"javascript:defaultname.");
+					context.generateHTML(this.getPrefix() + action.getFunction());
+					context.generateHTML("('" + this.getPrefix() + this.getUIID() + "');\" title='");
+					context.generateHTML(UIVariableUtil.getI18NProperty(action.getTitle()));
+					context.generateHTML("' icon=\""+action.getIcon()+"\">");
+					
+					if("button".equals(a.getType())) {
+						context.generateHTML(UIVariableUtil.getI18NProperty(action.getTitle()));
+						context.generateHTML("</button>");
+					} else if("radio".equals(a.getType())) {
+						context.generateHTML("<label for=\""+htmlPrefix+action.getUiid()+"\">");
+						context.generateHTML(UIVariableUtil.getI18NProperty(action.getTitle()));
+						context.generateHTML("</label></input>");
+					} else if("checkbox".equals(a.getType())) {
+						context.generateHTML("<label for=\""+action.getUiid()+"\">");
+						context.generateHTML(UIVariableUtil.getI18NProperty(action.getTitle()));
+						context.generateHTML("</label></input>");
+					}
+				}
+				HTMLUtil.generateTab(context, depth + 2);
+				context.generateHTML("</span>");
+			}
 		}
 		HTMLUtil.generateTab(context, depth + 1);
 		context.generateHTML("</span>");

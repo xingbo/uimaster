@@ -15,8 +15,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.shaolin.bmdp.datamodel.flowdiagram.RectangleNodeType;
 import org.shaolin.bmdp.i18n.LocaleContext;
+import org.shaolin.bmdp.runtime.AppContext;
 import org.shaolin.bmdp.runtime.Registry;
 import org.shaolin.bmdp.runtime.entity.EntityManager;
+import org.shaolin.bmdp.runtime.internal.AppServiceManagerImpl;
 import org.shaolin.bmdp.runtime.spi.IEntityManager;
 import org.shaolin.bmdp.runtime.spi.IServerServiceManager;
 import org.shaolin.javacc.exception.EvaluationException;
@@ -51,6 +53,8 @@ public class PageTest {
 		IEntityManager entityManager = IServerServiceManager.INSTANCE.getEntityManager();
 		((EntityManager)entityManager).init(new ArrayList(), filters);
 		WebConfig.setServletContextPath("E:/test/web/");
+		
+		AppContext.register(new AppServiceManagerImpl("test", ODTest.class.getClassLoader()));
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e1) {

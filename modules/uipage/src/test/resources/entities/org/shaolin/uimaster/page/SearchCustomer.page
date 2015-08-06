@@ -211,7 +211,7 @@
 							<ns2:value>Customer Id</ns2:value>
 						</ns2:title>
 						<ns2:uiid>custId_col</ns2:uiid>
-						<ns2:uiType xsi:type="ns2:UITableColHTMLType">Label</ns2:uiType>
+						<ns2:uiType xsi:type="ns2:UITableColHTMLType"><ns2:type>Label</ns2:type></ns2:uiType>
 						<ns2:rowExpression xsi:type="ns2:ExpressionPropertyType">
 							<ns2:expression xsi:type="ns2:ExpressionType">
 								<ns2:expressionString><![CDATA[$rowBE.getId()]]></ns2:expressionString>
@@ -223,7 +223,7 @@
 							<ns2:value>Customer Name</ns2:value>
 						</ns2:title>
 						<ns2:uiid>custName_col</ns2:uiid>
-						<ns2:uiType xsi:type="ns2:UITableColHTMLType">Label</ns2:uiType>
+						<ns2:uiType xsi:type="ns2:UITableColHTMLType"><ns2:type>Label</ns2:type></ns2:uiType>
 						<ns2:rowExpression xsi:type="ns2:ExpressionPropertyType">
 							<ns2:expression xsi:type="ns2:ExpressionType">
 								<ns2:expressionString><![CDATA[$rowBE.getName()]]></ns2:expressionString>
@@ -235,7 +235,7 @@
 							<ns2:value>Customer Gender</ns2:value>
 						</ns2:title>
 						<ns2:uiid>custGender_col</ns2:uiid>
-						<ns2:uiType xsi:type="ns2:UITableColHTMLType">Label</ns2:uiType>
+						<ns2:uiType xsi:type="ns2:UITableColHTMLType"><ns2:type>Label</ns2:type></ns2:uiType>
 						<ns2:rowExpression xsi:type="ns2:ExpressionPropertyType">
 							<ns2:expression xsi:type="ns2:ExpressionType">
 								<ns2:expressionString><![CDATA[$rowBE.getGender()]]></ns2:expressionString>

@@ -36,9 +36,11 @@ import org.shaolin.bmdp.datamodel.page.UIPanelType;
 import org.shaolin.bmdp.datamodel.page.UISkinType;
 import org.shaolin.bmdp.datamodel.page.UITextFieldType;
 import org.shaolin.bmdp.i18n.LocaleContext;
+import org.shaolin.bmdp.runtime.AppContext;
 import org.shaolin.bmdp.runtime.Registry;
 import org.shaolin.bmdp.runtime.entity.EntityManager;
 import org.shaolin.bmdp.runtime.entity.EntityUtil;
+import org.shaolin.bmdp.runtime.internal.AppServiceManagerImpl;
 import org.shaolin.bmdp.runtime.spi.IEntityManager;
 import org.shaolin.bmdp.runtime.spi.IServerServiceManager;
 import org.shaolin.javacc.exception.EvaluationException;
@@ -91,6 +93,7 @@ public class ODTest {
 		IEntityManager entityManager = IServerServiceManager.INSTANCE.getEntityManager();
 		((EntityManager)entityManager).init(new ArrayList(), filters);
 		
+		AppContext.register(new AppServiceManagerImpl("test", ODTest.class.getClassLoader()));
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e1) {
