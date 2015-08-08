@@ -54,7 +54,7 @@ public class PageUtil {
             
             TreeItem gitem = new TreeItem();
             gitem.setId(workflow.getEntityName().replace(' ', '_'));
-            gitem.setText(workflow.getDescription());
+            gitem.setText(workflow.getDescription() != null? workflow.getDescription():workflow.getEntityName());
             gitem.setState(new org.shaolin.uimaster.page.ajax.TreeItem.State());
             gitem.setA_attr(new org.shaolin.uimaster.page.ajax.TreeItem.LinkAttribute("#"));
             result.add(gitem);

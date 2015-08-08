@@ -17,6 +17,7 @@ public class UITable implements IODMappingConverter {
 	private HTMLTableType uiTable;
 	private String uiid;
 	private List<Object> selectedRows;
+	private List<Object> allRows;
 	
 	public static UITable createRule() {
 		return new UITable();
@@ -43,6 +44,7 @@ public class UITable implements IODMappingConverter {
 
 		dataClassInfo.put("ListData", List.class);
 		dataClassInfo.put("SelectedRows", List.class);
+		dataClassInfo.put("AllRows", List.class);
 		dataClassInfo.put("Condition", TableConditions.class);
 		
 		return dataClassInfo;
@@ -96,6 +98,8 @@ public class UITable implements IODMappingConverter {
 		try {
 			paramValue.put(UI_WIDGET_TYPE, this.uiTable);
 			paramValue.put("SelectedRows", this.selectedRows);
+			paramValue.put("AllRows", this.allRows);
+			
 		} catch (Throwable t) {
 			if (t instanceof UIConvertException) {
 				throw ((UIConvertException) t);
@@ -120,6 +124,7 @@ public class UITable implements IODMappingConverter {
 			Table textComp = (Table) AjaxActionHelper
 					.getCachedAjaxWidget(this.uiid, htmlContext);
 			this.selectedRows = textComp.getSelectedRows();
+			this.allRows = textComp.getListData();
 		} catch (Throwable t) {
 			if (t instanceof UIConvertException) {
 				throw ((UIConvertException) t);

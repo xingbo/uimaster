@@ -84,6 +84,74 @@
 			</bediagram:type>
 		</bediagram:member>
 	</bediagram:beEntity>
+	
+	<bediagram:beEntity needPersist="true">
+		<common:entityName>TaskHistory</common:entityName>
+		<bediagram:member pk="true">
+			<bediagram:name>id</bediagram:name>
+			<bediagram:type xsi:type="bediagram:LongType" />
+		</bediagram:member>
+		<!-- the task owner -->
+		<bediagram:member>
+			<!-- the login user id -->
+			<bediagram:name>partyId</bediagram:name>
+			<bediagram:type xsi:type="bediagram:LongType" />
+		</bediagram:member>
+		<bediagram:member>
+			<!-- the login user id -->
+			<bediagram:name>partyType</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>subject</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>description</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+
+ <bediagram:member>
+			<bediagram:name>expiredTime</bediagram:name>
+			<bediagram:type xsi:type="bediagram:DateTimeType" />
+		</bediagram:member>
+		<!-- search conditions. -->
+		<bediagram:member>
+			<bediagram:name>expiredTimeStart</bediagram:name>
+			<bediagram:type xsi:type="bediagram:DateTimeType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>expiredTimeEnd</bediagram:name>
+			<bediagram:type xsi:type="bediagram:DateTimeType" />
+		</bediagram:member>
+
+		<!-- action -->
+		<bediagram:member>
+			<bediagram:name>sendSMS</bediagram:name>
+			<bediagram:type xsi:type="bediagram:BooleanType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>sendEmail</bediagram:name>
+			<bediagram:type xsi:type="bediagram:BooleanType" />
+		</bediagram:member>
+
+		<bediagram:member>
+			<bediagram:name>status</bediagram:name>
+			<bediagram:type xsi:type="bediagram:CEObjRefType">
+				<bediagram:targetEntity entityName="TaskStatusType" />
+			</bediagram:type>
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>completeRate</bediagram:name>
+			<bediagram:type xsi:type="bediagram:IntType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>priority</bediagram:name>
+			<bediagram:type xsi:type="bediagram:CEObjRefType">
+				<bediagram:targetEntity entityName="TaskPriorityType" />
+			</bediagram:type>
+		</bediagram:member>
+	</bediagram:beEntity>
 
 	<bediagram:beEntity needPersist="true">
 		<common:entityName>Notification</common:entityName>

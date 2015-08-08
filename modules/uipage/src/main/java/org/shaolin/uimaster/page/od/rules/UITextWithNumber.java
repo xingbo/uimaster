@@ -153,8 +153,12 @@ public class UITextWithNumber implements IODMappingConverter {
 				this.uiid = (String) paramValue.get(UI_WIDGET_ID);
 			}
 			if (paramValue.containsKey("Number")) {
-				this.number = ((Number) paramValue.get("Number"))
+				try {
+					this.number = ((Number) paramValue.get("Number"))
 						.longValue();
+				} catch (NullPointerException e) {
+					this.number = 0;
+				}
 			}
 			if (paramValue.containsKey("PropValues")) {
 				this.propValues = ((Map) paramValue.get("PropValues"));

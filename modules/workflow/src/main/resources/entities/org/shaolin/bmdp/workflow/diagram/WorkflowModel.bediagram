@@ -43,7 +43,6 @@
 		</bediagram:member>
 	</bediagram:beEntity>
 	
-	
 	<bediagram:beEntity needPersist="true">
 		<common:entityName>UIFlows</common:entityName>
 		<bediagram:member pk="true">
@@ -70,6 +69,120 @@
   </bediagram:member>
 	</bediagram:beEntity>
 	
+	<!-- 
+	     These objects only used for generating the UI forms. they are not used for the data model 
+	     since we already defined the data model.
+	-->
+	<bediagram:beEntity needPersist="false" needUIEntity="true" needUITableEditor="true">
+		<common:entityName>SessionVarDefinition</common:entityName>
+		<bediagram:member>
+			<bediagram:name>name</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>sessionServiceClass</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>sessionClass</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+	</bediagram:beEntity>
+	
+	<bediagram:beEntity needPersist="false" needUIEntity="true" needUITableEditor="true">
+		<common:entityName>VariableDefinition</common:entityName>
+		<bediagram:member>
+			<bediagram:name>name</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>varType</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>classType</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+	</bediagram:beEntity>
+	
+	<bediagram:beEntity needPersist="false" needUIEntity="true">
+		<common:entityName>CreateWorkflow</common:entityName>
+		<bediagram:member>
+			<bediagram:name>workflowName</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>flowName</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>sessionServcies</bediagram:name>
+			<bediagram:type xsi:type="bediagram:BEListType">
+	      <bediagram:elementType xsi:type="bediagram:BEObjRefType">
+	          <bediagram:targetEntity entityName="SessionVarDefinition" />
+	      </bediagram:elementType>
+	  </bediagram:type>
+  </bediagram:member>
+	</bediagram:beEntity>
+	
+	<bediagram:beEntity needPersist="false" needUIEntity="true">
+		<common:entityName>CreateFlow</common:entityName>
+		<bediagram:member>
+			<bediagram:name>flowName</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>variables</bediagram:name>
+			<bediagram:type xsi:type="bediagram:BEListType">
+	      <bediagram:elementType xsi:type="bediagram:BEObjRefType">
+	          <bediagram:targetEntity entityName="VariableDefinition" />
+	      </bediagram:elementType>
+	  </bediagram:type>
+  </bediagram:member>
+	</bediagram:beEntity>
+	
+	<bediagram:beEntity needPersist="false" needUIEntity="true">
+		<common:entityName>CreateNode</common:entityName>
+		<bediagram:member>
+			<bediagram:name>name</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>description</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>expression</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>expiredDays</bediagram:name>
+			<bediagram:type xsi:type="bediagram:IntType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>expiredHours</bediagram:name>
+			<bediagram:type xsi:type="bediagram:IntType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>partyType</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>actionPage</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>actionPosition</bediagram:name>
+			<bediagram:type xsi:type="bediagram:StringType" />
+		</bediagram:member>
+		<bediagram:member>
+			<bediagram:name>type</bediagram:name>
+			<bediagram:type xsi:type="bediagram:CEObjRefType">
+   				<bediagram:targetEntity entityName="NodeType" />
+    </bediagram:type>
+		</bediagram:member>
+	</bediagram:beEntity>
+	
 	<bediagram:ceEntity>
 		<common:entityName>ModuleType</common:entityName>
 		<bediagram:constantValue>
@@ -84,5 +197,39 @@
 		</bediagram:constantValue>
 	</bediagram:ceEntity>
 	
+	<bediagram:ceEntity>
+	 <common:entityName>NodeType</common:entityName>
+		<bediagram:constantValue>
+			<bediagram:value>MissionNode</bediagram:value>
+			<bediagram:intValue>0</bediagram:intValue>
+			<bediagram:description>MissionNode</bediagram:description>
+		</bediagram:constantValue>
+		<common:entityName>NodeType</common:entityName>
+		<bediagram:constantValue>
+			<bediagram:value>StartNode</bediagram:value>
+			<bediagram:intValue>1</bediagram:intValue>
+			<bediagram:description>StartNode</bediagram:description>
+		</bediagram:constantValue>
+		<bediagram:constantValue>
+			<bediagram:value>ConditionNode</bediagram:value>
+			<bediagram:intValue>2</bediagram:intValue>
+			<bediagram:description>ConditionNode</bediagram:description>
+		</bediagram:constantValue>
+		<bediagram:constantValue>
+			<bediagram:value>SliptNode</bediagram:value>
+			<bediagram:intValue>3</bediagram:intValue>
+			<bediagram:description>SliptNode</bediagram:description>
+		</bediagram:constantValue>
+		<bediagram:constantValue>
+			<bediagram:value>JoinNode</bediagram:value>
+			<bediagram:intValue>4</bediagram:intValue>
+			<bediagram:description>JoinNode</bediagram:description>
+		</bediagram:constantValue>
+		<bediagram:constantValue>
+			<bediagram:value>EndNode</bediagram:value>
+			<bediagram:intValue>5</bediagram:intValue>
+			<bediagram:description>EndNode</bediagram:description>
+		</bediagram:constantValue>
+	</bediagram:ceEntity>
 	
 </bediagram:BEDiagram>

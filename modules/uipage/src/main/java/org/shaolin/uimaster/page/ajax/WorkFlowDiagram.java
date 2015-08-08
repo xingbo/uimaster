@@ -208,24 +208,12 @@ public class WorkFlowDiagram extends Widget implements Serializable {
 			lock.lock();
 			this.selectedNode = null;
 			this.currentFlowName = currentFlowName;
+			int hasDot = this.currentFlowName.lastIndexOf(".");
+			if (hasDot != -1) {
+				this.currentFlowName = this.currentFlowName.substring(hasDot + 1);
+			}
 			this.wflowModel = wflowMode;
 			this.flowView = flowView;
-		} finally {
-			lock.unlock();
-		}
-	}
-	
-	public FlowType createFlow() {
-		try {
-			lock.lock();
-			this.selectedNode = null;
-			
-			FlowType subFlow = new FlowType();
-			subFlow.setName("Newflow_" + (int)(Math.random() * 100000));
-			this.currentFlowName = subFlow.getName();
-			this.wflowModel.getFlows().add(subFlow);
-			this.flowView = new FlowChunk();
-			return subFlow;
 		} finally {
 			lock.unlock();
 		}
@@ -322,80 +310,92 @@ public class WorkFlowDiagram extends Widget implements Serializable {
 		}
 	}
 	
-	public void updateNode(final String flowName, final String nodeName) {
-		try {
-			lock.lock();
-			//TODO:
-			
-		} finally {
-			lock.unlock();
+	public void addFlow(FlowType newFlow) {
+		for (FlowType f : this.wflowModel.getFlows()) {
+			if (f.getName().equals(newFlow.getName())) {
+				this.wflowModel.getFlows().remove(f);
+				break;
+			}
 		}
+		this.currentFlowName = newFlow.getName();
+		this.wflowModel.getFlows().add(newFlow);
+		this.flowView = new FlowChunk();
+		
+		this.refreshModel();
 	}
-
-	public void addNode(final String nodeName, final String nodeType) {
-		if (nodeName == null || nodeName.trim().isEmpty()) {
-			return;
+	
+	public void removeFlow(FlowType newFlow) {
+		//TODO: check the node if exists.
+		for (FlowType f : this.wflowModel.getFlows()) {
+			if (f.getName().equals(newFlow.getName())) {
+				this.wflowModel.getFlows().remove(f);
+				break;
+			}
 		}
-		if (nodeType == null || nodeType.trim().isEmpty()) {
+		this.currentFlowName = null;
+		this.flowView = new FlowChunk();
+		
+		this.refreshModel();
+	}
+	
+	public void addNode(final org.shaolin.bmdp.datamodel.workflow.NodeType node) {
+		if (this.currentFlowName == null || node == null) {
+			logger.warn("Please selected a sub flow before adding the node!");
 			return;
 		}
 		
 		org.shaolin.bmdp.datamodel.flowdiagram.NodeType viewNode = null;
-		org.shaolin.bmdp.datamodel.workflow.NodeType dateNode = null;
-		if (nodeType.equals(StartNodeType.class.getName())) {
-			dateNode = new StartNodeType();
+		if (node.getClass() == StartNodeType.class) {
 			viewNode = new CircleNodeType();
 			viewNode.setX(0);
 			viewNode.setY(0);
-		} else if (nodeType.equals(EndNodeType.class.getName())) {
-			dateNode = new EndNodeType();
+		} else if (node.getClass() == EndNodeType.class) {
 			viewNode = new CircleNodeType();
 			viewNode.setX(0);
 			viewNode.setY(0);
-		} else if (nodeType.equals(MissionNodeType.class.getName())) {
-			dateNode = new MissionNodeType();
+		} else if (node.getClass() == MissionNodeType.class) {
 			viewNode = new RectangleNodeType();
 			viewNode.setX(0);
 			viewNode.setY(0);
-		} else if (nodeType.equals(ConditionNodeType.class.getName())) {
-			dateNode = new ConditionNodeType();
+		} else if (node.getClass() == ConditionNodeType.class) {
 			viewNode = new DiamondNodeType();
 			viewNode.setX(0);
 			viewNode.setY(0);
-		} else if (nodeType.equals(JoinNodeType.class.getName())) {
-			dateNode = new JoinNodeType();
+		} else if (node.getClass() == JoinNodeType.class) {
 			viewNode = new JoinTriangleNodeType();
 			viewNode.setX(0);
 			viewNode.setY(0);
-		} else if (nodeType.equals(SplitNodeType.class.getName())) {
-			dateNode = new SplitNodeType();
+		} else if (node.getClass() == SplitNodeType.class) {
 			viewNode = new SplitTriangleNodeType();
 			viewNode.setX(0);
 			viewNode.setY(0);
-		} else if (nodeType.equals(ChildFlowNodeType.class.getName())) {
-			dateNode = new ChildFlowNodeType();
+		} else if (node.getClass() == ChildFlowNodeType.class) {
 			viewNode = new RefFlowNodeType();
 			viewNode.setX(0);
 			viewNode.setY(0);
-		} else if (nodeType.equals(GeneralNodeType.class.getName())) {
-			dateNode = new GeneralNodeType();
+		} else if (node.getClass() == GeneralNodeType.class) {
 			viewNode = new RectangleNodeType();
 			viewNode.setX(0);
 			viewNode.setY(0);
 		} else {
-			throw new UnsupportedOperationException("Node type " + nodeType + " is unidentified!");
+			throw new UnsupportedOperationException("Node type " + node.getClass() + " is unidentified!");
 		}
-		dateNode.setName(nodeName);
-		dateNode.setDescription(nodeName);
 		for (FlowType f : wflowModel.getFlows()) {
 			if(this.currentFlowName.equals(f.getName())) {
-				f.getNodesAndConditionsAndSplits().add(dateNode);
+				for (org.shaolin.bmdp.datamodel.workflow.NodeType n : f.getNodesAndConditionsAndSplits()) {
+					if (n.getName().equals(node.getName())) {
+						f.getNodesAndConditionsAndSplits().remove(n);
+						logger.warn("the node {} is already existed, replace it.", n.getName());
+						break;
+					}
+				}
+				f.getNodesAndConditionsAndSplits().add(node);
 				break;
 			}
 		}
-		viewNode.setId(nodeName);
-		viewNode.setName(nodeName);
-		viewNode.setDescription(nodeName);
+		viewNode.setId(node.getName());
+		viewNode.setName(node.getName());
+		viewNode.setDescription(node.getDescription());
 		flowView.getNodes().add(viewNode);
 		
 		AjaxContext ajaxContext = AjaxActionHelper.getAjaxContext();

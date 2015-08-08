@@ -55,9 +55,13 @@ function org_shaolin_bmdp_workflow_page_FlowManagement(json)
 
     Form.addFlowNode = org_shaolin_bmdp_workflow_page_FlowManagement_addFlowNode;
 
+    Form.addMissionNode = org_shaolin_bmdp_workflow_page_FlowManagement_addMissionNode;
+
     Form.saveWorkflow = org_shaolin_bmdp_workflow_page_FlowManagement_saveWorkflow;
 
     Form.refreshModuleGroup = org_shaolin_bmdp_workflow_page_FlowManagement_refreshModuleGroup;
+
+    Form.xmlEditor = org_shaolin_bmdp_workflow_page_FlowManagement_xmlEditor;
 
     Form.initPageJs = org_shaolin_bmdp_workflow_page_FlowManagement_initPageJs;
 
@@ -120,6 +124,17 @@ function org_shaolin_bmdp_workflow_page_FlowManagement(json)
 
 
     /* auto generated eventlistener function declaration */
+    function org_shaolin_bmdp_workflow_page_FlowManagement_addMissionNode(eventsource,event) {/* Gen_First:org_shaolin_bmdp_workflow_page_FlowManagement_addMissionNode */
+
+        // cal ajax function. 
+
+        UIMaster.triggerServerEvent(UIMaster.getUIID(eventsource),"addMissionNode_20150808-104357",UIMaster.getValue(eventsource),this.__entityName);
+
+        var UIEntity = this;
+    }/* Gen_Last:org_shaolin_bmdp_workflow_page_FlowManagement_addMissionNode */
+
+
+    /* auto generated eventlistener function declaration */
     function org_shaolin_bmdp_workflow_page_FlowManagement_saveWorkflow(eventsource,event) {/* Gen_First:org_shaolin_bmdp_workflow_page_FlowManagement_saveWorkflow */
 
         // cal ajax function. 
@@ -135,10 +150,21 @@ function org_shaolin_bmdp_workflow_page_FlowManagement(json)
 
         // cal ajax function. 
 
-        UIMaster.triggerServerEvent(UIMaster.getUIID(eventsource),"refreshModuleGroup432423",UIMaster.getValue(eventsource),this.__entityName);
+        UIMaster.triggerServerEvent(UIMaster.getUIID(eventsource),"refreshModuleGroup-201506182322",UIMaster.getValue(eventsource),this.__entityName);
 
         var UIEntity = this;
     }/* Gen_Last:org_shaolin_bmdp_workflow_page_FlowManagement_refreshModuleGroup */
+
+
+    /* auto generated eventlistener function declaration */
+    function org_shaolin_bmdp_workflow_page_FlowManagement_xmlEditor(eventsource,event) {/* Gen_First:org_shaolin_bmdp_workflow_page_FlowManagement_xmlEditor */
+
+        // cal ajax function. 
+
+        UIMaster.triggerServerEvent(UIMaster.getUIID(eventsource),"xmlEditor-201508081054",UIMaster.getValue(eventsource),this.__entityName);
+
+        var UIEntity = this;
+    }/* Gen_Last:org_shaolin_bmdp_workflow_page_FlowManagement_xmlEditor */
 
 
     function org_shaolin_bmdp_workflow_page_FlowManagement_initPageJs(){/* Gen_First:org_shaolin_bmdp_workflow_page_FlowManagement_initPageJs */

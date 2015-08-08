@@ -13,46 +13,24 @@
                     import org.shaolin.uimaster.page.AjaxContext;
                     import org.shaolin.uimaster.page.AjaxActionHelper;
                     import org.shaolin.uimaster.page.ajax.*;
-                    import org.shaolin.bmdp.datamodel.workflow.Workflow;
-                    import org.shaolin.bmdp.datamodel.workflow.FlowType;
-                    import org.shaolin.bmdp.datamodel.workflow.StartNodeType;
-                    import org.shaolin.bmdp.datamodel.workflow.EndNodeType;
-                    import org.shaolin.bmdp.datamodel.workflow.MissionNodeType;
-                    import org.shaolin.bmdp.datamodel.workflow.DestType;
+                    import org.shaolin.bmdp.datamodel.workflow.*;
                     import org.shaolin.bmdp.datamodel.flowdiagram.FlowChunk;
                     import java.lang.Math; 
                     {
                     	Workflow wf = new Workflow();
-																					wf.setEntityName("NewWorkflow_" + (int)(Math.random() * 100000));
+																					wf.setEntityName("NewWorkflow_" + (int)(Math.random() * 100));
 																					wf.setDescription(wf.getEntityName());
-																					FlowType subFlow = new FlowType();
-																					subFlow.setName("Newflow_" + (int)(Math.random() * 100000));
-																					wf.getFlows().add(subFlow);
+																					ConfType conf = new ConfType();
+																					wf.setConf(conf);
 																					
-																					FlowChunk chunk = new FlowChunk();
-																					chunk.setEntityName(wf.getEntityName());
-																					
-																					StartNodeType startNode = new StartNodeType();
-																					startNode.setName("start");
-																					DestType dest = new DestType();
-																					dest.setName("mission1");
-																					startNode.setDest(dest);
-																					chunk.getNodes().add(startNode);
-																					
-																					MissionNodeType mission = new MissionNodeType();
-																					mission.setName("mission1");
-																					DestType dest1 = new DestType();
-																					dest1.setName("end");
-																					mission.setDest(dest1);
-																					chunk.getNodes().add(mission);
-																					
-																					EndNodeType endNode = new EndNodeType();
-																					endNode.setName("end");
-																					chunk.getNodes().add(endNode);
-																					
-                    	WorkFlowDiagram diagram = (WorkFlowDiagram)@page.getElement("flowDiagram");
-                    	diagram.setWorkflow(subFlow.getName(), wf, chunk);
-                    	diagram.refreshModel();
+                    	HashMap input = new HashMap();
+                     input.put("beObject", wf);
+                     input.put("parentUiid", "flowDiagram");
+                     input.put("editable", new Boolean(true));
+                     RefForm form = new RefForm("userForm", "org.shaolin.bmdp.workflow.form.CreateWorkflow", input);
+                     @page.addElement(form);
+                     
+                     form.openInWindows("Create Work Flow", null);
                     }
                     ]]></ns2:expressionString>
                 </ns2:exp>
@@ -123,20 +101,23 @@
                     import org.shaolin.uimaster.page.AjaxContext;
                     import org.shaolin.uimaster.page.AjaxActionHelper;
                     import org.shaolin.uimaster.page.ajax.*;
-                    import org.shaolin.vogerp.commonmodel.be.ModuleGroupImpl;
                     import org.shaolin.bmdp.runtime.be.IBusinessEntity;
                     import org.shaolin.bmdp.runtime.entity.EntityUtil;
-					               import org.shaolin.bmdp.datamodel.workflow.Workflow;
-                    import org.shaolin.bmdp.workflow.dao.WorkflowModel;
-                    import org.shaolin.bmdp.workflow.ce.ModuleType;
-                    import org.shaolin.bmdp.workflow.be.FlowEntityImpl;
                     import org.shaolin.bmdp.datamodel.flowdiagram.FlowChunk;
-                    import org.shaolin.bmdp.workflow.be.UIFlowsImpl;
+                    import org.shaolin.bmdp.datamodel.workflow.*;
                     import org.shaolin.bmdp.workflow.ui.PageUtil;
                     {
-                    	WorkFlowDiagram diagram = (WorkFlowDiagram)@page.getElement("flowDiagram");
-                    	diagram.createFlow();
-						               diagram.refreshModel();
+                     FlowType subFlow = new FlowType();
+                     FlowConfType conf = new FlowConfType();
+                     subFlow.setConf(conf);
+                     HashMap input = new HashMap();
+                     input.put("beObject", subFlow);
+                     input.put("parentUiid", "flowDiagram");
+                     input.put("editable", new Boolean(true));
+                     RefForm form = new RefForm("userForm", "org.shaolin.bmdp.workflow.form.CreateFlow", input);
+                     @page.addElement(form);
+                     
+                     form.openInWindows("Create Sub Flow", null);
                     }
                     ]]></ns2:expressionString>
                 </ns2:exp>
@@ -152,21 +133,43 @@
                     import org.shaolin.uimaster.page.AjaxContext;
                     import org.shaolin.uimaster.page.AjaxActionHelper;
                     import org.shaolin.uimaster.page.ajax.*;
-                    import org.shaolin.vogerp.commonmodel.be.ModuleGroupImpl;
-                    import org.shaolin.bmdp.runtime.be.IBusinessEntity;
-                    import org.shaolin.bmdp.runtime.entity.EntityUtil;
 					               import org.shaolin.bmdp.datamodel.workflow.Workflow;
-                    import org.shaolin.bmdp.workflow.dao.WorkflowModel;
-                    import org.shaolin.bmdp.workflow.ce.ModuleType;
-                    import org.shaolin.bmdp.workflow.be.FlowEntityImpl;
-                    import org.shaolin.bmdp.datamodel.flowdiagram.FlowChunk;
-                    import org.shaolin.bmdp.workflow.be.UIFlowsImpl;
-                    import org.shaolin.bmdp.workflow.ui.PageUtil;
-                    import org.shaolin.bmdp.datamodel.workflow.MissionNodeType;
                     {
-                    	WorkFlowDiagram diagram = (WorkFlowDiagram)@page.getElement("flowDiagram");
-                    	diagram.addNode("newNode", MissionNodeType.class.getName());
-						               diagram.refreshModel();
+                    }
+                    ]]></ns2:expressionString>
+                </ns2:exp>
+            </ns2:ops>
+        </ns2:eventHandler>
+        <ns2:eventHandler functionName="addMissionNode">
+           <ns2:ops xsi:type="ns2:OpCallAjaxType" name="addMissionNode_20150808-104357">
+                <ns2:exp>
+                    <ns2:expressionString><![CDATA[
+                    import java.util.HashMap;
+                    import java.util.List;
+                    import org.shaolin.bmdp.runtime.AppContext;
+                    import org.shaolin.uimaster.page.AjaxContext;
+                    import org.shaolin.uimaster.page.AjaxActionHelper;
+                    import org.shaolin.uimaster.page.ajax.*;
+					               import org.shaolin.bmdp.datamodel.workflow.Workflow;
+                    import org.shaolin.bmdp.datamodel.flowdiagram.FlowChunk;
+                    import org.shaolin.bmdp.workflow.ui.PageUtil;
+                    import org.shaolin.bmdp.datamodel.workflow.*;
+                    import org.shaolin.bmdp.datamodel.common.ExpressionType;
+                    {
+                    	MissionNodeType node = new MissionNodeType();
+                    	HandlerType handler = new HandlerType();
+                    	ExpressionType expr = new ExpressionType();
+                    	expr.setExpressionString("{}");
+                    	handler.setExpression(expr);
+                    	node.setProcess(handler); 
+                     HashMap input = new HashMap();
+                     input.put("beObject", node);
+                     input.put("parentUiid", "flowDiagram");
+                     input.put("editable", new Boolean(true));
+                     RefForm form = new RefForm("userForm", "org.shaolin.bmdp.workflow.form.CreateMissionNode", input);
+                     @page.addElement(form);
+                     
+                     form.openInWindows("Create Mission Node", null);
                     }
                     ]]></ns2:expressionString>
                 </ns2:exp>
@@ -178,6 +181,7 @@
                     <ns2:expressionString><![CDATA[
                     import java.util.ArrayList;
                     import java.util.List;
+                    import org.shaolin.bmdp.runtime.AppContext;
                     import org.shaolin.bmdp.runtime.entity.EntityUtil;
                     import org.shaolin.vogerp.commonmodel.be.IModule;
                     import org.shaolin.vogerp.commonmodel.be.ModuleImpl;
@@ -188,17 +192,19 @@
                     import org.shaolin.bmdp.workflow.dao.WorkflowModel;
                     import org.shaolin.bmdp.workflow.ce.ModuleType;
                     import org.shaolin.bmdp.workflow.be.FlowEntityImpl;
+                    import org.shaolin.bmdp.runtime.spi.IEntityManager;
                     {
                         WorkFlowDiagram flow = (WorkFlowDiagram)@page.getElement("flowDiagram");
                         FlowEntityImpl flowModel = new FlowEntityImpl();
                         flowModel.setEntityName(flow.getWorflowModel().getEntityName());
+                        String flowModelXml = flow.getFlowModelXML();
                         int count = (int)WorkflowModel.INSTANCE.searchFlowEntitiesCount(flowModel);
                         if (count == 0) {
-	                        flowModel.setContent(flow.getFlowModelXML());
+	                           flowModel.setContent(flowModelXml);
                             WorkflowModel.INSTANCE.create(flowModel);
                         } else {
                         	List groupflow = WorkflowModel.INSTANCE.searchFlowEntities(flowModel, null, 0, 1);
-                            ((FlowEntityImpl)groupflow.get(0)).setContent(flow.getFlowModelXML());
+                            ((FlowEntityImpl)groupflow.get(0)).setContent(flowModelXml);
                             WorkflowModel.INSTANCE.update((FlowEntityImpl)groupflow.get(0));
                         }
                         
@@ -215,6 +221,9 @@
                             ((UIFlowsImpl)groupflow.get(0)).setFlow(flow.getFlowViewXML());
                             WorkflowModel.INSTANCE.update((UIFlowsImpl)groupflow.get(0));
                         }
+                        
+                        IEntityManager entityManager = AppContext.get().getEntityManager();
+                        entityManager.appendEntity(flow.getWorflowModel());
                         
                         flow.saveSuccess();
                     }
@@ -254,7 +263,6 @@
 																						  FlowEntityImpl flowModel = new FlowEntityImpl();
 																						  flowModel.setEntityName(flow.getWorflowModel().getEntityName());
                         flowModel.setContent(flow.getFlowModelXML());
-																						  System.out.println("");
 				                    HashMap input = new HashMap();
 				                    input.put("flowObject", flowModel);
 				                    input.put("editable", new Boolean(true));
@@ -306,6 +314,22 @@
        </ns2:defaultActions>
        <ns2:actionGroup>
            <ns2:type>radio</ns2:type>
+           <ns2:action>
+               <ns2:uiid>addFlow</ns2:uiid>
+               <ns2:title xsi:type="ns2:StringPropertyType">
+                   <ns2:value>Add Sub Flow</ns2:value>
+               </ns2:title>
+               <ns2:icon>ui-icon-note</ns2:icon>
+               <ns2:function>addFlow</ns2:function>
+           </ns2:action>
+           <ns2:action>
+               <ns2:uiid>addChildFlowNode</ns2:uiid>
+               <ns2:title xsi:type="ns2:StringPropertyType">
+                   <ns2:value>Add Child Flow Node</ns2:value>
+               </ns2:title>
+               <ns2:icon>ui-icon-note</ns2:icon>
+               <ns2:function>addChildFlowNode</ns2:function>
+           </ns2:action>
            <ns2:action>
                <ns2:uiid>addFlowNode</ns2:uiid>
                <ns2:title xsi:type="ns2:StringPropertyType">

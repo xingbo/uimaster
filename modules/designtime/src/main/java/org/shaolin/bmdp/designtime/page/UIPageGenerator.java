@@ -314,7 +314,10 @@ public final class UIPageGenerator implements IEntityEventListener<BusinessEntit
 			if (!event.getEntity().isNeedUITableEditor()) {
 				return;
 			}
-			
+			File tableFile = new File(formDir, name + "Table.form");
+			if (tableFile.exists()) {
+				return;
+			}
 			createTableEditorForm(formDir, members, formPackage, name, beImpl, beImplName, entityName);
 			
 		} catch (Exception e) {

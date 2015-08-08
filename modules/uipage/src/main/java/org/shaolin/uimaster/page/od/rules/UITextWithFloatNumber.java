@@ -143,8 +143,12 @@ public class UITextWithFloatNumber implements IODMappingConverter {
 				this.uiid = (String) paramValue.get(UI_WIDGET_ID);
 			}
 			if (paramValue.containsKey("FloatNumber")) {
-				this.floatNumber = ((Number) paramValue.get("FloatNumber"))
+				try {
+					this.floatNumber = ((Number) paramValue.get("FloatNumber"))
 						.doubleValue();
+				} catch (NullPointerException e) {
+					this.floatNumber = 0.0f;
+				}
 			}
 			if (paramValue.containsKey("PropValues")) {
 				this.propValues = ((Map) paramValue.get("PropValues"));
