@@ -34,6 +34,8 @@ public class ReturnStatement extends Statement
                 execResult.setResultCode(StatementConstants.exceptionEnding);
                 execResult.setCauseException(e.getCause());
             }
+        } else {
+        	execResult.setResultCode(StatementConstants.returnEnding);
         }
         return execResult;
     }

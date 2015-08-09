@@ -52,4 +52,25 @@ public class IfSmtTest extends TestCase
         assertEquals(new Double(1.11), result);
     }
 
+    public void testCase3() throws Throwable
+    {
+        path =  ClassLoader.getSystemResourceAsStream("iftest/iftest3.jav");
+        String statementString = FileReaderUtil.readFile(path);
+        CompilationUnit unit = StatementParser.parse(statementString);
+        VariableLister lister = new VariableLister();
+        unit.traverse(lister);
+        Object result = StatementEvaluator.evaluate(unit);
+        assertEquals(0, result);
+    }
+    
+    public void testCase4() throws Throwable
+    {
+        path =  ClassLoader.getSystemResourceAsStream("iftest/iftest4.jav");
+        String statementString = FileReaderUtil.readFile(path);
+        CompilationUnit unit = StatementParser.parse(statementString);
+        VariableLister lister = new VariableLister();
+        unit.traverse(lister);
+        Object result = StatementEvaluator.evaluate(unit);
+        assertNull(result);
+    }
 }
