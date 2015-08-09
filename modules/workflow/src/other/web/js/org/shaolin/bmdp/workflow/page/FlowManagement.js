@@ -53,15 +53,21 @@ function org_shaolin_bmdp_workflow_page_FlowManagement(json)
 
     Form.addFlow = org_shaolin_bmdp_workflow_page_FlowManagement_addFlow;
 
-    Form.addFlowNode = org_shaolin_bmdp_workflow_page_FlowManagement_addFlowNode;
+    Form.removeFlow = org_shaolin_bmdp_workflow_page_FlowManagement_removeFlow;
+
+    Form.refreshFlow = org_shaolin_bmdp_workflow_page_FlowManagement_refreshFlow;
 
     Form.addMissionNode = org_shaolin_bmdp_workflow_page_FlowManagement_addMissionNode;
+
+    Form.addStartNode = org_shaolin_bmdp_workflow_page_FlowManagement_addStartNode;
+
+    Form.addEndNode = org_shaolin_bmdp_workflow_page_FlowManagement_addEndNode;
 
     Form.saveWorkflow = org_shaolin_bmdp_workflow_page_FlowManagement_saveWorkflow;
 
     Form.refreshModuleGroup = org_shaolin_bmdp_workflow_page_FlowManagement_refreshModuleGroup;
 
-    Form.xmlEditor = org_shaolin_bmdp_workflow_page_FlowManagement_xmlEditor;
+    Form.showXmlEditor = org_shaolin_bmdp_workflow_page_FlowManagement_showXmlEditor;
 
     Form.initPageJs = org_shaolin_bmdp_workflow_page_FlowManagement_initPageJs;
 
@@ -113,14 +119,25 @@ function org_shaolin_bmdp_workflow_page_FlowManagement(json)
 
 
     /* auto generated eventlistener function declaration */
-    function org_shaolin_bmdp_workflow_page_FlowManagement_addFlowNode(eventsource,event) {/* Gen_First:org_shaolin_bmdp_workflow_page_FlowManagement_addFlowNode */
+    function org_shaolin_bmdp_workflow_page_FlowManagement_removeFlow(eventsource,event) {/* Gen_First:org_shaolin_bmdp_workflow_page_FlowManagement_removeFlow */
 
         // cal ajax function. 
 
-        UIMaster.triggerServerEvent(UIMaster.getUIID(eventsource),"addFlowNode543543",UIMaster.getValue(eventsource),this.__entityName);
+        UIMaster.triggerServerEvent(UIMaster.getUIID(eventsource),"removeFlow-20150809-1101",UIMaster.getValue(eventsource),this.__entityName);
 
         var UIEntity = this;
-    }/* Gen_Last:org_shaolin_bmdp_workflow_page_FlowManagement_addFlowNode */
+    }/* Gen_Last:org_shaolin_bmdp_workflow_page_FlowManagement_removeFlow */
+
+
+    /* auto generated eventlistener function declaration */
+    function org_shaolin_bmdp_workflow_page_FlowManagement_refreshFlow(eventsource,event) {/* Gen_First:org_shaolin_bmdp_workflow_page_FlowManagement_refreshFlow */
+
+        // cal ajax function. 
+
+        UIMaster.triggerServerEvent(UIMaster.getUIID(eventsource),"refreshFlow-20150809-1101",UIMaster.getValue(eventsource),this.__entityName);
+
+        var UIEntity = this;
+    }/* Gen_Last:org_shaolin_bmdp_workflow_page_FlowManagement_refreshFlow */
 
 
     /* auto generated eventlistener function declaration */
@@ -132,6 +149,28 @@ function org_shaolin_bmdp_workflow_page_FlowManagement(json)
 
         var UIEntity = this;
     }/* Gen_Last:org_shaolin_bmdp_workflow_page_FlowManagement_addMissionNode */
+
+
+    /* auto generated eventlistener function declaration */
+    function org_shaolin_bmdp_workflow_page_FlowManagement_addStartNode(eventsource,event) {/* Gen_First:org_shaolin_bmdp_workflow_page_FlowManagement_addStartNode */
+
+        // cal ajax function. 
+
+        UIMaster.triggerServerEvent(UIMaster.getUIID(eventsource),"addStartNode_20150808-104357",UIMaster.getValue(eventsource),this.__entityName);
+
+        var UIEntity = this;
+    }/* Gen_Last:org_shaolin_bmdp_workflow_page_FlowManagement_addStartNode */
+
+
+    /* auto generated eventlistener function declaration */
+    function org_shaolin_bmdp_workflow_page_FlowManagement_addEndNode(eventsource,event) {/* Gen_First:org_shaolin_bmdp_workflow_page_FlowManagement_addEndNode */
+
+        // cal ajax function. 
+
+        UIMaster.triggerServerEvent(UIMaster.getUIID(eventsource),"addEndNode_20150808-104357",UIMaster.getValue(eventsource),this.__entityName);
+
+        var UIEntity = this;
+    }/* Gen_Last:org_shaolin_bmdp_workflow_page_FlowManagement_addEndNode */
 
 
     /* auto generated eventlistener function declaration */
@@ -157,14 +196,14 @@ function org_shaolin_bmdp_workflow_page_FlowManagement(json)
 
 
     /* auto generated eventlistener function declaration */
-    function org_shaolin_bmdp_workflow_page_FlowManagement_xmlEditor(eventsource,event) {/* Gen_First:org_shaolin_bmdp_workflow_page_FlowManagement_xmlEditor */
+    function org_shaolin_bmdp_workflow_page_FlowManagement_showXmlEditor(eventsource,event) {/* Gen_First:org_shaolin_bmdp_workflow_page_FlowManagement_showXmlEditor */
 
         // cal ajax function. 
 
-        UIMaster.triggerServerEvent(UIMaster.getUIID(eventsource),"xmlEditor-201508081054",UIMaster.getValue(eventsource),this.__entityName);
+        UIMaster.triggerServerEvent(UIMaster.getUIID(eventsource),"showXmlEditor-201508081054",UIMaster.getValue(eventsource),this.__entityName);
 
         var UIEntity = this;
-    }/* Gen_Last:org_shaolin_bmdp_workflow_page_FlowManagement_xmlEditor */
+    }/* Gen_Last:org_shaolin_bmdp_workflow_page_FlowManagement_showXmlEditor */
 
 
     function org_shaolin_bmdp_workflow_page_FlowManagement_initPageJs(){/* Gen_First:org_shaolin_bmdp_workflow_page_FlowManagement_initPageJs */

@@ -487,7 +487,7 @@ in simple component mapping, the paramName is required</xs:documentation>
                 	<xs:element name="addNodeEvent" type="xs:string" minOccurs="0"/>
                 	<xs:element name="deleteNodeEvent" type="xs:string" minOccurs="0"/>
                 	<xs:element name="refreshNodeEvent" type="xs:string" minOccurs="0"/>
-                    <xs:element name="action" type="Page:UITableActionType" maxOccurs="unbounded" minOccurs="0" />
+                 <xs:element name="action" type="Page:UITableActionType" maxOccurs="unbounded" minOccurs="0" />
                 	<xs:element name="initExpression" type="Page:ExpressionPropertyType"/>
                 </xs:sequence>
             </xs:extension>

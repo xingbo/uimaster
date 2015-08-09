@@ -780,6 +780,7 @@ public class UIFormObject implements java.io.Serializable
             	propMap.put("deleteNode", tree.getDeleteNodeEvent());
             	propMap.put("refreshNode", tree.getRefreshNodeEvent());
             	propMap.put("actions", tree.getActions());
+            	propMap.put("initExpr", tree.getInitExpression().getExpression());
             	
             	getEventListeners(component.getEventListeners(), eventMap);
             }
@@ -1082,7 +1083,7 @@ public class UIFormObject implements java.io.Serializable
         else if (component instanceof UIWebTreeType)
         {
         	UIWebTreeType tree = (UIWebTreeType)component;
-			getAttribute("initExpr", tree.getInitExpression(), propMap, i18nMap, expMap, "",
+			getAttribute("initValue", tree.getInitExpression(), propMap, i18nMap, expMap, "",
 					parsingContext);
         }
         else if (component instanceof UIChartType) 

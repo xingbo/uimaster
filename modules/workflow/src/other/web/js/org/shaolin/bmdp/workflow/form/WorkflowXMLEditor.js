@@ -3,6 +3,11 @@
 function org_shaolin_bmdp_workflow_form_WorkflowXMLEditor(json)
 {
     var prefix = (typeof(json) == "string") ? json : json.prefix; 
+    var idUI = new UIMaster.ui.hidden
+    ({
+        ui: elementList[prefix + "idUI"]
+    });
+
     var entityNameUI = new UIMaster.ui.hidden
     ({
         ui: elementList[prefix + "entityNameUI"]
@@ -34,14 +39,16 @@ function org_shaolin_bmdp_workflow_form_WorkflowXMLEditor(json)
     ({
         ui: elementList[prefix + "fieldPanel"]
         ,items: []
-        ,subComponents: [prefix + "entityNameUI",prefix + "xmlContentUI"]
+        ,subComponents: [prefix + "idUI",prefix + "entityNameUI",prefix + "xmlContentUI"]
     });
 
     var Form = new UIMaster.ui.panel
     ({
         ui: elementList[prefix + "Form"]
-        ,items: [entityNameUI,xmlContentUI,okbtn,cancelbtn,fieldPanel,actionPanel]
+        ,items: [idUI,entityNameUI,xmlContentUI,okbtn,cancelbtn,fieldPanel,actionPanel]
     });
+
+    Form.idUI=idUI;
 
     Form.entityNameUI=entityNameUI;
 

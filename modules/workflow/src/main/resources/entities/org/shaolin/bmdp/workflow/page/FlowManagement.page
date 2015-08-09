@@ -60,12 +60,15 @@
                     {
                     	Tree flowTree = @page.getTree("functionTree");
                     	if(flowTree.getSelectedItemId() == null || flowTree.getSelectedItemId().isEmpty()) {
-                    		return;
+                    		  return;
                     	}
-                    	System.out.println("SelectedItemId(): " + flowTree.getSelectedItemId() 
-                    	+ ", Parent: " + flowTree.getSelectedParentItemId());
+                    	System.out.println("SelectedItemId: " + flowTree.getSelectedItemId() + 
+                    	                   ", Parent: " + flowTree.getSelectedParentItemId());
                      String workflowName = flowTree.getSelectedParentItemId();
                      String currentFlowName = flowTree.getSelectedItemId();
+                     if ("#".equals(workflowName)) {
+                        return;
+                     }
 													        Workflow flowModel = (Workflow)AppContext.get().getEntityManager().getEntity(flowTree.getSelectedParentItemId(), Workflow.class);
 													        FlowChunk flowView = null;
 													        UIFlowsImpl searchCriteria = new UIFlowsImpl();
@@ -118,13 +121,14 @@
                      @page.addElement(form);
                      
                      form.openInWindows("Create Sub Flow", null);
+                     form.addWindowsClosedCallBack(new TreeCallBack("functionTree"));
                     }
                     ]]></ns2:expressionString>
                 </ns2:exp>
             </ns2:ops>
         </ns2:eventHandler>
-        <ns2:eventHandler functionName="addFlowNode">
-           <ns2:ops xsi:type="ns2:OpCallAjaxType" name="addFlowNode543543">
+        <ns2:eventHandler functionName="removeFlow">
+           <ns2:ops xsi:type="ns2:OpCallAjaxType" name="removeFlow-20150809-1101">
                 <ns2:exp>
                     <ns2:expressionString><![CDATA[
                     import java.util.HashMap;
@@ -133,8 +137,35 @@
                     import org.shaolin.uimaster.page.AjaxContext;
                     import org.shaolin.uimaster.page.AjaxActionHelper;
                     import org.shaolin.uimaster.page.ajax.*;
-					               import org.shaolin.bmdp.datamodel.workflow.Workflow;
+                    import org.shaolin.bmdp.runtime.be.IBusinessEntity;
+                    import org.shaolin.bmdp.runtime.entity.EntityUtil;
+                    import org.shaolin.bmdp.datamodel.flowdiagram.FlowChunk;
+                    import org.shaolin.bmdp.datamodel.workflow.*;
+                    import org.shaolin.bmdp.workflow.ui.PageUtil;
                     {
+                     System.out.println("reove flow!");
+                    }
+                    ]]></ns2:expressionString>
+                </ns2:exp>
+            </ns2:ops>
+        </ns2:eventHandler>
+        <ns2:eventHandler functionName="refreshFlow">
+           <ns2:ops xsi:type="ns2:OpCallAjaxType" name="refreshFlow-20150809-1101">
+                <ns2:exp>
+                    <ns2:expressionString><![CDATA[
+                    import java.util.HashMap;
+                    import java.util.List;
+                    import org.shaolin.bmdp.runtime.AppContext;
+                    import org.shaolin.uimaster.page.AjaxContext;
+                    import org.shaolin.uimaster.page.AjaxActionHelper;
+                    import org.shaolin.uimaster.page.ajax.*;
+                    import org.shaolin.bmdp.runtime.be.IBusinessEntity;
+                    import org.shaolin.bmdp.runtime.entity.EntityUtil;
+                    import org.shaolin.bmdp.datamodel.flowdiagram.FlowChunk;
+                    import org.shaolin.bmdp.datamodel.workflow.*;
+                    import org.shaolin.bmdp.workflow.ui.PageUtil;
+                    {
+                     System.out.println("reove flow!");
                     }
                     ]]></ns2:expressionString>
                 </ns2:exp>
@@ -167,6 +198,76 @@
                      input.put("parentUiid", "flowDiagram");
                      input.put("editable", new Boolean(true));
                      RefForm form = new RefForm("userForm", "org.shaolin.bmdp.workflow.form.CreateMissionNode", input);
+                     @page.addElement(form);
+                     
+                     form.openInWindows("Create Mission Node", null);
+                    }
+                    ]]></ns2:expressionString>
+                </ns2:exp>
+            </ns2:ops>
+        </ns2:eventHandler>
+        <ns2:eventHandler functionName="addStartNode">
+           <ns2:ops xsi:type="ns2:OpCallAjaxType" name="addStartNode_20150808-104357">
+                <ns2:exp>
+                    <ns2:expressionString><![CDATA[
+                    import java.util.HashMap;
+                    import java.util.List;
+                    import org.shaolin.bmdp.runtime.AppContext;
+                    import org.shaolin.uimaster.page.AjaxContext;
+                    import org.shaolin.uimaster.page.AjaxActionHelper;
+                    import org.shaolin.uimaster.page.ajax.*;
+					               import org.shaolin.bmdp.datamodel.workflow.Workflow;
+                    import org.shaolin.bmdp.datamodel.flowdiagram.FlowChunk;
+                    import org.shaolin.bmdp.workflow.ui.PageUtil;
+                    import org.shaolin.bmdp.datamodel.workflow.*;
+                    import org.shaolin.bmdp.datamodel.common.ExpressionType;
+                    {
+                    	StartNodeType node = new StartNodeType();
+                    	HandlerType handler = new HandlerType();
+                    	ExpressionType expr = new ExpressionType();
+                    	expr.setExpressionString("{}");
+                    	handler.setExpression(expr);
+                    	node.setProcess(handler); 
+                     HashMap input = new HashMap();
+                     input.put("beObject", node);
+                     input.put("parentUiid", "flowDiagram");
+                     input.put("editable", new Boolean(true));
+                     RefForm form = new RefForm("userForm", "org.shaolin.bmdp.workflow.form.CreateStartNode", input);
+                     @page.addElement(form);
+                     
+                     form.openInWindows("Create Mission Node", null);
+                    }
+                    ]]></ns2:expressionString>
+                </ns2:exp>
+            </ns2:ops>
+        </ns2:eventHandler>
+        <ns2:eventHandler functionName="addEndNode">
+           <ns2:ops xsi:type="ns2:OpCallAjaxType" name="addEndNode_20150808-104357">
+                <ns2:exp>
+                    <ns2:expressionString><![CDATA[
+                    import java.util.HashMap;
+                    import java.util.List;
+                    import org.shaolin.bmdp.runtime.AppContext;
+                    import org.shaolin.uimaster.page.AjaxContext;
+                    import org.shaolin.uimaster.page.AjaxActionHelper;
+                    import org.shaolin.uimaster.page.ajax.*;
+					               import org.shaolin.bmdp.datamodel.workflow.Workflow;
+                    import org.shaolin.bmdp.datamodel.flowdiagram.FlowChunk;
+                    import org.shaolin.bmdp.workflow.ui.PageUtil;
+                    import org.shaolin.bmdp.datamodel.workflow.*;
+                    import org.shaolin.bmdp.datamodel.common.ExpressionType;
+                    {
+                    	EndNodeType node = new EndNodeType();
+                    	HandlerType handler = new HandlerType();
+                    	ExpressionType expr = new ExpressionType();
+                    	expr.setExpressionString("{}");
+                    	handler.setExpression(expr);
+                    	node.setProcess(handler); 
+                     HashMap input = new HashMap();
+                     input.put("beObject", node);
+                     input.put("parentUiid", "flowDiagram");
+                     input.put("editable", new Boolean(true));
+                     RefForm form = new RefForm("userForm", "org.shaolin.bmdp.workflow.form.CreateEndNode", input);
                      @page.addElement(form);
                      
                      form.openInWindows("Create Mission Node", null);
@@ -247,8 +348,8 @@
                 </ns2:exp>
             </ns2:ops>
         </ns2:eventHandler>
-        <ns2:eventHandler functionName="xmlEditor">
-           <ns2:ops xsi:type="ns2:OpCallAjaxType" name="xmlEditor-201508081054">
+        <ns2:eventHandler functionName="showXmlEditor">
+           <ns2:ops xsi:type="ns2:OpCallAjaxType" name="showXmlEditor-201508081054">
                 <ns2:exp>
                     <ns2:expressionString><![CDATA[
                     import java.util.HashMap;
@@ -264,9 +365,10 @@
 																						  flowModel.setEntityName(flow.getWorflowModel().getEntityName());
                         flowModel.setContent(flow.getFlowModelXML());
 				                    HashMap input = new HashMap();
+				                    input.put("parentUiid", "flowDiagram");
 				                    input.put("flowObject", flowModel);
 				                    input.put("editable", new Boolean(true));
-				                    RefForm form = new RefForm("xmlEditor", "org.shaolin.bmdp.workflow.form.WorkflowXMLEditor", input);
+				                    RefForm form = new RefForm("userForm", "org.shaolin.bmdp.workflow.form.WorkflowXMLEditor", input);
 				                    @page.addElement(form);
 				                    
 				                    form.openInWindows("XML Editor", null, 690, 500);
@@ -331,14 +433,6 @@
                <ns2:function>addChildFlowNode</ns2:function>
            </ns2:action>
            <ns2:action>
-               <ns2:uiid>addFlowNode</ns2:uiid>
-               <ns2:title xsi:type="ns2:StringPropertyType">
-                   <ns2:value>Add Flow Node</ns2:value>
-               </ns2:title>
-               <ns2:icon>ui-icon-note</ns2:icon>
-               <ns2:function>addFlowNode</ns2:function>
-           </ns2:action>
-           <ns2:action>
                <ns2:uiid>addMissionNode</ns2:uiid>
                <ns2:title xsi:type="ns2:StringPropertyType">
                    <ns2:value>Add Mission Node</ns2:value>
@@ -385,12 +479,12 @@
        <ns2:actionGroup>
            <ns2:type>radio</ns2:type>
            <ns2:action>
-               <ns2:uiid>xmlEditor</ns2:uiid>
+               <ns2:uiid>showXmlEditor</ns2:uiid>
                <ns2:title xsi:type="ns2:StringPropertyType">
                    <ns2:value>XML Editor</ns2:value>
                </ns2:title>
                <ns2:icon>ui-icon-note</ns2:icon>
-               <ns2:function>xmlEditor</ns2:function>
+               <ns2:function>showXmlEditor</ns2:function>
            </ns2:action>
            <ns2:action>
                <ns2:uiid>resyncFlowView</ns2:uiid>
@@ -418,6 +512,9 @@
 						<ns2:selectMode>Multiple</ns2:selectMode>
 						<ns2:expandTreeEvent>expandTree</ns2:expandTreeEvent>
       <ns2:selectNodeEvent>openWorkflow</ns2:selectNodeEvent>
+      <ns2:addNodeEvent>addFlow</ns2:addNodeEvent>
+      <ns2:deleteNodeEvent>removeFlow</ns2:deleteNodeEvent>
+      <ns2:refreshNodeEvent>refreshFlow</ns2:refreshNodeEvent>
 						<ns2:initExpression xsi:type="ns2:ExpressionPropertyType">
 							<ns2:expression xsi:type="ns2:ExpressionType">
 								<ns2:expressionString><![CDATA[

@@ -1,55 +1,43 @@
 <?xml version="1.0" ?>
 <ns2:UIEntity xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns5="http://bmdp.shaolin.org/datamodel/PageDiagram" xmlns:ns4="http://bmdp.shaolin.org/datamodel/RDBDiagram" xmlns:ns3="http://bmdp.shaolin.org/datamodel/BEDiagram" xmlns:ns2="http://bmdp.shaolin.org/datamodel/Page" xmlns="http://bmdp.shaolin.org/datamodel/Common" xsi:schemaLocation="">
-  <entityName>org.shaolin.bmdp.workflow.form.WorkflowXMLEditor</entityName>
+  <entityName>org.shaolin.bmdp.workflow.form.CreateStartNode</entityName>
   <systemVersion>0</systemVersion>
   <ns2:eventHandler functionName="Save">
-    <ns2:ops xsi:type="ns2:OpCallAjaxType" name="saveDetail-20150801-235410">
+    <ns2:ops xsi:type="ns2:OpExecuteScriptType">
+        <ns2:expressionString><![CDATA[
+        {   
+            var constraint_result = this.Form.validate();
+            if (constraint_result != true && constraint_result != null) {
+                return false;
+            }
+        }
+        ]]></ns2:expressionString>
+    </ns2:ops>
+    <ns2:ops xsi:type="ns2:OpCallAjaxType" name="saveDetail-20150807-230249">
       <ns2:exp>
         <expressionString><![CDATA[
-        import java.util.List;
         import java.util.HashMap;
-        import java.io.StringReader;
         import org.shaolin.uimaster.page.AjaxContext;
         import org.shaolin.uimaster.page.ajax.*;
-        import org.shaolin.bmdp.workflow.be.TaskImpl;
-        import org.shaolin.bmdp.workflow.dao.WorkflowModel;
-        import org.shaolin.bmdp.workflow.ce.ModuleType;
-        import org.shaolin.bmdp.workflow.be.FlowEntityImpl;
-        import org.shaolin.bmdp.runtime.AppContext;
-        import org.shaolin.bmdp.runtime.spi.IEntityManager;
-        import org.shaolin.bmdp.runtime.entity.EntityUtil;
-        import org.shaolin.bmdp.datamodel.workflow.Workflow;
+        import org.shaolin.bmdp.datamodel.workflow.*;
+        import org.shaolin.bmdp.datamodel.common.ExpressionType;
         { 
-            TextArea textArea = @page.getTextArea("xmlContentUI");
-            String entityName = @page.getHidden("entityNameUI").getValue();
-            String xmlContent = textArea.getValue();
-            System.out.println("entityName: " + entityName);
-            System.out.println(xmlContent);
-            
-            //validate
-            StringReader reader = new StringReader(xmlContent);
-            Workflow workflow = (Workflow)EntityUtil.unmarshaller(Workflow.class, reader);
-            IEntityManager entityManager = AppContext.get().getEntityManager();
-            entityManager.appendEntity(workflow);
-            
-            FlowEntityImpl flowModel = new FlowEntityImpl();
-            flowModel.setEntityName(entityName);
-            int count = (int)WorkflowModel.INSTANCE.searchFlowEntitiesCount(flowModel);
-            if (count == 0) {
-                flowModel.setContent(xmlContent);
-                WorkflowModel.INSTANCE.create(flowModel);
-            } else {
-            	   List groupflow = WorkflowModel.INSTANCE.searchFlowEntities(flowModel, null, 0, 1);
-            	   flowModel = (FlowEntityImpl)groupflow.get(0);
-                flowModel.setContent(xmlContent);
-                WorkflowModel.INSTANCE.update(flowModel);
-            }
-            
+            StartNodeType node = new StartNodeType();
+           	HandlerType handler = new HandlerType();
+           	ExpressionType expr = new ExpressionType();
+           	expr.setExpressionString("{}");
+           	handler.setExpression(expr);
+           	node.setProcess(handler); 
+            HashMap input = new HashMap();
+            input.put("beObject", node);
+            input.put("editable", new Boolean(true));
+            RefForm form = (RefForm)@page.getElement(@page.getEntityUiid()); 
+            form.ui2Data(input);
+
             String flowId = @page.getHidden("idUI").getValue();
 												WorkFlowDiagram diagram = (WorkFlowDiagram)@page.getElement(flowId);
-												diagram.setWorkflow(diagram.getWorflowView().getEntityName(), workflow, diagram.getWorflowView());
-            
-            RefForm form = (RefForm)@page.getElement(@page.getEntityUiid()); 
+												diagram.addNode(node);
+
             form.closeIfinWindows();
             @page.removeForm(@page.getEntityUiid()); 
         }]]></expressionString>
@@ -57,7 +45,7 @@
     </ns2:ops>
   </ns2:eventHandler>
   <ns2:eventHandler functionName="Cancel">
-    <ns2:ops xsi:type="ns2:OpCallAjaxType" name="cancelDetail-20150801-235410">
+    <ns2:ops xsi:type="ns2:OpCallAjaxType" name="cancelDetail-20150807-230249">
       <ns2:exp>
         <expressionString><![CDATA[
         import org.shaolin.uimaster.page.AjaxContext;
@@ -79,6 +67,10 @@
     <ns2:component xsi:type="ns2:UIPanelType" UIID="fieldPanel">
       <ns2:layout xsi:type="ns2:TableLayoutType">
         <ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+        <ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+        <ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+        <ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+        <ns2:columnWidthWeight>1.0</ns2:columnWidthWeight>
         <ns2:columnWidthWeight>1.0</ns2:columnWidthWeight>
       </ns2:layout>
       <ns2:component xsi:type="ns2:UIHiddenType" UIID="idUI">
@@ -86,28 +78,41 @@
           <ns2:value>true</ns2:value>
         </ns2:secure>
       </ns2:component>
-      <ns2:component xsi:type="ns2:UIHiddenType" UIID="entityNameUI">
-        <ns2:secure>
-          <ns2:value>true</ns2:value>
-        </ns2:secure>
+      <ns2:component xsi:type="ns2:UILabelType" UIID="nameUILabel">
+        <ns2:UIStyle>uimaster_leftform_widget</ns2:UIStyle>
+        <ns2:text xsi:type="ns2:ResourceBundlePropertyType">
+          <ns2:bundle>org_shaolin_bmdp_workflow_i18n</ns2:bundle>
+          <ns2:key>org.shaolin.bmdp.workflow.be.CreateNode.name</ns2:key>
+        </ns2:text>
       </ns2:component>
-      <ns2:component xsi:type="ns2:UITextAreaType" UIID="xmlContentUI">
-      	<ns2:Property name="rows" >
-      			<ns2:value xsi:type="ns2:NumericPropertyType">
-      			   <type>int</type>
-            <value>20</value>
-      			</ns2:value>
-      	</ns2:Property>
-      	<ns2:Property name="cols" >
-      			<ns2:value xsi:type="ns2:NumericPropertyType">
-      			   <type>int</type>
-            <value>90</value>
-      			</ns2:value>
-      	</ns2:Property>
+      <ns2:component xsi:type="ns2:UITextFieldType" UIID="nameUI">
+        <ns2:UIStyle>uimaster_rightform_widget</ns2:UIStyle>
+      </ns2:component>
+      <ns2:component xsi:type="ns2:UILabelType" UIID="expressionUILabel">
+        <ns2:UIStyle>uimaster_leftform_widget</ns2:UIStyle>
+        <ns2:text xsi:type="ns2:ResourceBundlePropertyType">
+          <ns2:bundle>org_shaolin_bmdp_workflow_i18n</ns2:bundle>
+          <ns2:key>org.shaolin.bmdp.workflow.be.CreateNode.expression</ns2:key>
+        </ns2:text>
+      </ns2:component>
+      <ns2:component xsi:type="ns2:UITextAreaType" UIID="expressionUI">
+        <ns2:UIStyle>uimaster_rightform_widget</ns2:UIStyle>
       </ns2:component>
       <ns2:layoutConstraint>
-        <ns2:componentId>xmlContentUI</ns2:componentId>
-        <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" x="0" y="0" align="FULL" cellUIClass="uimaster_rightform_cell"></ns2:constraint>
+        <ns2:componentId>nameUILabel</ns2:componentId>
+        <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" x="0" y="0" align="FULL" cellUIClass="uimaster_leftform_cell"></ns2:constraint>
+      </ns2:layoutConstraint>
+      <ns2:layoutConstraint>
+        <ns2:componentId>nameUI</ns2:componentId>
+        <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" x="1" y="0" align="FULL" cellUIClass="uimaster_rightform_cell"></ns2:constraint>
+      </ns2:layoutConstraint>
+      <ns2:layoutConstraint>
+        <ns2:componentId>expressionUILabel</ns2:componentId>
+        <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" x="0" y="1" align="FULL" cellUIClass="uimaster_leftform_cell"></ns2:constraint>
+      </ns2:layoutConstraint>
+      <ns2:layoutConstraint>
+        <ns2:componentId>expressionUI</ns2:componentId>
+        <ns2:constraint xsi:type="ns2:TableLayoutConstraintType" x="1" y="1" align="FULL" cellUIClass="uimaster_rightform_cell"></ns2:constraint>
       </ns2:layoutConstraint>
     </ns2:component>
     <ns2:component xsi:type="ns2:UIPanelType" UIID="actionPanel">
@@ -120,6 +125,11 @@
         <ns2:EventListener xsi:type="ns2:ClickListenerType">
           <ns2:handler functionName="Save"></ns2:handler>
         </ns2:EventListener>
+        <ns2:editable xsi:type="ns2:ExpressionPropertyType">
+          <ns2:expression>
+            <expressionString>{return $editable;}</expressionString>
+          </ns2:expression>
+        </ns2:editable>
         <ns2:text xsi:type="ns2:ResourceBundlePropertyType">
           <ns2:bundle>Common</ns2:bundle>
           <ns2:key>OKbtn</ns2:key>
@@ -154,26 +164,29 @@
   </ns2:body>
   <ns2:mapping>
     <systemVersion>0</systemVersion>
-    <ns2:DataEntity scope="InOut" name="flowObject" category="BusinessEntity">
-      <type entityName="org.shaolin.bmdp.workflow.be.FlowEntity"></type>
+    <ns2:DataEntity scope="InOut" name="beObject" category="JavaClass">
+      <type entityName="org.shaolin.bmdp.datamodel.workflow.StartNodeType"></type>
     </ns2:DataEntity>
     <ns2:DataEntity scope="InOut" name="parentUiid" category="JavaClass">
       <type entityName="java.lang.String"></type>
     </ns2:DataEntity>
+    <ns2:DataEntity scope="InOut" name="editable" category="JavaPrimitive">
+      <type entityName="java.lang.Boolean"></type>
+    </ns2:DataEntity>
     <ns2:ComponentMapping xsi:type="ns2:SimpleComponentMappingType" name="simpleMapping0">
       <ns2:mappingRule entityName="org.shaolin.uimaster.page.od.rules.UIText"></ns2:mappingRule>
-      <ns2:UIComponent componentPath="xmlContentUI" paramName="UIWidgetType"></ns2:UIComponent>
-      <ns2:DataComponent xsi:type="ns2:ComponentParamType" componentPath="flowObject.content" paramName="StringData"></ns2:DataComponent>
+      <ns2:UIComponent componentPath="nameUI" paramName="UIWidgetType"></ns2:UIComponent>
+      <ns2:DataComponent xsi:type="ns2:ComponentParamType" componentPath="beObject.name" paramName="StringData"></ns2:DataComponent>
     </ns2:ComponentMapping>
     <ns2:ComponentMapping xsi:type="ns2:SimpleComponentMappingType" name="simpleMapping1">
+      <ns2:mappingRule entityName="org.shaolin.uimaster.page.od.rules.UIText"></ns2:mappingRule>
+      <ns2:UIComponent componentPath="expressionUI" paramName="UIWidgetType"></ns2:UIComponent>
+      <ns2:DataComponent xsi:type="ns2:ComponentParamType" componentPath="beObject.process.expression.expressionString" paramName="StringData"></ns2:DataComponent>
+    </ns2:ComponentMapping>
+    <ns2:ComponentMapping xsi:type="ns2:SimpleComponentMappingType" name="simpleMapping2">
       <ns2:mappingRule entityName="org.shaolin.uimaster.page.od.rules.UIText"></ns2:mappingRule>
       <ns2:UIComponent componentPath="idUI" paramName="UIWidgetType"></ns2:UIComponent>
       <ns2:DataComponent xsi:type="ns2:ComponentParamType" componentPath="parentUiid" paramName="StringData"></ns2:DataComponent>
-    </ns2:ComponentMapping>
-    <ns2:ComponentMapping xsi:type="ns2:SimpleComponentMappingType" name="simpleMapping1">
-      <ns2:mappingRule entityName="org.shaolin.uimaster.page.od.rules.UIText"></ns2:mappingRule>
-      <ns2:UIComponent componentPath="entityNameUI" paramName="UIWidgetType"></ns2:UIComponent>
-      <ns2:DataComponent xsi:type="ns2:ComponentParamType" componentPath="flowObject.entityName" paramName="StringData"></ns2:DataComponent>
     </ns2:ComponentMapping>
     <ns2:DataToUIMappingOperation>
       <expressionString>{

@@ -66,7 +66,7 @@ public class FlowContainer {
         	// add to cache, but not initialized.
         	appflowCache.putIfAbsent(flow.getEntityName(), flowInfo);
             
-            if (flow.getConf().isBootable()) {
+            if (flow.getConf().isBootable() != null && flow.getConf().isBootable()) {
             	activeFlows.add(flowInfo);
             }
         }

@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.shaolin.bmdp.datamodel.common.ExpressionType;
 import org.shaolin.bmdp.datamodel.page.UITableActionType;
 import org.shaolin.uimaster.page.HTMLSnapshotContext;
 import org.shaolin.uimaster.page.HTMLUtil;
@@ -76,7 +77,7 @@ public class HTMLWebTreeType extends HTMLWidgetType {
 			context.generateHTML(getName());
 			context.generateHTML("\" class=\"uimaster_tree\">");
 			
-			List<TreeItem> result = (List<TreeItem>)this.removeAttribute("initExpr");
+			List<TreeItem> result = (List<TreeItem>)this.removeAttribute("initValue");
 			JSONArray jsonArray = new JSONArray(result);
 			
 			context.generateHTML("<div style='display:none;' clickevent=\"defaultname.");
@@ -120,7 +121,8 @@ public class HTMLWebTreeType extends HTMLWidgetType {
 	
 	public Widget createAjaxWidget(VariableEvaluator ee)
     {
-        Tree tree = new Tree(getName(), Layout.NULL);
+        Tree tree = new Tree(getName(), Layout.NULL, 
+        		(ExpressionType) this.removeAttribute("initExpr"));
 
         tree.setReadOnly(getReadOnly());
         tree.setUIEntityName(getUIEntityName());
@@ -128,7 +130,7 @@ public class HTMLWebTreeType extends HTMLWidgetType {
         tree.setListened(true);
         tree.setFrameInfo(getFrameInfo());
 
-        List result = (List)this.getAttribute("initExpr");
+        List result = (List)this.getAttribute("initValue");
         Object lastObject = result.get(result.size()-1);
         if (lastObject instanceof Map) {
         	tree.setDataModel((Map)lastObject);

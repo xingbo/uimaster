@@ -23,19 +23,19 @@ import org.shaolin.uimaster.page.AjaxActionHelper;
  * @author wushaol
  *
  */
-public class FlowDiagramCallBack implements CallBack {
+public class TreeCallBack implements CallBack {
 
 	private final String uiid;
 	
 	private final String entityPrefix;
 	
-	public FlowDiagramCallBack(String uiid) {
+	public TreeCallBack(String uiid) {
 		this.entityPrefix = AjaxActionHelper.getAjaxContext().getEntityPrefix();
 		this.uiid = uiid;
 	}
 	
 	public void execute() {
-		WorkFlowDiagram table = (WorkFlowDiagram)AjaxActionHelper.getAjaxContext().getElementByAbsoluteId(entityPrefix + uiid);
-		table.refreshModel();
+		Tree tree = (Tree)AjaxActionHelper.getAjaxContext().getElementByAbsoluteId(entityPrefix + uiid);
+		tree.refresh();
 	}
 }

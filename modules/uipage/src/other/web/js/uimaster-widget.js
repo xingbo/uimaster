@@ -2045,6 +2045,14 @@ UIMaster.ui.webtree = UIMaster.extend(UIMaster.ui, {
 			UIMaster.ui.sync.set({_uiid:UIMaster.getUIID(obj),_valueName:"selectedNodeName",
 				                  _value:this._selectedNodeName,_framePrefix:UIMaster.getFramePrefix(obj)});
 		}
+	},
+	refresh:function(children){
+		for (var i=0; i<children.length; i++){
+			if(children[i].hasChildren && children[i].children.length==0) {
+				children[i].children = true;
+			}
+		}
+		$(this).jstree({"core":{"data": children, "check_callback" : true}});
 	}
 });
 var options = [[['YES_NO_OPTION','YES_OPTION','MESSAGE_DIALOG','Error'],0],
