@@ -249,5 +249,135 @@ public class CoordinatorModel extends BEEntityDaoObject {
         }
     }
 
+    public List<org.shaolin.bmdp.workflow.be.TaskHistoryImpl> searchTasksHistory(org.shaolin.bmdp.workflow.be.TaskHistoryImpl scFlow,
+           List<Order> orders, int offset, int count) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        try {
+            Criteria inFlowCriteria = this._createCriteria(session, org.shaolin.bmdp.workflow.be.TaskHistoryImpl.class, "inFlow");
+            if (orders == null) {
+            } else {
+                this._addOrders(inFlowCriteria, orders);
+            }
+
+            if (scFlow.getId() > 0) {
+                inFlowCriteria.add(createCriterion(Operator.EQUALS, "inFlow.id", scFlow.getId()));
+            }
+            if (scFlow.getSubject() != null && scFlow.getSubject().length() > 0) {
+                inFlowCriteria.add(createCriterion(Operator.START_WITH_RIGHT, "inFlow.subject", scFlow.getSubject()));
+            }
+            if (scFlow.getExpiredTimeStart() != null) {
+                inFlowCriteria.add(createCriterion(Operator.GREATER_THAN_OR_EQUALS, "inFlow.expiredTime", scFlow.getExpiredTimeStart()));
+            }
+            if (scFlow.getExpiredTimeEnd() != null) {
+                inFlowCriteria.add(createCriterion(Operator.LESS_THAN_OR_EQUALS, "inFlow.expiredTime", scFlow.getExpiredTimeEnd()));
+            }
+            if (scFlow.getStatus() != null && scFlow.getStatus() != org.shaolin.bmdp.workflow.ce.TaskStatusType.NOT_SPECIFIED) {
+                inFlowCriteria.add(createCriterion(Operator.EQUALS, "inFlow.status", scFlow.getStatus().getIntValue()));
+            }
+            if (scFlow.getPriority() != null && scFlow.getPriority() != org.shaolin.bmdp.workflow.ce.TaskPriorityType.NOT_SPECIFIED) {
+                inFlowCriteria.add(createCriterion(Operator.EQUALS, "inFlow.priority", scFlow.getPriority().getIntValue()));
+            }
+
+            List result = this._list(offset, count, inFlowCriteria);
+            return result;
+        } finally {
+            session.getTransaction().commit();
+        }
+    }
+
+    public List<org.shaolin.bmdp.workflow.be.TaskHistoryImpl> searchTasksHistory(org.shaolin.bmdp.workflow.be.TaskHistoryImpl scFlow,
+           Session session, List<Order> orders, int offset, int count) {
+        try {
+            Criteria inFlowCriteria = this._createCriteria(session, org.shaolin.bmdp.workflow.be.TaskHistoryImpl.class, "inFlow");
+            if (orders == null) {
+            } else {
+                this._addOrders(inFlowCriteria, orders);
+            }
+
+            if (scFlow.getId() > 0) {
+                inFlowCriteria.add(createCriterion(Operator.EQUALS, "inFlow.id", scFlow.getId()));
+            }
+            if (scFlow.getSubject() != null && scFlow.getSubject().length() > 0) {
+                inFlowCriteria.add(createCriterion(Operator.START_WITH_RIGHT, "inFlow.subject", scFlow.getSubject()));
+            }
+            if (scFlow.getExpiredTimeStart() != null) {
+                inFlowCriteria.add(createCriterion(Operator.GREATER_THAN_OR_EQUALS, "inFlow.expiredTime", scFlow.getExpiredTimeStart()));
+            }
+            if (scFlow.getExpiredTimeEnd() != null) {
+                inFlowCriteria.add(createCriterion(Operator.LESS_THAN_OR_EQUALS, "inFlow.expiredTime", scFlow.getExpiredTimeEnd()));
+            }
+            if (scFlow.getStatus() != null && scFlow.getStatus() != org.shaolin.bmdp.workflow.ce.TaskStatusType.NOT_SPECIFIED) {
+                inFlowCriteria.add(createCriterion(Operator.EQUALS, "inFlow.status", scFlow.getStatus().getIntValue()));
+            }
+            if (scFlow.getPriority() != null && scFlow.getPriority() != org.shaolin.bmdp.workflow.ce.TaskPriorityType.NOT_SPECIFIED) {
+                inFlowCriteria.add(createCriterion(Operator.EQUALS, "inFlow.priority", scFlow.getPriority().getIntValue()));
+            }
+
+            List result = this._list(offset, count, inFlowCriteria);
+            return result;
+        } finally {
+        }
+    }
+
+    public long searchTasksHistoryCount(org.shaolin.bmdp.workflow.be.TaskHistoryImpl scFlow) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        try {
+            Criteria inFlowCriteria = this._createCriteria(session, org.shaolin.bmdp.workflow.be.TaskHistoryImpl.class, "inFlow");
+
+            if (scFlow.getId() > 0) {
+                inFlowCriteria.add(createCriterion(Operator.EQUALS, "inFlow.id", scFlow.getId()));
+            }
+            if (scFlow.getSubject() != null && scFlow.getSubject().length() > 0) {
+                inFlowCriteria.add(createCriterion(Operator.START_WITH_RIGHT, "inFlow.subject", scFlow.getSubject()));
+            }
+            if (scFlow.getExpiredTimeStart() != null) {
+                inFlowCriteria.add(createCriterion(Operator.GREATER_THAN_OR_EQUALS, "inFlow.expiredTime", scFlow.getExpiredTimeStart()));
+            }
+            if (scFlow.getExpiredTimeEnd() != null) {
+                inFlowCriteria.add(createCriterion(Operator.LESS_THAN_OR_EQUALS, "inFlow.expiredTime", scFlow.getExpiredTimeEnd()));
+            }
+            if (scFlow.getStatus() != null && scFlow.getStatus() != org.shaolin.bmdp.workflow.ce.TaskStatusType.NOT_SPECIFIED) {
+                inFlowCriteria.add(createCriterion(Operator.EQUALS, "inFlow.status", scFlow.getStatus().getIntValue()));
+            }
+            if (scFlow.getPriority() != null && scFlow.getPriority() != org.shaolin.bmdp.workflow.ce.TaskPriorityType.NOT_SPECIFIED) {
+                inFlowCriteria.add(createCriterion(Operator.EQUALS, "inFlow.priority", scFlow.getPriority().getIntValue()));
+            }
+
+            return this._count(inFlowCriteria);
+        } finally {
+            session.getTransaction().commit();
+        }
+    }
+
+    public long searchTasksHistoryCount(org.shaolin.bmdp.workflow.be.TaskHistoryImpl scFlow, Session session) {
+        try {
+            Criteria inFlowCriteria = this._createCriteria(session, org.shaolin.bmdp.workflow.be.TaskHistoryImpl.class, "inFlow");
+
+            if (scFlow.getId() > 0) {
+                inFlowCriteria.add(createCriterion(Operator.EQUALS, "inFlow.id", scFlow.getId()));
+            }
+            if (scFlow.getSubject() != null && scFlow.getSubject().length() > 0) {
+                inFlowCriteria.add(createCriterion(Operator.START_WITH_RIGHT, "inFlow.subject", scFlow.getSubject()));
+            }
+            if (scFlow.getExpiredTimeStart() != null) {
+                inFlowCriteria.add(createCriterion(Operator.GREATER_THAN_OR_EQUALS, "inFlow.expiredTime", scFlow.getExpiredTimeStart()));
+            }
+            if (scFlow.getExpiredTimeEnd() != null) {
+                inFlowCriteria.add(createCriterion(Operator.LESS_THAN_OR_EQUALS, "inFlow.expiredTime", scFlow.getExpiredTimeEnd()));
+            }
+            if (scFlow.getStatus() != null && scFlow.getStatus() != org.shaolin.bmdp.workflow.ce.TaskStatusType.NOT_SPECIFIED) {
+                inFlowCriteria.add(createCriterion(Operator.EQUALS, "inFlow.status", scFlow.getStatus().getIntValue()));
+            }
+            if (scFlow.getPriority() != null && scFlow.getPriority() != org.shaolin.bmdp.workflow.ce.TaskPriorityType.NOT_SPECIFIED) {
+                inFlowCriteria.add(createCriterion(Operator.EQUALS, "inFlow.priority", scFlow.getPriority().getIntValue()));
+            }
+
+            return this._count(inFlowCriteria);
+        } finally {
+        }
+    }
+
 }
 

@@ -5,8 +5,8 @@
 	<entityName>org.shaolin.bmdp.workflow.page.TasksManager</entityName>
 	<systemVersion>0</systemVersion>
 	<ns2:UIEntity xsi:type="ns2:UIEntityType">
-    <ns2:eventHandler functionName="createCE">
-       <ns2:ops xsi:type="ns2:OpCallAjaxType" name="showBlankconstantInfoPanel">
+    <ns2:eventHandler functionName="createTask">
+       <ns2:ops xsi:type="ns2:OpCallAjaxType" name="showBlanktaskInfoPanel">
             <ns2:exp>
                 <ns2:expressionString><![CDATA[
                 import java.util.HashMap;
@@ -28,8 +28,8 @@
             </ns2:exp>
         </ns2:ops>
     </ns2:eventHandler>
-    <ns2:eventHandler functionName="openCEDetail">
-        <ns2:ops xsi:type="ns2:OpCallAjaxType" name="showconstantInfoPanel">
+    <ns2:eventHandler functionName="openTask">
+        <ns2:ops xsi:type="ns2:OpCallAjaxType" name="openTask-20150809-2009">
             <ns2:exp>
                 <ns2:expressionString><![CDATA[
                 import java.util.HashMap;
@@ -62,131 +62,267 @@
             <ns2:columnWidthWeight>1.0</ns2:columnWidthWeight>
         </ns2:layout>
         <ns2:component xsi:type="ns2:UIHiddenType" UIID="CENameUI"></ns2:component>
-        <ns2:component xsi:type="ns2:UIPanelType" UIID="constantInfoPanel">
-            <ns2:layout xsi:type="ns2:TableLayoutType">
-                <ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
-                <ns2:columnWidthWeight>1.0</ns2:columnWidthWeight>
-            </ns2:layout>
-            <ns2:component xsi:type="ns2:UITableType" UIID="tasksTable">
-                <ns2:beElement>org.shaolin.bmdp.workflow.be.Task</ns2:beElement>
-                <ns2:selectMode xsi:type="ns2:UITableSelectModeType">Multiple</ns2:selectMode>
-                <ns2:defaultRowSize>10</ns2:defaultRowSize>
-                <ns2:showActionBar>true</ns2:showActionBar>
-                <ns2:showFilter>true</ns2:showFilter>
-                <ns2:query xsi:type="ns2:ExpressionPropertyType">
-                    <ns2:expression xsi:type="ns2:ExpressionType">
-                        <ns2:expressionString><![CDATA[
-                        import java.util.List;
-                        import org.shaolin.uimaster.page.ajax.TableConditions;
-                        import org.shaolin.bmdp.workflow.be.TaskImpl;
-                        import org.shaolin.bmdp.runtime.AppContext;
-                        import org.shaolin.bmdp.workflow.coordinator.ICoordinatorService;
-                        {
-                              if ($tableCondition == null) {
-                                 $tableCondition = TableConditions.createCondition(new TaskImpl());
-                              }
-                              TaskImpl condition = (TaskImpl)$tableCondition.getCondition();
-                              ICoordinatorService service = (ICoordinatorService)AppContext.get().getService(ICoordinatorService.class);
-                              return service.getAllTasks();
-                        }]]></ns2:expressionString>
-                    </ns2:expression>
-                </ns2:query>
-                <ns2:totalCount xsi:type="ns2:ExpressionPropertyType">
-                    <ns2:expression xsi:type="ns2:ExpressionType">
-                        <ns2:expressionString><![CDATA[
-                        import java.util.List;
-                        import org.shaolin.uimaster.page.ajax.TableConditions;
-                        import org.shaolin.bmdp.workflow.be.TaskImpl;
-                        import org.shaolin.bmdp.runtime.AppContext;
-                        import org.shaolin.bmdp.workflow.coordinator.ICoordinatorService;
-                        {
-                              if ($tableCondition == null) {
-                                 $tableCondition = TableConditions.createCondition(new TaskImpl());
-                              }
-                              TaskImpl condition = (TaskImpl)$tableCondition.getCondition();
-                              ICoordinatorService service = (ICoordinatorService)AppContext.get().getService(ICoordinatorService.class);
-                              return service.getTaskSize();
-                        }]]></ns2:expressionString>
-                    </ns2:expression>
-                </ns2:totalCount>
-                <ns2:column xsi:type="ns2:UITableColumnType">
-                    <ns2:title xsi:type="ns2:StringPropertyType">
-                        <ns2:value>Subject</ns2:value>
-                    </ns2:title>
-                    <ns2:beFieldId>rowBE.subject</ns2:beFieldId>
-                    <ns2:uiType xsi:type="ns2:UITableColHTMLType"><ns2:type>Text</ns2:type></ns2:uiType>
-                </ns2:column>
-                <ns2:column xsi:type="ns2:UITableColumnType">
-                    <ns2:title xsi:type="ns2:StringPropertyType">
-                        <ns2:value>Description</ns2:value>
-                    </ns2:title>
-                    <ns2:beFieldId>rowBE.description</ns2:beFieldId>
-                    <ns2:uiType xsi:type="ns2:UITableColHTMLType"><ns2:type>Text</ns2:type></ns2:uiType>
-                </ns2:column>
-                <ns2:column xsi:type="ns2:UITableColumnType">
-                    <ns2:title xsi:type="ns2:StringPropertyType">
-                        <ns2:value>Trigger Time</ns2:value>
-                    </ns2:title>
-                    <ns2:beFieldId>rowBE.expiredTime</ns2:beFieldId>
-                    <ns2:uiType xsi:type="ns2:UITableColHTMLType">
-                      <ns2:type>DateRange</ns2:type>
-                      <ns2:startCondition>rowBE.expiredTimeStart</ns2:startCondition> 
-                      <ns2:endCondition>rowBE.expiredTimeEnd</ns2:endCondition>
-                    </ns2:uiType>
-                    <ns2:updateCondition xsi:type="ns2:ExpressionPropertyType">
-                        <ns2:expression xsi:type="ns2:ExpressionType">
-                            <ns2:expressionString><![CDATA[
-                            import org.shaolin.uimaster.page.od.formats.FormatUtil;
-                            import java.util.Date;
-                            {
-                                if ($value == null || "".equals($value)) {
-                                    if ("rowBE.expiredTimeStart".equals($filterId)) {
-                                        $rowBE.setExpiredTimeStart(null);
-                                    } else {
-                                        $rowBE.setExpiredTimeEnd(null);
-                                    }
-                                } else {
-                                    Date d = (Date)FormatUtil.convertUIToData(FormatUtil.DATE, $value);
-                                    if ("rowBE.expiredTimeStart".equals($filterId)) {
-                                        $rowBE.setExpiredTimeStart(d);
-                                    } else {
-                                        $rowBE.setExpiredTimeEnd(d);
-                                    }
-                                }
-                            }]]></ns2:expressionString>
-                        </ns2:expression>
-                    </ns2:updateCondition>
-                </ns2:column>
-                <ns2:column xsi:type="ns2:UITableColumnType">
-                    <ns2:title xsi:type="ns2:StringPropertyType">
-                        <ns2:value>Status</ns2:value>
-                    </ns2:title>
-                    <ns2:beFieldId>rowBE.status</ns2:beFieldId>
-                    <ns2:uiType xsi:type="ns2:UITableColHTMLType"><ns2:type>ComBox</ns2:type></ns2:uiType>
-                    <ns2:updateCondition xsi:type="ns2:ExpressionPropertyType">
-                        <ns2:expression xsi:type="ns2:ExpressionType">
-                            <ns2:expressionString><![CDATA[
-                            import org.shaolin.bmdp.workflow.ce.TaskStatusType;
-                            import org.shaolin.bmdp.runtime.AppContext;
-                            {
-                                $rowBE.setStatus((TaskStatusType)AppContext.get().getConstantService().getConstantEntity("org.shaolin.bmdp.workflow.ce.TaskStatusType").getByIntValue(Integer.valueOf($value).intValue()));
-                            }]]></ns2:expressionString>
-                        </ns2:expression>
-                    </ns2:updateCondition>
-                </ns2:column>
-                <ns2:defaultActions>
-                    <ns2:defaultNewAction>createCE</ns2:defaultNewAction>
-                    <ns2:defaultOpenAction>openCEDetail</ns2:defaultOpenAction>
-                </ns2:defaultActions>
-            </ns2:component>
-            <ns2:layoutConstraint>
-                <ns2:componentId>tasksTable</ns2:componentId>
-                <ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
-                    x="0" y="0" align="FULL"></ns2:constraint>
-            </ns2:layoutConstraint>
+        <ns2:component xsi:type="ns2:UITabPaneType" UIID="functionsTab">
+			     <ns2:ajaxLoad>false</ns2:ajaxLoad>
+              <ns2:tab uiid="tasksTablePanel">
+               <ns2:title xsi:type="ns2:ResourceBundlePropertyType">
+                   <ns2:bundle>org_shaolin_bmdp_workflow_i18n</ns2:bundle>
+                   <ns2:key>org.shaolin.bmdp.workflow.page.TaskManager.tasksTablePanel</ns2:key>
+               </ns2:title>
+               <ns2:panel UIID="tasksTablePanel">
+               <ns2:layout xsi:type="ns2:TableLayoutType">
+                   <ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+                   <ns2:columnWidthWeight>1.0</ns2:columnWidthWeight>
+               </ns2:layout>
+			            <ns2:component xsi:type="ns2:UITableType" UIID="tasksTable">
+			                <ns2:beElement>org.shaolin.bmdp.workflow.be.Task</ns2:beElement>
+			                <ns2:selectMode xsi:type="ns2:UITableSelectModeType">Multiple</ns2:selectMode>
+			                <ns2:defaultRowSize>10</ns2:defaultRowSize>
+			                <ns2:showActionBar>true</ns2:showActionBar>
+			                <ns2:showFilter>true</ns2:showFilter>
+			                <ns2:query xsi:type="ns2:ExpressionPropertyType">
+			                    <ns2:expression xsi:type="ns2:ExpressionType">
+			                        <ns2:expressionString><![CDATA[
+			                        import java.util.List;
+			                        import org.shaolin.uimaster.page.ajax.TableConditions;
+			                        import org.shaolin.bmdp.workflow.be.TaskImpl;
+			                        import org.shaolin.bmdp.runtime.AppContext;
+			                        import org.shaolin.bmdp.workflow.coordinator.ICoordinatorService;
+			                        {
+			                              if ($tableCondition == null) {
+			                                 $tableCondition = TableConditions.createCondition(new TaskImpl());
+			                              }
+			                              TaskImpl condition = (TaskImpl)$tableCondition.getCondition();
+			                              ICoordinatorService service = (ICoordinatorService)AppContext.get().getService(ICoordinatorService.class);
+			                              return service.getAllTasks();
+			                        }]]></ns2:expressionString>
+			                    </ns2:expression>
+			                </ns2:query>
+			                <ns2:totalCount xsi:type="ns2:ExpressionPropertyType">
+			                    <ns2:expression xsi:type="ns2:ExpressionType">
+			                        <ns2:expressionString><![CDATA[
+			                        import java.util.List;
+			                        import org.shaolin.uimaster.page.ajax.TableConditions;
+			                        import org.shaolin.bmdp.workflow.be.TaskImpl;
+			                        import org.shaolin.bmdp.runtime.AppContext;
+			                        import org.shaolin.bmdp.workflow.coordinator.ICoordinatorService;
+			                        {
+			                              if ($tableCondition == null) {
+			                                 $tableCondition = TableConditions.createCondition(new TaskImpl());
+			                              }
+			                              TaskImpl condition = (TaskImpl)$tableCondition.getCondition();
+			                              ICoordinatorService service = (ICoordinatorService)AppContext.get().getService(ICoordinatorService.class);
+			                              return service.getTaskSize();
+			                        }]]></ns2:expressionString>
+			                    </ns2:expression>
+			                </ns2:totalCount>
+			                <ns2:column xsi:type="ns2:UITableColumnType">
+			                    <ns2:title xsi:type="ns2:StringPropertyType">
+			                        <ns2:value>Subject</ns2:value>
+			                    </ns2:title>
+			                    <ns2:beFieldId>rowBE.subject</ns2:beFieldId>
+			                    <ns2:uiType xsi:type="ns2:UITableColHTMLType"><ns2:type>Text</ns2:type></ns2:uiType>
+			                </ns2:column>
+			                <ns2:column xsi:type="ns2:UITableColumnType">
+			                    <ns2:title xsi:type="ns2:StringPropertyType">
+			                        <ns2:value>Description</ns2:value>
+			                    </ns2:title>
+			                    <ns2:beFieldId>rowBE.description</ns2:beFieldId>
+			                    <ns2:uiType xsi:type="ns2:UITableColHTMLType"><ns2:type>Text</ns2:type></ns2:uiType>
+			                </ns2:column>
+			                <ns2:column xsi:type="ns2:UITableColumnType">
+			                    <ns2:title xsi:type="ns2:StringPropertyType">
+			                        <ns2:value>Trigger Time</ns2:value>
+			                    </ns2:title>
+			                    <ns2:beFieldId>rowBE.expiredTime</ns2:beFieldId>
+			                    <ns2:uiType xsi:type="ns2:UITableColHTMLType">
+			                      <ns2:type>DateRange</ns2:type>
+			                      <ns2:startCondition>rowBE.expiredTimeStart</ns2:startCondition> 
+			                      <ns2:endCondition>rowBE.expiredTimeEnd</ns2:endCondition>
+			                    </ns2:uiType>
+			                    <ns2:updateCondition xsi:type="ns2:ExpressionPropertyType">
+			                        <ns2:expression xsi:type="ns2:ExpressionType">
+			                            <ns2:expressionString><![CDATA[
+			                            import org.shaolin.uimaster.page.od.formats.FormatUtil;
+			                            import java.util.Date;
+			                            {
+			                                if ($value == null || "".equals($value)) {
+			                                    if ("rowBE.expiredTimeStart".equals($filterId)) {
+			                                        $rowBE.setExpiredTimeStart(null);
+			                                    } else {
+			                                        $rowBE.setExpiredTimeEnd(null);
+			                                    }
+			                                } else {
+			                                    Date d = (Date)FormatUtil.convertUIToData(FormatUtil.DATE, $value);
+			                                    if ("rowBE.expiredTimeStart".equals($filterId)) {
+			                                        $rowBE.setExpiredTimeStart(d);
+			                                    } else {
+			                                        $rowBE.setExpiredTimeEnd(d);
+			                                    }
+			                                }
+			                            }]]></ns2:expressionString>
+			                        </ns2:expression>
+			                    </ns2:updateCondition>
+			                </ns2:column>
+			                <ns2:column xsi:type="ns2:UITableColumnType">
+			                    <ns2:title xsi:type="ns2:StringPropertyType">
+			                        <ns2:value>Status</ns2:value>
+			                    </ns2:title>
+			                    <ns2:beFieldId>rowBE.status</ns2:beFieldId>
+			                    <ns2:uiType xsi:type="ns2:UITableColHTMLType"><ns2:type>ComBox</ns2:type></ns2:uiType>
+			                    <ns2:updateCondition xsi:type="ns2:ExpressionPropertyType">
+			                        <ns2:expression xsi:type="ns2:ExpressionType">
+			                            <ns2:expressionString><![CDATA[
+			                            import org.shaolin.bmdp.workflow.ce.TaskStatusType;
+			                            import org.shaolin.bmdp.runtime.AppContext;
+			                            {
+			                                $rowBE.setStatus((TaskStatusType)AppContext.get().getConstantService().getConstantEntity("org.shaolin.bmdp.workflow.ce.TaskStatusType").getByIntValue(Integer.valueOf($value).intValue()));
+			                            }]]></ns2:expressionString>
+			                        </ns2:expression>
+			                    </ns2:updateCondition>
+			                </ns2:column>
+			                <ns2:defaultActions>
+			                    <ns2:defaultNewAction>createTask</ns2:defaultNewAction>
+			                    <ns2:defaultOpenAction>openTask</ns2:defaultOpenAction>
+			                </ns2:defaultActions>
+			            </ns2:component>
+			            <ns2:layoutConstraint>
+			                <ns2:componentId>tasksTable</ns2:componentId>
+			                <ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+			                    x="0" y="0" align="FULL"></ns2:constraint>
+			            </ns2:layoutConstraint>
+            </ns2:panel>
+            </ns2:tab>
+            <ns2:tab uiid="tasksHistoryTablePanel">
+               <ns2:title xsi:type="ns2:ResourceBundlePropertyType">
+                   <ns2:bundle>org_shaolin_bmdp_workflow_i18n</ns2:bundle>
+                   <ns2:key>org.shaolin.bmdp.workflow.page.TaskManager.tasksHistoryTablePanel</ns2:key>
+               </ns2:title>
+               <ns2:panel UIID="tasksHistoryTablePanel">
+               <ns2:layout xsi:type="ns2:TableLayoutType">
+                   <ns2:rowHeightWeight>0.0</ns2:rowHeightWeight>
+                   <ns2:columnWidthWeight>1.0</ns2:columnWidthWeight>
+               </ns2:layout>
+			            <ns2:component xsi:type="ns2:UITableType" UIID="tasksHistoryTable">
+			                <ns2:beElement>org.shaolin.bmdp.workflow.be.TaskHistory</ns2:beElement>
+			                <ns2:selectMode xsi:type="ns2:UITableSelectModeType">Multiple</ns2:selectMode>
+			                <ns2:defaultRowSize>10</ns2:defaultRowSize>
+			                <ns2:showActionBar>true</ns2:showActionBar>
+			                <ns2:showFilter>true</ns2:showFilter>
+			                <ns2:query xsi:type="ns2:ExpressionPropertyType">
+			                    <ns2:expression xsi:type="ns2:ExpressionType">
+			                        <ns2:expressionString><![CDATA[
+			                        import java.util.List;
+			                        import org.shaolin.uimaster.page.ajax.TableConditions;
+			                        import org.shaolin.bmdp.workflow.be.TaskHistoryImpl;
+			                        import org.shaolin.bmdp.runtime.AppContext;
+			                        import org.shaolin.bmdp.workflow.dao.CoordinatorModel;
+			                        {
+			                              if ($tableCondition == null) {
+			                                 $tableCondition = TableConditions.createCondition(new TaskHistoryImpl());
+			                              }
+			                              TaskHistoryImpl condition = (TaskHistoryImpl)$tableCondition.getCondition();
+			                              return CoordinatorModel.INSTANCE.searchTasksHistory(condition, null, 0, -1);
+			                        }]]></ns2:expressionString>
+			                    </ns2:expression>
+			                </ns2:query>
+			                <ns2:totalCount xsi:type="ns2:ExpressionPropertyType">
+			                    <ns2:expression xsi:type="ns2:ExpressionType">
+			                        <ns2:expressionString><![CDATA[
+			                        import java.util.List;
+			                        import org.shaolin.uimaster.page.ajax.TableConditions;
+			                        import org.shaolin.bmdp.workflow.be.TaskHistoryImpl;
+			                        import org.shaolin.bmdp.runtime.AppContext;
+			                        import org.shaolin.bmdp.workflow.dao.CoordinatorModel;
+			                        {
+			                              if ($tableCondition == null) {
+			                                 $tableCondition = TableConditions.createCondition(new TaskHistoryImpl());
+			                              }
+			                              TaskHistoryImpl condition = (TaskHistoryImpl)$tableCondition.getCondition();
+			                              return CoordinatorModel.INSTANCE.searchTasksHistoryCount(condition);
+			                        }]]></ns2:expressionString>
+			                    </ns2:expression>
+			                </ns2:totalCount>
+			                <ns2:column xsi:type="ns2:UITableColumnType">
+			                    <ns2:title xsi:type="ns2:StringPropertyType">
+			                        <ns2:value>Subject</ns2:value>
+			                    </ns2:title>
+			                    <ns2:beFieldId>rowBE.subject</ns2:beFieldId>
+			                    <ns2:uiType xsi:type="ns2:UITableColHTMLType"><ns2:type>Text</ns2:type></ns2:uiType>
+			                </ns2:column>
+			                <ns2:column xsi:type="ns2:UITableColumnType">
+			                    <ns2:title xsi:type="ns2:StringPropertyType">
+			                        <ns2:value>Description</ns2:value>
+			                    </ns2:title>
+			                    <ns2:beFieldId>rowBE.description</ns2:beFieldId>
+			                    <ns2:uiType xsi:type="ns2:UITableColHTMLType"><ns2:type>Text</ns2:type></ns2:uiType>
+			                </ns2:column>
+			                <ns2:column xsi:type="ns2:UITableColumnType">
+			                    <ns2:title xsi:type="ns2:StringPropertyType">
+			                        <ns2:value>Trigger Time</ns2:value>
+			                    </ns2:title>
+			                    <ns2:beFieldId>rowBE.expiredTime</ns2:beFieldId>
+			                    <ns2:uiType xsi:type="ns2:UITableColHTMLType">
+			                      <ns2:type>DateRange</ns2:type>
+			                      <ns2:startCondition>rowBE.expiredTimeStart</ns2:startCondition> 
+			                      <ns2:endCondition>rowBE.expiredTimeEnd</ns2:endCondition>
+			                    </ns2:uiType>
+			                    <ns2:updateCondition xsi:type="ns2:ExpressionPropertyType">
+			                        <ns2:expression xsi:type="ns2:ExpressionType">
+			                            <ns2:expressionString><![CDATA[
+			                            import org.shaolin.uimaster.page.od.formats.FormatUtil;
+			                            import java.util.Date;
+			                            {
+			                                if ($value == null || "".equals($value)) {
+			                                    if ("rowBE.expiredTimeStart".equals($filterId)) {
+			                                        $rowBE.setExpiredTimeStart(null);
+			                                    } else {
+			                                        $rowBE.setExpiredTimeEnd(null);
+			                                    }
+			                                } else {
+			                                    Date d = (Date)FormatUtil.convertUIToData(FormatUtil.DATE, $value);
+			                                    if ("rowBE.expiredTimeStart".equals($filterId)) {
+			                                        $rowBE.setExpiredTimeStart(d);
+			                                    } else {
+			                                        $rowBE.setExpiredTimeEnd(d);
+			                                    }
+			                                }
+			                            }]]></ns2:expressionString>
+			                        </ns2:expression>
+			                    </ns2:updateCondition>
+			                </ns2:column>
+			                <ns2:column xsi:type="ns2:UITableColumnType">
+			                    <ns2:title xsi:type="ns2:StringPropertyType">
+			                        <ns2:value>Status</ns2:value>
+			                    </ns2:title>
+			                    <ns2:beFieldId>rowBE.status</ns2:beFieldId>
+			                    <ns2:uiType xsi:type="ns2:UITableColHTMLType"><ns2:type>ComBox</ns2:type></ns2:uiType>
+			                    <ns2:updateCondition xsi:type="ns2:ExpressionPropertyType">
+			                        <ns2:expression xsi:type="ns2:ExpressionType">
+			                            <ns2:expressionString><![CDATA[
+			                            import org.shaolin.bmdp.workflow.ce.TaskStatusType;
+			                            import org.shaolin.bmdp.runtime.AppContext;
+			                            {
+			                                $rowBE.setStatus((TaskStatusType)AppContext.get().getConstantService().getConstantEntity("org.shaolin.bmdp.workflow.ce.TaskStatusType").getByIntValue(Integer.valueOf($value).intValue()));
+			                            }]]></ns2:expressionString>
+			                        </ns2:expression>
+			                    </ns2:updateCondition>
+			                </ns2:column>
+			                <ns2:defaultActions>
+			                    <ns2:defaultNewAction>createTask</ns2:defaultNewAction>
+			                    <ns2:defaultOpenAction>openTask</ns2:defaultOpenAction>
+			                </ns2:defaultActions>
+			            </ns2:component>
+			            <ns2:layoutConstraint>
+			                <ns2:componentId>tasksHistoryTable</ns2:componentId>
+			                <ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
+			                    x="0" y="0" align="FULL"></ns2:constraint>
+			            </ns2:layoutConstraint>
+            </ns2:panel>
+            </ns2:tab>
         </ns2:component>
         <ns2:layoutConstraint>
-            <ns2:componentId>constantInfoPanel</ns2:componentId>
+            <ns2:componentId>functionsTab</ns2:componentId>
             <ns2:constraint xsi:type="ns2:TableLayoutConstraintType"
                 x="0" y="0" align="FULL"></ns2:constraint>
         </ns2:layoutConstraint>

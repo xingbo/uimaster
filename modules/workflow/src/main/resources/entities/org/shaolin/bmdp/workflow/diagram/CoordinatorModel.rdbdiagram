@@ -38,6 +38,40 @@
     </ns2:mapping>
   </ns2:table>
   
+  <ns2:table>
+    <entityName>WF_TASKS_HISTORY</entityName>
+    <systemVersion>0</systemVersion>
+    <ns2:column name="ID" type="BIGINT" isNull="false" autoIncrement="true"></ns2:column>
+    <ns2:column name="PARTYID" type="BIGINT" isNull="true"></ns2:column>
+    <ns2:column name="SUBJECT" type="VARCHAR" isNull="true"></ns2:column>
+    <ns2:column name="DESCRIPTION" type="VARCHAR" isNull="true"></ns2:column>
+    <ns2:column name="EXPIREDTIME" type="DATETIME" isNull="true"></ns2:column>
+    <ns2:column name="SENDSMS" type="BIT" isNull="true"></ns2:column>
+    <ns2:column name="SENDEMAIL" type="BIT" isNull="true"></ns2:column>
+    <ns2:column name="STATUS" type="INTEGER" length="2" isNull="true"></ns2:column>
+    <ns2:column name="COMPLETERATE" type="INTEGER" length="3" isNull="true"></ns2:column>
+    <ns2:column name="PRIORITY" type="INTEGER" length="2" isNull="true"></ns2:column>
+    <ns2:column name="_enable" type="INTEGER" length="2" default="1"></ns2:column>
+    <ns2:primaryKey>
+      <ns2:columnName>ID</ns2:columnName>
+    </ns2:primaryKey>
+    <ns2:mapping>
+      <systemVersion>0</systemVersion>
+      <ns2:businessEntity entityName="org.shaolin.bmdp.workflow.be.TaskHistory"></ns2:businessEntity>
+      <ns2:fieldMapping beFieldName="id" columnName="ID"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="partyId" columnName="PARTYID"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="subject" columnName="SUBJECT"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="description" columnName="DESCRIPTION"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="expiredTime" columnName="EXPIREDTIME"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="sendSMS" columnName="SENDSMS"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="sendEmail" columnName="SENDEMAIL"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="status" columnName="STATUS"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="completeRate" columnName="COMPLETERATE"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="priority" columnName="PRIORITY"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="_enable" columnName="_enable"></ns2:fieldMapping>
+    </ns2:mapping>
+  </ns2:table>
+  
   <ns2:query queryName="searchTasks">
     <ns2:searchResult name="outFlow" notes="" category="BusinessEntity" searchable="false">
         <type entityName="org.shaolin.bmdp.workflow.be.Task" systemVersion="0"/>
@@ -206,6 +240,112 @@
         </ns2:fieldMapping>
         <ns2:searchConditionData name="scFlow" category="BusinessEntity" searchable="false">
             <type entityName="org.shaolin.bmdp.workflow.be.Task"/>
+        </ns2:searchConditionData>
+    </ns2:searchConditionMapping>
+  </ns2:query>
+  
+  <ns2:query queryName="searchTasksHistory">
+    <ns2:searchResult name="outFlow" notes="" category="BusinessEntity" searchable="false">
+        <type entityName="org.shaolin.bmdp.workflow.be.TaskHistory" systemVersion="0"/>
+    </ns2:searchResult>
+    <ns2:fromData name="inFlow" category="BusinessEntity">
+        <type entityName="org.shaolin.bmdp.workflow.be.TaskHistory"/>
+    </ns2:fromData>
+    <ns2:searchResultMapping>
+        <ns2:fieldMapping>
+            <ns2:toDataFieldPath>outFlow</ns2:toDataFieldPath>
+            <ns2:value xsi:type="ns2:SimpleFieldValueType">
+                <ns2:valueFieldPath>inFlow</ns2:valueFieldPath>
+            </ns2:value>
+        </ns2:fieldMapping>
+    </ns2:searchResultMapping>
+    <ns2:searchConditionMapping name="Search">
+        <ns2:fieldMapping>
+            <ns2:toDataFieldPath>inFlow.id</ns2:toDataFieldPath>
+            <ns2:conditionValue>
+                <ns2:operator isReverse="false" xsi:type="ns2:LogicOperatorType">
+                    <ns2:type>=</ns2:type>
+                </ns2:operator>
+                <ns2:value xsi:type="ns2:SimpleFieldValueType">
+                    <ns2:valueFieldPath>scFlow.id</ns2:valueFieldPath>
+                </ns2:value>
+                <ns2:condition>
+                    <expressionString><![CDATA[scFlow.getId() > 0]]></expressionString>
+                </ns2:condition>
+            </ns2:conditionValue>
+        </ns2:fieldMapping>
+        <ns2:fieldMapping>
+            <ns2:toDataFieldPath>inFlow.subject</ns2:toDataFieldPath>
+            <ns2:conditionValue>
+                <ns2:operator isReverse="false" xsi:type="ns2:StarLikeOperatorType">
+                    <ns2:type>LIKE %*</ns2:type>
+                </ns2:operator>
+                <ns2:value xsi:type="ns2:SimpleFieldValueType">
+                    <ns2:valueFieldPath>scFlow.subject</ns2:valueFieldPath>
+                </ns2:value>
+                <ns2:condition>
+                    <expressionString><![CDATA[scFlow.getSubject() != null && scFlow.getSubject().length() > 0]]></expressionString>
+                </ns2:condition>
+            </ns2:conditionValue>
+        </ns2:fieldMapping>
+        <ns2:fieldMapping>
+            <ns2:toDataFieldPath>inFlow.expiredTime</ns2:toDataFieldPath>
+            <ns2:conditionValue>
+                <ns2:operator isReverse="false" xsi:type="ns2:LogicOperatorType">
+                    <ns2:type>&gt;=</ns2:type>
+                </ns2:operator>
+                <ns2:value xsi:type="ns2:SimpleFieldValueType">
+                    <ns2:valueFieldPath>scFlow.expiredTimeStart</ns2:valueFieldPath>
+                </ns2:value>
+                <ns2:condition>
+                    <expressionString><![CDATA[scFlow.getExpiredTimeStart() != null]]></expressionString>
+                </ns2:condition>
+            </ns2:conditionValue>
+        </ns2:fieldMapping>
+        <ns2:fieldMapping>
+            <ns2:toDataFieldPath>inFlow.expiredTime</ns2:toDataFieldPath>
+            <ns2:conditionValue>
+                <ns2:operator isReverse="false" xsi:type="ns2:LogicOperatorType">
+                    <ns2:type>&lt;=</ns2:type>
+                </ns2:operator>
+                <ns2:value xsi:type="ns2:SimpleFieldValueType">
+                    <ns2:valueFieldPath>scFlow.expiredTimeEnd</ns2:valueFieldPath>
+                </ns2:value>
+                <ns2:condition>
+                    <expressionString><![CDATA[scFlow.getExpiredTimeEnd() != null]]></expressionString>
+                </ns2:condition>
+            </ns2:conditionValue>
+        </ns2:fieldMapping>
+        <ns2:fieldMapping>
+            <ns2:toDataFieldPath>inFlow.status</ns2:toDataFieldPath>
+            <ns2:conditionValue>
+                <ns2:operator isReverse="false" xsi:type="ns2:LogicOperatorType">
+                    <ns2:type>=</ns2:type>
+                </ns2:operator>
+                <ns2:value xsi:type="ns2:SimpleFieldValueType">
+                    <ns2:valueFieldPath>scFlow.getStatus().getIntValue()</ns2:valueFieldPath>
+                </ns2:value>
+                <ns2:condition>
+                    <expressionString><![CDATA[scFlow.getStatus() != null && scFlow.getStatus() != org.shaolin.bmdp.workflow.ce.TaskStatusType.NOT_SPECIFIED]]></expressionString>
+                </ns2:condition>
+            </ns2:conditionValue>
+        </ns2:fieldMapping>
+        <ns2:fieldMapping>
+            <ns2:toDataFieldPath>inFlow.priority</ns2:toDataFieldPath>
+            <ns2:conditionValue>
+                <ns2:operator isReverse="false" xsi:type="ns2:LogicOperatorType">
+                    <ns2:type>=</ns2:type>
+                </ns2:operator>
+                <ns2:value xsi:type="ns2:SimpleFieldValueType">
+                    <ns2:valueFieldPath>scFlow.getPriority().getIntValue()</ns2:valueFieldPath>
+                </ns2:value>
+                <ns2:condition>
+                    <expressionString><![CDATA[scFlow.getPriority() != null && scFlow.getPriority() != org.shaolin.bmdp.workflow.ce.TaskPriorityType.NOT_SPECIFIED]]></expressionString>
+                </ns2:condition>
+            </ns2:conditionValue>
+        </ns2:fieldMapping>
+        <ns2:searchConditionData name="scFlow" category="BusinessEntity" searchable="false">
+            <type entityName="org.shaolin.bmdp.workflow.be.TaskHistory"/>
         </ns2:searchConditionData>
     </ns2:searchConditionMapping>
   </ns2:query>

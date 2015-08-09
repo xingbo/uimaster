@@ -13,24 +13,29 @@ function org_shaolin_bmdp_workflow_page_TasksManager(json)
         ui: elementList[prefix + "tasksTable"]
     });
 
-    var constantInfoPanel = new UIMaster.ui.panel
+    var tasksHistoryTable = new UIMaster.ui.objectlist
     ({
-        ui: elementList[prefix + "constantInfoPanel"]
-        ,items: []
-        ,subComponents: [prefix + "tasksTable"]
+        ui: elementList[prefix + "tasksHistoryTable"]
+    });
+
+    var functionsTab = new UIMaster.ui.tab
+    ({
+        ui: elementList[prefix + "functionsTab"]
     });
 
     var Form = new UIMaster.ui.panel
     ({
         ui: elementList[prefix + "Form"]
-        ,items: [CENameUI,tasksTable,constantInfoPanel]
+        ,items: [CENameUI,tasksTable,tasksHistoryTable,functionsTab]
     });
 
     Form.CENameUI=CENameUI;
 
     Form.tasksTable=tasksTable;
 
-    Form.constantInfoPanel=constantInfoPanel;
+    Form.tasksHistoryTable=tasksHistoryTable;
+
+    Form.functionsTab=functionsTab;
 
     Form.user_constructor = function()
     {
@@ -38,9 +43,9 @@ function org_shaolin_bmdp_workflow_page_TasksManager(json)
         /* Construct_LAST:org_shaolin_bmdp_workflow_page_TasksManager */
     };
 
-    Form.createCE = org_shaolin_bmdp_workflow_page_TasksManager_createCE;
+    Form.createTask = org_shaolin_bmdp_workflow_page_TasksManager_createTask;
 
-    Form.openCEDetail = org_shaolin_bmdp_workflow_page_TasksManager_openCEDetail;
+    Form.openTask = org_shaolin_bmdp_workflow_page_TasksManager_openTask;
 
     Form.deleteUser = org_shaolin_bmdp_workflow_page_TasksManager_deleteUser;
 
@@ -61,25 +66,25 @@ function org_shaolin_bmdp_workflow_page_TasksManager(json)
 /* Other_Func_LAST:org_shaolin_bmdp_workflow_page_TasksManager */
 
     /* auto generated eventlistener function declaration */
-    function org_shaolin_bmdp_workflow_page_TasksManager_createCE(eventsource,event) {/* Gen_First:org_shaolin_bmdp_workflow_page_TasksManager_createCE */
+    function org_shaolin_bmdp_workflow_page_TasksManager_createTask(eventsource,event) {/* Gen_First:org_shaolin_bmdp_workflow_page_TasksManager_createTask */
 
         // cal ajax function. 
 
-        UIMaster.triggerServerEvent(UIMaster.getUIID(eventsource),"showBlankconstantInfoPanel",UIMaster.getValue(eventsource),this.__entityName);
+        UIMaster.triggerServerEvent(UIMaster.getUIID(eventsource),"showBlanktaskInfoPanel",UIMaster.getValue(eventsource),this.__entityName);
 
         var UIEntity = this;
-    }/* Gen_Last:org_shaolin_bmdp_workflow_page_TasksManager_createCE */
+    }/* Gen_Last:org_shaolin_bmdp_workflow_page_TasksManager_createTask */
 
 
     /* auto generated eventlistener function declaration */
-    function org_shaolin_bmdp_workflow_page_TasksManager_openCEDetail(eventsource,event) {/* Gen_First:org_shaolin_bmdp_workflow_page_TasksManager_openCEDetail */
+    function org_shaolin_bmdp_workflow_page_TasksManager_openTask(eventsource,event) {/* Gen_First:org_shaolin_bmdp_workflow_page_TasksManager_openTask */
 
         // cal ajax function. 
 
-        UIMaster.triggerServerEvent(UIMaster.getUIID(eventsource),"showconstantInfoPanel",UIMaster.getValue(eventsource),this.__entityName);
+        UIMaster.triggerServerEvent(UIMaster.getUIID(eventsource),"openTask-20150809-2009",UIMaster.getValue(eventsource),this.__entityName);
 
         var UIEntity = this;
-    }/* Gen_Last:org_shaolin_bmdp_workflow_page_TasksManager_openCEDetail */
+    }/* Gen_Last:org_shaolin_bmdp_workflow_page_TasksManager_openTask */
 
 
     /* auto generated eventlistener function declaration */

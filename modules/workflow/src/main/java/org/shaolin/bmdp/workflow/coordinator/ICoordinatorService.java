@@ -1,5 +1,6 @@
 package org.shaolin.bmdp.workflow.coordinator;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -54,6 +55,8 @@ public interface ICoordinatorService {
 	void completeTask(ITask task);
 	
 	void cancelTask(ITask task);
+	
+	void postponeTask(ITask task, Date date);
 	
 	/**
 	 * The party id is required!

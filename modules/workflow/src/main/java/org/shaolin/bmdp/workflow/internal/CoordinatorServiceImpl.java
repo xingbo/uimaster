@@ -2,6 +2,7 @@ package org.shaolin.bmdp.workflow.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.hibernate.Session;
+import org.shaolin.bmdp.persistence.HibernateUtil;
 import org.shaolin.bmdp.runtime.AppContext;
 import org.shaolin.bmdp.runtime.spi.IAppServiceManager;
 import org.shaolin.bmdp.runtime.spi.ILifeCycleProvider;
@@ -19,6 +22,7 @@ import org.shaolin.bmdp.runtime.spi.IServiceProvider;
 import org.shaolin.bmdp.workflow.be.INotification;
 import org.shaolin.bmdp.workflow.be.ITask;
 import org.shaolin.bmdp.workflow.be.NotificationImpl;
+import org.shaolin.bmdp.workflow.be.TaskHistoryImpl;
 import org.shaolin.bmdp.workflow.be.TaskImpl;
 import org.shaolin.bmdp.workflow.ce.TaskStatusType;
 import org.shaolin.bmdp.workflow.coordinator.ICoordinatorService;
@@ -166,10 +170,22 @@ public class CoordinatorServiceImpl implements ILifeCycleProvider, ICoordinatorS
 		taskToNotification(task);
 	}
 	
+	public void postponeTask(ITask task, Date date) {
+		if (task.getExpiredTime() != null) {
+			if (task.getExpiredTime().getTime() >= date.getTime()) {
+				throw new IllegalArgumentException("Current task expired time is greater than the given date.");
+			}
+		}
+		task.setExpiredTime(date);
+		task.setStatus(TaskStatusType.NOTSTARTED);
+				
+		updateTask(task);
+	}
+	
 	@Override
 	public void updateTask(ITask task) {
 		if (task.getId() <= 0) {
-			throw new IllegalArgumentException("A created task can't be updated!");
+			throw new IllegalArgumentException("The created task can't be updated!");
 		}
 		
 		if (!testCaseFlag) {
@@ -177,11 +193,10 @@ public class CoordinatorServiceImpl implements ILifeCycleProvider, ICoordinatorS
 		}
 		
 		ScheduledFuture<?> future = futures.remove(task);
-		if (!future.isDone()) {
+		if (future != null && !future.isDone()) {
 			future.cancel(true);
 		}
-		
-		if (workingTasks.containsKey(task.getId())) {
+		if (!workingTasks.containsKey(task.getId())) {
 			workingTasks.put(task.getId(), task);
 		}
 		
@@ -234,7 +249,12 @@ public class CoordinatorServiceImpl implements ILifeCycleProvider, ICoordinatorS
 		task.setCompleteRate(100);
 		
 		if (!testCaseFlag) {
-			CoordinatorModel.INSTANCE.update(task);
+			Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+			session.beginTransaction();
+			
+			moveToHistory(task, session);
+			
+			session.getTransaction().commit();
 		}
 		
 		if (task.getListener() != null) {
@@ -260,7 +280,12 @@ public class CoordinatorServiceImpl implements ILifeCycleProvider, ICoordinatorS
 			task.setStatus(TaskStatusType.CANCELLED);
 			
 			if (!testCaseFlag) {
-				CoordinatorModel.INSTANCE.update(task);
+				Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+				session.beginTransaction();
+				
+				moveToHistory(task, session);
+				
+				session.getTransaction().commit();
 			}
 			
 			if (task.getListener() != null) {
@@ -272,9 +297,28 @@ public class CoordinatorServiceImpl implements ILifeCycleProvider, ICoordinatorS
 		}
 	}
 	
+	private void moveToHistory(ITask task, Session session) {
+		TaskHistoryImpl history = new TaskHistoryImpl();
+		history.setCompleteRate(task.getCompleteRate());
+		history.setDescription(task.getDescription());
+		history.setEnabled(task.isEnabled());
+		history.setExpiredTime(task.getExpiredTime());
+		history.setPartyId(task.getPartyId());
+		history.setPartyType(task.getPartyType());
+		history.setPriority(task.getPriority());
+		history.setSendEmail(task.getSendEmail());
+		history.setSendSMS(task.getSendSMS());
+		history.setStatus(task.getStatus());
+		history.setSubject(task.getSubject());
+		
+		session.save(history);
+		session.delete(task);
+	}
+	
 	@Override
 	public void startService() {
-		workingTasks.clear();
+		this.workingTasks.clear();
+		this.futures.clear();
 		this.setAppService(AppContext.get());
 		// make this shared
 		this.pool = IServerServiceManager.INSTANCE.getSchedulerService()
@@ -302,13 +346,14 @@ public class CoordinatorServiceImpl implements ILifeCycleProvider, ICoordinatorS
 
 	@Override
 	public boolean readyToStop() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public void stopService() {
-		workingTasks.clear();
 		pool.shutdown();
+		workingTasks.clear();
+		futures.clear();
 	}
 
 	@Override

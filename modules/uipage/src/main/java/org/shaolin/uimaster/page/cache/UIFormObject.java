@@ -619,7 +619,7 @@ public class UIFormObject implements java.io.Serializable
 						p.setExpression(expr);
 						col.setRowExpression(p);
 					}
-					if(col.getUpdateCondition() == null && !"Label".equals(col.getUiType().getType())) {
+					if(table.isShowFilter() && (col.getUpdateCondition() == null && !"Label".equals(col.getUiType().getType()))) {
 						if (col.getBeFieldId() == null) {
 							throw new IllegalArgumentException("This column must have a befieldid in " + table.getUIID() + " table.");
 						}
@@ -753,7 +753,7 @@ public class UIFormObject implements java.io.Serializable
 					
 					for (UITableColumnType col : table.getColumns()) {
 						col.getRowExpression().getExpression().parse(parsingContext);
-						if (col.getUpdateCondition() != null) {
+						if (table.isShowFilter() && col.getUpdateCondition() != null) {
 							col.getUpdateCondition().getExpression().parse(parsingContext);
 						}
 						if(col.getComboxExpression() != null) {
