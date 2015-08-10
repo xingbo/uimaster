@@ -299,7 +299,7 @@ public class HTMLUtil
         IUISkin uiskinObj = null;
         if (uiskin != null)
         {
-            String uiskinName = uiskin.getSkinName();
+            String uiskinName = uiskin.getSkinName().trim();
             try
             {
                 if (skinMap.containsKey(uiskinName))

@@ -875,7 +875,7 @@ public class UIFormJSGenerator0 {
         if(uiskin != null)
         {
 	        out.write("        ,uiskin: \"");
-	        out.print(uiskin.getSkinName());
+	        out.print(uiskin.getSkinName().trim());
 	        out.write("\"\n");
         }
         
@@ -940,7 +940,7 @@ public class UIFormJSGenerator0 {
         if(uiskin != null)
         {
 	        out.write("        ,uiskin: \"");
-	        out.print(uiskin.getSkinName());
+	        out.print(uiskin.getSkinName().trim());
 	        out.write("\"\n");
         }
     }

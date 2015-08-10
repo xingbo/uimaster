@@ -25,6 +25,7 @@ import org.shaolin.bmdp.runtime.security.IPermissionService;
 import org.shaolin.bmdp.runtime.spi.IAppServiceManager;
 import org.shaolin.javacc.exception.EvaluationException;
 import org.shaolin.javacc.exception.ParsingException;
+import org.shaolin.uimaster.page.AjaxActionHelper;
 import org.shaolin.uimaster.page.MobilitySupport;
 import org.shaolin.uimaster.page.WebConfig;
 import org.shaolin.uimaster.page.cache.UIFlowCacheManager;
@@ -480,6 +481,19 @@ public class WebFlowServlet extends HttpServlet
 				logger.error("Error occurs when synchronize the widget values: "
 								+ e.getMessage(), e);
 				WebflowErrorUtil.addError(request, "ajax.sync.error",
+						new WebflowError(e.getMessage(), e));
+				WebNode srcNode = processSourceWebNode(request, attrAccessor);
+				ProcessHelper.processForwardError(srcNode, request, response);
+				
+		        UserContext.unregisterCurrentUserContext();
+		        LocaleContext.clearLocaleContext();
+				return;
+			} 
+			try {
+				AjaxActionHelper.getAjaxWidgetMap(request.getSession(true));
+			} catch (NullPointerException e) {
+				logger.info("Session time out or submit duplication. forward to login page");
+				WebflowErrorUtil.addError(request, "submit.error",
 						new WebflowError(e.getMessage(), e));
 				WebNode srcNode = processSourceWebNode(request, attrAccessor);
 				ProcessHelper.processForwardError(srcNode, request, response);

@@ -345,7 +345,7 @@ html {
 .tab { width : 100%;}
 .tab-titles { width : 100%;  border-bottom: 0px;}
 .tab-titles div { display : block ; float : left ; padding : 8px; text-align : center ; cursor : pointer ; }
-.tab-bodies { width : 100% ; clear : both ; padding : 8px ; }
+.tab-bodies { width : 100% ; clear : both ; }
 .tab-bodies .tab-unselected-body { display : none ; }
 .tab-bodies .tab-selected-body { display : block ; }
  
