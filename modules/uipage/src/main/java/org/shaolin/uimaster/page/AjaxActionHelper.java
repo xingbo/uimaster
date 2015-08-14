@@ -15,6 +15,7 @@
 */
 package org.shaolin.uimaster.page;
 
+import java.util.Collections;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -132,7 +133,10 @@ public class AjaxActionHelper {
 	 * @return ui map which is in the whole page.
 	 */
 	public static Map<?, ?> getAjaxWidgetMap(HttpSession session) {
-		return (Map<?, ?>) session.getAttribute(AjaxContext.AJAX_COMP_MAP);
+		if (session != null) {
+			return (Map<?, ?>) session.getAttribute(AjaxContext.AJAX_COMP_MAP);
+		}
+		return Collections.EMPTY_MAP;
 	}
 	
 	public static Widget getCachedAjaxWidget(String name,

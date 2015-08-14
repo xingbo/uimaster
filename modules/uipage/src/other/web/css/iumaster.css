@@ -342,6 +342,7 @@ html {
     height:3000px/*must have for any big value*/;
 }
 
+.dataTables_wrapper{margin-left:2px;margin-right:2px;}
 .tab { width : 100%;}
 .tab-titles { width : 100%;  border-bottom: 0px;}
 .tab-titles div { display : block ; float : left ; padding : 8px; text-align : center ; cursor : pointer ; }

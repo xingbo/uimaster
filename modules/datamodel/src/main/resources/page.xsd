@@ -532,8 +532,8 @@ in simple component mapping, the paramName is required</xs:documentation>
                             <xs:documentation>location of the image, should  be one of the properties</xs:documentation>
                         </xs:annotation>
                     </xs:element>
-                    <xs:element name="isGallery" type="Page:BooleanPropertyType">
-                    </xs:element>
+                    <xs:element name="isGallery" type="Page:BooleanPropertyType" />
+                    <xs:element name="showWords" type="Page:BooleanPropertyType" />
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>

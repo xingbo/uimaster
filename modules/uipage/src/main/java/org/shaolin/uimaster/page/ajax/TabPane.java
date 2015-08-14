@@ -29,7 +29,9 @@ import javax.servlet.jsp.JspException;
 import org.shaolin.bmdp.datamodel.page.TableLayoutConstraintType;
 import org.shaolin.bmdp.datamodel.page.UIReferenceEntityType;
 import org.shaolin.bmdp.datamodel.page.UITabPaneItemType;
+import org.shaolin.bmdp.runtime.entity.EntityNotFoundException;
 import org.shaolin.bmdp.runtime.spi.IServerServiceManager;
+import org.shaolin.javacc.context.DefaultEvaluationContext;
 import org.shaolin.javacc.context.ParsingContext;
 import org.shaolin.javacc.exception.EvaluationException;
 import org.shaolin.uimaster.html.layout.HTMLPanelLayout;
@@ -44,6 +46,8 @@ import org.shaolin.uimaster.page.cache.PageCacheManager;
 import org.shaolin.uimaster.page.cache.UIFormObject;
 import org.shaolin.uimaster.page.javacc.VariableEvaluator;
 import org.shaolin.uimaster.page.od.ODContext;
+import org.shaolin.uimaster.page.od.ODEntityContext;
+import org.shaolin.uimaster.page.od.ODPageContext;
 import org.shaolin.uimaster.page.spi.IJsGenerator;
 import org.shaolin.uimaster.page.widgets.HTMLCellLayoutType;
 import org.shaolin.uimaster.page.widgets.HTMLFrameType;
@@ -233,8 +237,35 @@ public class TabPane extends Container implements Serializable
     	ODContext odContext = this.evalContexts.remove(tab.getUiid());
         String entityPrefix = ajaxContext.getEntityPrefix();
 		if (tab.getPanel() != null) {
-			ParsingContext pContext = PageCacheManager.getUIFormObject(odContext.getOdEntityName()).getVariablePContext();
-			VariableEvaluator ee = new VariableEvaluator(odContext);
+			ParsingContext pContext = null;
+			VariableEvaluator ee = null;
+			if (odContext != null) {
+				pContext = PageCacheManager.getUIFormObject(odContext.getOdEntityName()).getVariablePContext();
+				ee = new VariableEvaluator(odContext);
+			} else {
+				try {
+					String pageName = ownerEntity.getName();
+					try {
+						pContext = PageCacheManager.getUIFormObject(pageName).getVariablePContext();
+						ODEntityContext odEntityContext = new ODEntityContext(pageName, htmlContext);
+						odEntityContext.initContext();
+						odContext = odEntityContext;
+						ee = new VariableEvaluator(new DefaultEvaluationContext());
+					} catch (EntityNotFoundException e) {
+						pContext = PageCacheManager.getUIPageObject(pageName).getUIFormObject().getVariablePContext();
+						ODPageContext odPageContext = new ODPageContext( htmlContext, pageName );
+						odPageContext.initContext();
+						odContext = odPageContext;
+						ee = new VariableEvaluator(odPageContext);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			if (pContext == null) {
+				throw new IllegalStateException("Failed to initialize the OD context for UIPage tab.");
+			}
+			
         	//ui panel support
         	String UIID = entityPrefix + tab.getPanel().getUIID();
         	HTMLPanelLayout panelLayout = new HTMLPanelLayout(UIID, ownerEntity);

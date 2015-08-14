@@ -1051,6 +1051,8 @@ public class UIFormObject implements java.io.Serializable
                     parsingContext);
             getAttribute("isGallery", ((UIImageType)component).getIsGallery(), propMap, i18nMap, expMap,
                     parsingContext);
+            getAttribute("showWords", ((UIImageType)component).getShowWords(), propMap, i18nMap, expMap,
+                    parsingContext);
         }
         else if (component instanceof UIFileType)
         {

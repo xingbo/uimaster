@@ -93,6 +93,9 @@ public class HTMLImageType extends HTMLTextWidgetType
 	            generateAttributes(context);
 	            generateEventListeners(context);
 	            context.generateHTML(" style=\"cursor:pointer;\"/>");
+	            if (this.getAttribute("showWords") != null) {
+	            	context.generateHTML("<span>" + this.getAttribute("text") + "</span>");
+	            }
         	}
             generateEndWidget(context);
         }
@@ -104,14 +107,7 @@ public class HTMLImageType extends HTMLTextWidgetType
 
     private String getSrc(HTMLSnapshotContext context)
     {
-        if (getValue() != null && !"".equals(getValue()))
-        {
-            return context.getImageUrl(getUIEntityName(), getValue());
-        }
-        else
-        {
-            return context.getImageUrl(getUIEntityName(), (String) getAllAttribute("src"));
-        }
+        return context.getImageUrl(getUIEntityName(), (String) getAllAttribute("src"));
     }
 
     public void generateAttribute(HTMLSnapshotContext context, String attributeName, Object attributeValue) throws IOException
