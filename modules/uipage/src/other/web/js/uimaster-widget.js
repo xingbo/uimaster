@@ -996,7 +996,15 @@ UIMaster.ui.combobox = UIMaster.extend(UIMaster.ui.field, /** @lends UIMaster.ui
 		}
 	},
 	removeAttr: function(v) {
-		this.clearOptions();
+	    if (v != null && v.indexOf("CLEAR_ALL_ITEMS") == -1) {
+		    for(var i=0;i<this.options.length;i++)
+            if(this.options[i].value==v) {
+                $(this.options[i]).remove();
+				break;
+			}
+		} else {
+		  this.clearOptions();
+		}
 	},
 	addOption: function(item){
 	   $(this).append($("<option></option>").attr("value",item.value).text(item.name));
@@ -2515,7 +2523,7 @@ UIMaster.ui.tab=UIMaster.extend(UIMaster.ui,{
         			this.remove();
         			titles = $("#titles-container-" + othis.id).children();
         			if(titles.length != 0)
-        				othis._setTab($(titles[0]).attr("id"));
+        				othis._setTab($(titles[titles.length-1]).attr("id"));
         		});
         		bodies.each(function(){
         			if($(this).attr("index") == index){

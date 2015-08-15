@@ -72,6 +72,15 @@ abstract public class Choice extends Widget
         }
     }
     
+    public String getOptionName(String itemValue) {
+    	if(optionValues.contains(itemValue))
+        {
+    		int index = optionValues.indexOf(itemValue);
+    		return optionDisplayValues.get(index);
+        }
+    	return "";
+    }
+    
     /**
      * 
      * Be noticed that the parameter is itemValue!
@@ -92,6 +101,17 @@ abstract public class Choice extends Widget
             
             _removeAttribute(itemValue);
         }
+    }
+    
+    public void removeAllOptions() {
+    	if(this._isReadOnly())
+        {
+            return;
+        }
+    	optionValues.clear();
+    	optionDisplayValues.clear();
+    	
+    	updateOptions();
     }
 
     public void setOptions(List<String> displayValues, List<String> optionValues)

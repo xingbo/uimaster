@@ -1069,7 +1069,11 @@ UIMaster.registerHandler("fadeOut", function(data,win){
         	e = win.elementList[i];
     if(!e)
     	 return;
-	e.removeAttr(data.name);
+    if (data.name == undefined) {
+       e.removeAttr(data.data);
+    } else {
+	   e.removeAttr(data.name);
+    }
 }).registerHandler("update_event",function(data,win){
 	var attribute = win.eval("("+data.data+")");
 	win.$('#'+data.uiid).bind(attribute.name, attribute.value);
