@@ -25,16 +25,9 @@
         import org.shaolin.bmdp.datamodel.workflow.*;
         import org.shaolin.bmdp.datamodel.flowdiagram.FlowChunk;
         { 
-            Workflow wf = new Workflow();
-            ConfType conf = new ConfType();
-												wf.setConf(conf);
-            HashMap input = new HashMap();
-            input.put("beObject", wf);
-            input.put("editable", new Boolean(true));
             RefForm form = (RefForm)@page.getElement(@page.getEntityUiid()); 
-            form.ui2Data(input);
-
-            wf = (Workflow)input.get("beObject");
+            HashMap input = (HashMap)form.ui2Data(input);
+            Workflow wf = (Workflow)input.get("beObject");
             
             FlowType subFlow = new FlowType();
 												subFlow.setName(@page.getTextField("flowNameUI").getValue());

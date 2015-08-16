@@ -291,7 +291,7 @@ public class HibernateMappingGenerator implements IEntityEventListener<TableType
 		for (MemberType field: fields) {
 			if (field.getName().equals(beField)) {
 				if (field.getType() instanceof DateTimeType) {
-					out.write("\" type=\"date");;
+					out.write("\" type=\"timestamp");;
 				} else if (field.getType() instanceof TimeType) {
 					out.write("\" type=\"timestamp");
 				} else if (field.getType() instanceof CEObjRefType) {

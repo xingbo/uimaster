@@ -15,14 +15,7 @@
                 import org.shaolin.uimaster.page.ajax.*;
                 import org.shaolin.bmdp.workflow.be.TaskImpl;
                 {
-                    TaskImpl defaultUser = new TaskImpl();
-                    HashMap input = new HashMap();
-                    input.put("beObject", defaultUser);
-                    input.put("editable", new Boolean(true));
-                    RefForm form = new RefForm("userForm", "org.shaolin.bmdp.workflow.form.Task", input);
-                    @page.addElement(form);
-                    
-                    form.openInWindows("Add Item", new TableCallBack("tasksTable"), 690, 380);
+                    //TODO: unsupported to create task.
                 }
                 ]]></ns2:expressionString>
             </ns2:exp>
@@ -130,6 +123,60 @@
 			                    <ns2:beFieldId>rowBE.description</ns2:beFieldId>
 			                    <ns2:uiType xsi:type="ns2:UITableColHTMLType"><ns2:type>Text</ns2:type></ns2:uiType>
 			                </ns2:column>
+			                <ns2:column xsi:type="ns2:UITableColumnType">
+                       <ns2:title xsi:type="ns2:StringPropertyType">
+                           <ns2:value>Party</ns2:value>
+                       </ns2:title>
+                       <ns2:beFieldId>rowBE.partyId</ns2:beFieldId>
+                       <ns2:uiType xsi:type="ns2:UITableColHTMLType"><ns2:type>Text</ns2:type></ns2:uiType>
+                       <ns2:updateCondition xsi:type="ns2:ExpressionPropertyType">
+                           <ns2:expression xsi:type="ns2:ExpressionType">
+                               <ns2:expressionString><![CDATA[
+                               import org.shaolin.vogerp.commonmodel.ce.OrganizationType;
+                               import org.shaolin.bmdp.runtime.AppContext;
+                               import org.shaolin.bmdp.runtime.ce.IConstantEntity;
+                               {
+                               }]]></ns2:expressionString>
+                           </ns2:expression>
+                       </ns2:updateCondition>
+                       <ns2:rowExpression xsi:type="ns2:ExpressionPropertyType">
+                           <ns2:expression xsi:type="ns2:ExpressionType">
+                                <ns2:expressionString><![CDATA[
+                                import org.shaolin.bmdp.runtime.AppContext;
+                                import org.shaolin.bmdp.workflow.coordinator.IResourceManager;
+                                {
+                                 IResourceManager service = (IResourceManager)AppContext.get().getService(IResourceManager.class);
+                                 return service.getResource(rowBE.getPartyId());
+                                }]]></ns2:expressionString>
+                            </ns2:expression>
+                        </ns2:rowExpression>
+                   </ns2:column>
+                   <ns2:column xsi:type="ns2:UITableColumnType">
+                       <ns2:title xsi:type="ns2:StringPropertyType">
+                           <ns2:value>Party Type</ns2:value>
+                       </ns2:title>
+                       <ns2:beFieldId>rowBE.partyType</ns2:beFieldId>
+                       <ns2:uiType xsi:type="ns2:UITableColHTMLType"><ns2:type>Label</ns2:type></ns2:uiType>
+                       <ns2:updateCondition xsi:type="ns2:ExpressionPropertyType">
+                           <ns2:expression xsi:type="ns2:ExpressionType">
+                               <ns2:expressionString><![CDATA[
+                               import org.shaolin.vogerp.commonmodel.ce.OrganizationType;
+                               import org.shaolin.bmdp.runtime.AppContext;
+                               import org.shaolin.bmdp.runtime.ce.IConstantEntity;
+                               {
+                               }]]></ns2:expressionString>
+                           </ns2:expression>
+                       </ns2:updateCondition>
+                       <ns2:rowExpression xsi:type="ns2:ExpressionPropertyType">
+                           <ns2:expression xsi:type="ns2:ExpressionType">
+                                <ns2:expressionString><![CDATA[
+                                import org.shaolin.bmdp.runtime.AppContext;
+                                {
+                                 return org.shaolin.bmdp.runtime.ce.CEUtil.getValue($rowBE.getPartyType());
+                                }]]></ns2:expressionString>
+                            </ns2:expression>
+                        </ns2:rowExpression>
+                   </ns2:column>
 			                <ns2:column xsi:type="ns2:UITableColumnType">
 			                    <ns2:title xsi:type="ns2:StringPropertyType">
 			                        <ns2:value>Trigger Time</ns2:value>

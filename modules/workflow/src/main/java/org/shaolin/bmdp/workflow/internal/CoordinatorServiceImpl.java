@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -93,13 +92,13 @@ public class CoordinatorServiceImpl implements ILifeCycleProvider, ICoordinatorS
 		return workingTasks.size();
 	}
 	
-	public Set<Long> getAllTaskOnwers() {
-		Map<Long, Long> onwers = new HashMap<Long, Long>();
+	public List<Long> getAllTaskOnwers() {
+		List<Long> onwers = new ArrayList<Long>();
 		Collection<ITask> tasks= workingTasks.values();
 		for (ITask t : tasks) {
-			onwers.put(t.getPartyId(), t.getPartyId());
+			onwers.add(t.getPartyId());
 		}
-		return onwers.keySet();
+		return onwers;
 	}
 	
 	@Override
@@ -112,6 +111,11 @@ public class CoordinatorServiceImpl implements ILifeCycleProvider, ICoordinatorS
 			}
 		}
 		return partyTasks;
+	}
+	
+	@Override
+	public List<ITask> getAllExpiredTasks() {
+		return getAllTasks(TaskStatusType.EXPIRED);
 	}
 	
 	@Override
@@ -152,15 +156,16 @@ public class CoordinatorServiceImpl implements ILifeCycleProvider, ICoordinatorS
 		if (!testCaseFlag) {
 			CoordinatorModel.INSTANCE.create(task);
 		}
-		
 		if (workingTasks.putIfAbsent(task.getId(), task) == null) {
 			schedule(task);
+		}
+		if (!testCaseFlag) {
+			CoordinatorModel.INSTANCE.update(task);
 		}
 	}
 
 	private void schedule(final ITask task) {
-		if (task.getStatus() == TaskStatusType.INPROGRESS
-				|| task.getStatus() == TaskStatusType.COMPLETED
+		if (task.getStatus() == TaskStatusType.COMPLETED
 				|| task.getStatus() == TaskStatusType.CANCELLED) {
 			workingTasks.remove(task.getId());
 			throw new IllegalArgumentException("Task must be not in started state: " + task.getStatus());
@@ -203,10 +208,6 @@ public class CoordinatorServiceImpl implements ILifeCycleProvider, ICoordinatorS
 			throw new IllegalArgumentException("The created task can't be updated!");
 		}
 		
-		if (!testCaseFlag) {
-			CoordinatorModel.INSTANCE.update(task);
-		}
-		
 		ScheduledFuture<?> future = futures.remove(task);
 		if (future != null && !future.isDone()) {
 			future.cancel(true);
@@ -218,16 +219,22 @@ public class CoordinatorServiceImpl implements ILifeCycleProvider, ICoordinatorS
 		if (task.getStatus() == TaskStatusType.NOTSTARTED) {
 			schedule(task);
 		}
+		if (!testCaseFlag) {
+			CoordinatorModel.INSTANCE.update(task);
+		}
 	}
 	
 	private void expireTask(ITask task) {
-		AppContext.register(appService);
 		if (logger.isDebugEnabled()) {
 			logger.debug("Task is expired!  {}", task.toString());
 		}
+		if (task.getStatus() == TaskStatusType.EXPIRED) {
+			return;
+		}
+		AppContext.register(appService);
 		
 		ScheduledFuture<?> future = futures.remove(task); 
-		if (!future.isDone()) {
+		if (future != null && !future.isDone()) {
 			future.cancel(true);
 		}
 		workingTasks.remove(task.getId());
@@ -236,6 +243,7 @@ public class CoordinatorServiceImpl implements ILifeCycleProvider, ICoordinatorS
 		task.setCompleteRate(100);
 		
 		if (!testCaseFlag) {
+			// only update the task that give the customer change to make the decision.
 			CoordinatorModel.INSTANCE.update(task);
 		}
 		
@@ -255,7 +263,7 @@ public class CoordinatorServiceImpl implements ILifeCycleProvider, ICoordinatorS
 		}
 		
 		ScheduledFuture<?> future = futures.remove(task); 
-		if (!future.isDone()) {
+		if (future != null && !future.isDone()) {
 			future.cancel(true);
 		}
 		workingTasks.remove(task.getId());
@@ -287,7 +295,7 @@ public class CoordinatorServiceImpl implements ILifeCycleProvider, ICoordinatorS
 		}
 		
 		ScheduledFuture<?> future = futures.remove(task);
-		if (!future.isDone()) {
+		if (future != null && !future.isDone()) {
 			future.cancel(true);
 			
 			workingTasks.remove(task.getId());
@@ -344,11 +352,11 @@ public class CoordinatorServiceImpl implements ILifeCycleProvider, ICoordinatorS
 		}
 		// load all pending tasks when system up.
 		TaskImpl condition = new TaskImpl();
-		List<TaskImpl> tasks = CoordinatorModel.INSTANCE.searchPendingTasks(condition, null, 0, -1);
+		List<TaskImpl> tasks = CoordinatorModel.INSTANCE.searchTasks(condition, null, 0, -1);
 		for (TaskImpl t : tasks) {
 			workingTasks.put(t.getId(), t);
 			
-			if (t.getStatus() == TaskStatusType.INPROGRESS) {
+			if (t.getStatus() == TaskStatusType.NOTSTARTED || t.getStatus() == TaskStatusType.INPROGRESS) {
 				if (System.currentTimeMillis() < t.getExpiredTime().getTime()) {
 					schedule(t);
 				} else {

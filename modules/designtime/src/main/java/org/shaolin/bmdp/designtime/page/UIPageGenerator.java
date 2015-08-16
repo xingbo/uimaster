@@ -173,18 +173,9 @@ public final class UIPageGenerator implements IEntityEventListener<BusinessEntit
 								        "\n        import org.shaolin.uimaster.page.ajax.*;" +
 								        "\n        import " + beImpl + ";" +
 								        "\n        { " +
-								        "\n            "+beImplName+" defaultUser = new " + beImplName + "();" +
-								        "\n            HashMap input = new HashMap();" +
-								        "\n            input.put(\"beObject\", defaultUser);" +
-								        "\n            input.put(\"editable\", new Boolean(true));" +
 								        "\n            RefForm form = (RefForm)@page.getElement(@page.getEntityUiid()); " +
-								        "\n            form.ui2Data(input);\n" +
-								        "\n            defaultUser = (" + beImplName + ")input.get(\"beObject\");" +
-								        "\n            String v = @page.getHidden(\"idUI\").getValue();" +
-								        "\n            if (v != null && v.length() > 0) {" +
-								        "\n            	   Long objectId = Long.valueOf(v);" +
-								        "\n            	   defaultUser.setId(objectId.longValue());" +
-								        "\n            }" +
+								        "\n            HashMap out = (HashMap)form.ui2Data();\n" +
+								        "\n            "+beImplName+" defaultUser = (" + beImplName + ")out.get(\"beObject\");" +
 								        "\n            if (defaultUser.getId() == 0) {" +
 								        "\n                System.out.println(\"created object: \" + defaultUser);" +
 								        "\n            } else {" +

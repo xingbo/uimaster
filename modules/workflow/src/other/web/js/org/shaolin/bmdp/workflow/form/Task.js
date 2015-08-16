@@ -3,29 +3,14 @@
 function org_shaolin_bmdp_workflow_form_Task(json)
 {
     var prefix = (typeof(json) == "string") ? json : json.prefix; 
-    var idUI = new UIMaster.ui.hidden
-    ({
-        ui: elementList[prefix + "idUI"]
-    });
-
     var partyIdUILabel = new UIMaster.ui.label
     ({
         ui: elementList[prefix + "partyIdUILabel"]
     });
 
-    var partyIdUI = new UIMaster.ui.textfield
+    var partyIdUI = new UIMaster.ui.label
     ({
         ui: elementList[prefix + "partyIdUI"]
-    });
-
-    var partyTypeUILabel = new UIMaster.ui.label
-    ({
-        ui: elementList[prefix + "partyTypeUILabel"]
-    });
-
-    var partyTypeUI = new UIMaster.ui.textfield
-    ({
-        ui: elementList[prefix + "partyTypeUI"]
     });
 
     var subjectUILabel = new UIMaster.ui.label
@@ -43,7 +28,7 @@ function org_shaolin_bmdp_workflow_form_Task(json)
         ui: elementList[prefix + "descriptionUILabel"]
     });
 
-    var descriptionUI = new UIMaster.ui.textfield
+    var descriptionUI = new UIMaster.ui.textarea
     ({
         ui: elementList[prefix + "descriptionUI"]
     });
@@ -56,26 +41,7 @@ function org_shaolin_bmdp_workflow_form_Task(json)
     var expiredTimeUI = new UIMaster.ui.calendar
     ({
         ui: elementList[prefix + "expiredTimeUI"]
-    });
-
-    var expiredTimeStartUILabel = new UIMaster.ui.label
-    ({
-        ui: elementList[prefix + "expiredTimeStartUILabel"]
-    });
-
-    var expiredTimeStartUI = new UIMaster.ui.calendar
-    ({
-        ui: elementList[prefix + "expiredTimeStartUI"]
-    });
-
-    var expiredTimeEndUILabel = new UIMaster.ui.label
-    ({
-        ui: elementList[prefix + "expiredTimeEndUILabel"]
-    });
-
-    var expiredTimeEndUI = new UIMaster.ui.calendar
-    ({
-        ui: elementList[prefix + "expiredTimeEndUI"]
+        ,isDataOnly: false
     });
 
     var sendSMSUILabel = new UIMaster.ui.label
@@ -149,24 +115,18 @@ function org_shaolin_bmdp_workflow_form_Task(json)
     ({
         ui: elementList[prefix + "fieldPanel"]
         ,items: []
-        ,subComponents: [prefix + "idUI",prefix + "partyIdUILabel",prefix + "partyIdUI",prefix + "partyTypeUILabel",prefix + "partyTypeUI",prefix + "subjectUILabel",prefix + "subjectUI",prefix + "descriptionUILabel",prefix + "descriptionUI",prefix + "expiredTimeUILabel",prefix + "expiredTimeUI",prefix + "expiredTimeStartUILabel",prefix + "expiredTimeStartUI",prefix + "expiredTimeEndUILabel",prefix + "expiredTimeEndUI",prefix + "sendSMSUILabel",prefix + "sendSMSUI",prefix + "sendEmailUILabel",prefix + "sendEmailUI",prefix + "statusUILabel",prefix + "statusUI",prefix + "completeRateUILabel",prefix + "completeRateUI",prefix + "priorityUILabel",prefix + "priorityUI"]
+        ,subComponents: [prefix + "partyIdUILabel",prefix + "partyIdUI",prefix + "subjectUILabel",prefix + "subjectUI",prefix + "descriptionUILabel",prefix + "descriptionUI",prefix + "expiredTimeUILabel",prefix + "expiredTimeUI",prefix + "sendSMSUILabel",prefix + "sendSMSUI",prefix + "sendEmailUILabel",prefix + "sendEmailUI",prefix + "statusUILabel",prefix + "statusUI",prefix + "completeRateUILabel",prefix + "completeRateUI",prefix + "priorityUILabel",prefix + "priorityUI"]
     });
 
     var Form = new UIMaster.ui.panel
     ({
         ui: elementList[prefix + "Form"]
-        ,items: [idUI,partyIdUILabel,partyIdUI,partyTypeUILabel,partyTypeUI,subjectUILabel,subjectUI,descriptionUILabel,descriptionUI,expiredTimeUILabel,expiredTimeUI,expiredTimeStartUILabel,expiredTimeStartUI,expiredTimeEndUILabel,expiredTimeEndUI,sendSMSUILabel,sendSMSUI,sendEmailUILabel,sendEmailUI,statusUILabel,statusUI,completeRateUILabel,completeRateUI,priorityUILabel,priorityUI,okbtn,cancelbtn,fieldPanel,actionPanel]
+        ,items: [partyIdUILabel,partyIdUI,subjectUILabel,subjectUI,descriptionUILabel,descriptionUI,expiredTimeUILabel,expiredTimeUI,sendSMSUILabel,sendSMSUI,sendEmailUILabel,sendEmailUI,statusUILabel,statusUI,completeRateUILabel,completeRateUI,priorityUILabel,priorityUI,okbtn,cancelbtn,fieldPanel,actionPanel]
     });
-
-    Form.idUI=idUI;
 
     Form.partyIdUILabel=partyIdUILabel;
 
     Form.partyIdUI=partyIdUI;
-
-    Form.partyTypeUILabel=partyTypeUILabel;
-
-    Form.partyTypeUI=partyTypeUI;
 
     Form.subjectUILabel=subjectUILabel;
 
@@ -179,14 +139,6 @@ function org_shaolin_bmdp_workflow_form_Task(json)
     Form.expiredTimeUILabel=expiredTimeUILabel;
 
     Form.expiredTimeUI=expiredTimeUI;
-
-    Form.expiredTimeStartUILabel=expiredTimeStartUILabel;
-
-    Form.expiredTimeStartUI=expiredTimeStartUI;
-
-    Form.expiredTimeEndUILabel=expiredTimeEndUILabel;
-
-    Form.expiredTimeEndUI=expiredTimeEndUI;
 
     Form.sendSMSUILabel=sendSMSUILabel;
 

@@ -53,6 +53,8 @@ function org_shaolin_bmdp_workflow_page_FlowManagement(json)
 
     Form.addFlow = org_shaolin_bmdp_workflow_page_FlowManagement_addFlow;
 
+    Form.editFlow = org_shaolin_bmdp_workflow_page_FlowManagement_editFlow;
+
     Form.removeFlow = org_shaolin_bmdp_workflow_page_FlowManagement_removeFlow;
 
     Form.refreshFlow = org_shaolin_bmdp_workflow_page_FlowManagement_refreshFlow;
@@ -116,6 +118,17 @@ function org_shaolin_bmdp_workflow_page_FlowManagement(json)
 
         var UIEntity = this;
     }/* Gen_Last:org_shaolin_bmdp_workflow_page_FlowManagement_addFlow */
+
+
+    /* auto generated eventlistener function declaration */
+    function org_shaolin_bmdp_workflow_page_FlowManagement_editFlow(eventsource,event) {/* Gen_First:org_shaolin_bmdp_workflow_page_FlowManagement_editFlow */
+
+        // cal ajax function. 
+
+        UIMaster.triggerServerEvent(UIMaster.getUIID(eventsource),"editFlow-20150816-1118",UIMaster.getValue(eventsource),this.__entityName);
+
+        var UIEntity = this;
+    }/* Gen_Last:org_shaolin_bmdp_workflow_page_FlowManagement_editFlow */
 
 
     /* auto generated eventlistener function declaration */

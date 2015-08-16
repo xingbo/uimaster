@@ -167,7 +167,7 @@ public class FlowContainer {
         //Notify the parties
         ICoordinatorService coordinator = AppContext.get().getService(ICoordinatorService.class);
         ITask task = new TaskImpl();
-        task.setSubject(mission.getDescription());
+        task.setSubject("Task: " + mission.getName());
         task.setDescription(mission.getDescription());
         task.setPartyType(mission.getPartyType());
         task.setExpiredTime(timeout);

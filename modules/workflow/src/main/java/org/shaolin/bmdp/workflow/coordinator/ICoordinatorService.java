@@ -17,7 +17,6 @@ package org.shaolin.bmdp.workflow.coordinator;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.shaolin.bmdp.workflow.be.INotification;
 import org.shaolin.bmdp.workflow.be.ITask;
@@ -37,7 +36,7 @@ public interface ICoordinatorService {
 	 * 
 	 * @return
 	 */
-	Set<Long> getAllTaskOnwers();
+	List<Long> getAllTaskOnwers();
 	
 	/**
 	 * 
@@ -52,6 +51,8 @@ public interface ICoordinatorService {
 	 * @return
 	 */
 	List<ITask> getAllTasks(TaskStatusType status);
+	
+	List<ITask> getAllExpiredTasks();	
 	
 	/**
 	 * How many tasks that the employee is working.

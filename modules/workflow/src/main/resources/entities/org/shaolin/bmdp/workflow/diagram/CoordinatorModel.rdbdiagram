@@ -9,6 +9,7 @@
     <systemVersion>0</systemVersion>
     <ns2:column name="ID" type="BIGINT" isNull="false" autoIncrement="true"></ns2:column>
     <ns2:column name="PARTYID" type="BIGINT" isNull="true"></ns2:column>
+    <ns2:column name="PARTYTYPE" type="VARCHAR" isNull="true"></ns2:column>
     <ns2:column name="SUBJECT" type="VARCHAR" isNull="true"></ns2:column>
     <ns2:column name="DESCRIPTION" type="VARCHAR" isNull="true"></ns2:column>
     <ns2:column name="EXPIREDTIME" type="DATETIME" isNull="true"></ns2:column>
@@ -26,6 +27,7 @@
       <ns2:businessEntity entityName="org.shaolin.bmdp.workflow.be.Task"></ns2:businessEntity>
       <ns2:fieldMapping beFieldName="id" columnName="ID"></ns2:fieldMapping>
       <ns2:fieldMapping beFieldName="partyId" columnName="PARTYID"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="partyType" columnName="PARTYTYPE"></ns2:fieldMapping>
       <ns2:fieldMapping beFieldName="subject" columnName="SUBJECT"></ns2:fieldMapping>
       <ns2:fieldMapping beFieldName="description" columnName="DESCRIPTION"></ns2:fieldMapping>
       <ns2:fieldMapping beFieldName="expiredTime" columnName="EXPIREDTIME"></ns2:fieldMapping>
@@ -43,6 +45,7 @@
     <systemVersion>0</systemVersion>
     <ns2:column name="ID" type="BIGINT" isNull="false" autoIncrement="true"></ns2:column>
     <ns2:column name="PARTYID" type="BIGINT" isNull="true"></ns2:column>
+    <ns2:column name="PARTYTYPE" type="VARCHAR" isNull="true"></ns2:column>
     <ns2:column name="SUBJECT" type="VARCHAR" isNull="true"></ns2:column>
     <ns2:column name="DESCRIPTION" type="VARCHAR" isNull="true"></ns2:column>
     <ns2:column name="EXPIREDTIME" type="DATETIME" isNull="true"></ns2:column>
@@ -60,6 +63,7 @@
       <ns2:businessEntity entityName="org.shaolin.bmdp.workflow.be.TaskHistory"></ns2:businessEntity>
       <ns2:fieldMapping beFieldName="id" columnName="ID"></ns2:fieldMapping>
       <ns2:fieldMapping beFieldName="partyId" columnName="PARTYID"></ns2:fieldMapping>
+      <ns2:fieldMapping beFieldName="partyType" columnName="PARTYTYPE"></ns2:fieldMapping>
       <ns2:fieldMapping beFieldName="subject" columnName="SUBJECT"></ns2:fieldMapping>
       <ns2:fieldMapping beFieldName="description" columnName="DESCRIPTION"></ns2:fieldMapping>
       <ns2:fieldMapping beFieldName="expiredTime" columnName="EXPIREDTIME"></ns2:fieldMapping>

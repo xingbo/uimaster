@@ -16,11 +16,13 @@
 package org.shaolin.bmdp.workflow.internal;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.shaolin.bmdp.datamodel.common.NameExpressionType;
@@ -133,6 +135,13 @@ public final class FlowRuntimeContext extends OpExecuteContext implements FlowVa
 			for (Map.Entry<String, Object> spi: set) {
 	        	globalVariables.setVariableValue(spi.getKey(), spi.getValue());
 	        }
+			Collection<Entry<String, Object>> attributes = event.getAllAttributes();
+			if (attributes != null && !attributes.isEmpty()) {
+				for (Entry<String, Object> attribute: attributes) {
+					globalVariables.setVariableValue(attribute.getKey(), attribute.getValue());
+				}
+			}
+			
 		} catch (EvaluationException e) {
 		}
         this.setEvaluationContextObject("@", globalVariables);

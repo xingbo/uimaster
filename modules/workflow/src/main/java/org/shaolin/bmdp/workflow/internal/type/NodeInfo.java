@@ -147,10 +147,12 @@ public class NodeInfo implements Serializable {
         
         if (node instanceof StartNodeType) {
         	DestWithFilterType filter = ((StartNodeType)node).getFilter();
-            filterMap.put(filter.getName(), filter);
-            if (filter.getBean() != null) {
-                beans.add(filter.getBean()); // add start filter bean
-            }
+        	if (filter != null && filter.getName() != null) {
+	            filterMap.put(filter.getName(), filter);
+	            if (filter.getBean() != null) {
+	                beans.add(filter.getBean()); // add start filter bean
+	            }
+        	}
         } else if (node instanceof ConditionNodeType) {
         	if (((ConditionNodeType)node).getBean() != null) {
                 beans.add(((ConditionNodeType)node).getBean()); // add condition bean

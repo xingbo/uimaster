@@ -7,7 +7,7 @@
 	<cePackage>org.shaolin.bmdp.workflow.ce</cePackage>
 	<diagramPackage>org.shaolin.bmdp.workflow.diagram</diagramPackage>
 
-	<bediagram:beEntity needPersist="true" needUIEntity="true" needUITableEditor="true">
+	<bediagram:beEntity needPersist="true" needUIEntity="true">
 		<common:entityName>Task</common:entityName>
 		<bediagram:member pk="true">
 			<bediagram:name>id</bediagram:name>

@@ -132,7 +132,7 @@ public class WorkflowLifecycleServiceImpl implements ILifeCycleProvider, IServic
 
 	@Override
 	public int getRunLevel() {
-		return 10;
+		return 100;
 	}
 	
 	public Workflow getWorkflowEntity(String name) {

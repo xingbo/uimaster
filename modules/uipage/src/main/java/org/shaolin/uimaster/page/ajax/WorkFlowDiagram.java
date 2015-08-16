@@ -164,6 +164,18 @@ public class WorkFlowDiagram extends Widget implements Serializable {
 		return wflowModel;
 	}
 	
+	public FlowType getSelectedFlow() {
+		if (currentFlowName == null) {
+			throw new IllegalStateException("No flow selected currently!");
+		}
+		for (FlowType flow : wflowModel.getFlows()) {
+			if (flow.getName().equals(currentFlowName)) {
+				return flow;
+			}
+		}
+		return null;
+	}
+	
 	public FlowChunk getWorflowView() {
 		return flowView;
 	}

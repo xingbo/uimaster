@@ -127,6 +127,9 @@ public class FlowEngine {
     	this.flowInfo = flowInfo;
     	this.flowInfo.parse();
         this.sessionService = (SessionService) AppContext.get().getService(this.flowInfo.getSessionService());
+        if (this.sessionService == null) {
+        	this.sessionService = new DefaultFlowSessionService();
+        }
     }
 
     /**

@@ -188,7 +188,9 @@ public class FlowObject implements java.io.Serializable {
     		}
     		OpExecuteContext opContext = getOpParsingContext(start.getProcess()
     				.getVars(), globalContext);
-    		initConditionFilters(opContext, start.getFilter(), classPrefix);
+    		if (start.getFilter() != null) {
+    			initConditionFilters(opContext, start.getFilter(), classPrefix);
+    		}
     	}
 
     	public void initMissionNodeInfo(DefaultParsingContext globalContext, 

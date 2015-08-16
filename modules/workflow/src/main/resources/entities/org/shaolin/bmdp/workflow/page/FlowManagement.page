@@ -110,6 +110,47 @@
                     import org.shaolin.bmdp.datamodel.workflow.*;
                     import org.shaolin.bmdp.workflow.ui.PageUtil;
                     {
+                     Tree flowTree = @page.getTree("functionTree");
+                     if(flowTree.getSelectedItemId() == null || flowTree.getSelectedItemId().isEmpty()) {
+                        return;
+                     }
+                     System.out.println("SelectedItemId: " + flowTree.getSelectedItemId() + 
+                                        ", Parent: " + flowTree.getSelectedParentItemId());
+                     String workflowName = flowTree.getSelectedParentItemId();
+                     String currentFlowName = flowTree.getSelectedItemId();
+                    
+                     WorkFlowDiagram diagram = (WorkFlowDiagram)@page.getElement("flowDiagram");
+                     FlowType subFlow = diagram.getSelectedFlow();
+                     HashMap input = new HashMap();
+                     input.put("beObject", subFlow);
+                     input.put("parentUiid", "flowDiagram");
+                     input.put("editable", new Boolean(true));
+                     RefForm form = new RefForm("userForm", "org.shaolin.bmdp.workflow.form.CreateFlow", input);
+                     @page.addElement(form);
+                     
+                     form.openInWindows("Open Flow", null);
+                     form.addWindowsClosedCallBack(new TreeCallBack("functionTree"));
+                    }
+                    ]]></ns2:expressionString>
+                </ns2:exp>
+            </ns2:ops>
+        </ns2:eventHandler>
+        <ns2:eventHandler functionName="editFlow">
+           <ns2:ops xsi:type="ns2:OpCallAjaxType" name="editFlow-20150816-1118">
+                <ns2:exp>
+                    <ns2:expressionString><![CDATA[
+                    import java.util.HashMap;
+                    import java.util.List;
+                    import org.shaolin.bmdp.runtime.AppContext;
+                    import org.shaolin.uimaster.page.AjaxContext;
+                    import org.shaolin.uimaster.page.AjaxActionHelper;
+                    import org.shaolin.uimaster.page.ajax.*;
+                    import org.shaolin.bmdp.runtime.be.IBusinessEntity;
+                    import org.shaolin.bmdp.runtime.entity.EntityUtil;
+                    import org.shaolin.bmdp.datamodel.flowdiagram.FlowChunk;
+                    import org.shaolin.bmdp.datamodel.workflow.*;
+                    import org.shaolin.bmdp.workflow.ui.PageUtil;
+                    {
                      FlowType subFlow = new FlowType();
                      FlowConfType conf = new FlowConfType();
                      subFlow.setConf(conf);
@@ -515,6 +556,14 @@
       <ns2:addNodeEvent>addFlow</ns2:addNodeEvent>
       <ns2:deleteNodeEvent>removeFlow</ns2:deleteNodeEvent>
       <ns2:refreshNodeEvent>refreshFlow</ns2:refreshNodeEvent>
+      <ns2:action>
+          <ns2:uiid>editFlow</ns2:uiid>
+          <ns2:title xsi:type="ns2:StringPropertyType">
+              <ns2:value>Edit Flow...</ns2:value>
+          </ns2:title>
+          <ns2:icon>ui-icon-note</ns2:icon>
+          <ns2:function>editFlow</ns2:function>
+      </ns2:action>
 						<ns2:initExpression xsi:type="ns2:ExpressionPropertyType">
 							<ns2:expression xsi:type="ns2:ExpressionType">
 								<ns2:expressionString><![CDATA[

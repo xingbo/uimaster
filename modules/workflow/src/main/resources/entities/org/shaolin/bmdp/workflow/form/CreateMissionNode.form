@@ -24,18 +24,10 @@
         import org.shaolin.bmdp.datamodel.workflow.HandlerType;
         import org.shaolin.bmdp.datamodel.common.ExpressionType;
         { 
-            MissionNodeType node = new MissionNodeType();
-           	HandlerType handler = new HandlerType();
-           	ExpressionType expr = new ExpressionType();
-           	expr.setExpressionString("{}");
-           	handler.setExpression(expr);
-           	node.setProcess(handler); 
-            HashMap input = new HashMap();
-            input.put("beObject", node);
-            input.put("editable", new Boolean(true));
             RefForm form = (RefForm)@page.getElement(@page.getEntityUiid()); 
-            form.ui2Data(input);
-
+            HashMap output = (HashMap)form.ui2Data();
+            MissionNodeType node = (MissionNodeType)output.get("beObject");
+            
             String flowId = @page.getHidden("idUI").getValue();
 												WorkFlowDiagram diagram = (WorkFlowDiagram)@page.getElement(flowId);
 												diagram.addNode(node);
